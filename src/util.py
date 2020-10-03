@@ -118,7 +118,6 @@ def create_Bottom(factory):
 
 def create_middle(factory):
 
-    # TODO: Real size of the component
     # Hight: x achse
     # Width: y achse
     # Length/Long: z achse
@@ -236,14 +235,14 @@ def create_middle(factory):
 
     #Cereate  Bolt 1
     bolt_x = init_x + main_hight/2 - BOLT_DIA
-    bolt_y = init_y + 0.95*main_width/2
+    bolt_y = init_y + main_width/2
     bolt_z = init_z+ sub_long+ main_long + BOLT_LENGTH/2# BOLT_LENGTH/4 #1.1 is fixed value of bolt
     rota=(radians(180), 'X')
     bolt_1 = create_bolt((bolt_x, bolt_y, bolt_z),rota,bit_type)
 
     #Cereate  Bolt 2
     bolt_x = init_x - main_hight/2 + BOLT_DIA
-    bolt_y = init_y - 0.95*main_width/2
+    bolt_y = init_y - main_width/2
     bolt_z = init_z+ sub_long+ main_long + BOLT_LENGTH/2# BOLT_LENGTH/4 #1.1 is fixed value of bolt
     bolt_2 = create_bolt((bolt_x, bolt_y, bolt_z),rota,bit_type)
 
@@ -673,7 +672,7 @@ def create_bolt(position,rotation=None,bit_type=None):
         bit = bpy.context.object
         bit.name = 'Slot'
     else:
-        bit = add_torx((position[0],position[1],z_sphe+ in_dia/3),in_dia*1.5,0.2)
+        bit = add_torx((position[0],position[1],z_sphe+ in_dia),in_dia*1.5,0.2)
     
     bool_bit = sphere.modifiers.new('bool_bit', 'BOOLEAN')
     bool_bit.operation = 'DIFFERENCE'
@@ -789,8 +788,10 @@ def create_gear(factory,position,rotation,gear_type):
         x_bolt_1,y_bolt_1 = rotate_around_point((position[0],position[1]),bolt_position_angel,(x_bolt_init,y_bolt_init))
         x_bolt_2,y_bolt_2 = rotate_around_point((position[0],position[1]),bolt_position_angel+angel,(x_bolt_init,y_bolt_init))       
         bolt_1 = create_bolt((x_bolt_1,y_bolt_1,z_bolt_init),bit_type=bit_type)
-        bolt_1.name = "Test"
+        sub_obj(bolt_1,cly_1)
+
         bolt_2 = create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),bit_type=bit_type)
+        sub_obj(bolt_2,cly_1)
 
 
         part = combine_all_obj(cly_1,[cly_2,cly_3,bolt_1,bolt_2])
@@ -905,7 +906,7 @@ def add_torx(position,size,depth):
         add_vector(position, v4,minus=1, height=depth),
         add_vector(position, v5,minus=1, height=depth),
         add_vector(position, v6,minus=1, height=depth),
-        [x,y,z-depth*1.5],
+        [x,y,z-depth*1.3],
     ]
     
     up = [0,1,2,3,4,5,6,7,8,9,10,11]
@@ -923,6 +924,16 @@ def add_torx(position,size,depth):
     return obj
 
 
+
+def sub_obj(domain, slave):
+    boolean = domain.modifiers.new('boolean', 'BOOLEAN')
+    boolean.operation = 'DIFFERENCE'
+    boolean.object = slave
+    bpy.context.view_layer.objects.active = domain
+    res = bpy.ops.object.modifier_apply(modifier='boolean')
+    return res
+
+
 def add_vector(v1,v2,minus=0,height=0):
     out = []
     for i in range(len(v1)):
@@ -932,6 +943,8 @@ def add_vector(v1,v2,minus=0,height=0):
             out.append(v1[i]+v2[i])
     if height != 0:
         out[-1] -= height
+    else:
+        out[-1] += height
     print(out)
     return out
     
