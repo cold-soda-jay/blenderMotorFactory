@@ -788,11 +788,8 @@ def create_gear(factory,position,rotation,gear_type):
         x_bolt_1,y_bolt_1 = rotate_around_point((position[0],position[1]),bolt_position_angel,(x_bolt_init,y_bolt_init))
         x_bolt_2,y_bolt_2 = rotate_around_point((position[0],position[1]),bolt_position_angel+angel,(x_bolt_init,y_bolt_init))       
         bolt_1 = create_bolt((x_bolt_1,y_bolt_1,z_bolt_init),bit_type=bit_type)
-        sub_obj(bolt_1,cly_1)
 
         bolt_2 = create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),bit_type=bit_type)
-        sub_obj(bolt_2,cly_1)
-
 
         part = combine_all_obj(cly_1,[cly_2,cly_3,bolt_1,bolt_2])
         bpy.context.view_layer.objects.active = part
@@ -906,7 +903,7 @@ def add_torx(position,size,depth):
         add_vector(position, v4,minus=1, height=depth),
         add_vector(position, v5,minus=1, height=depth),
         add_vector(position, v6,minus=1, height=depth),
-        [x,y,z-depth*1.3],
+        [x,y,z-depth*2],
     ]
     
     up = [0,1,2,3,4,5,6,7,8,9,10,11]
@@ -943,8 +940,5 @@ def add_vector(v1,v2,minus=0,height=0):
             out.append(v1[i]+v2[i])
     if height != 0:
         out[-1] -= height
-    else:
-        out[-1] += height
-    print(out)
     return out
     
