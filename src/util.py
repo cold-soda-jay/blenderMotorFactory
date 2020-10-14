@@ -1,6 +1,7 @@
 import bpy
 import math
 import mathutils
+import random
 from math import radians
 
 
@@ -19,9 +20,21 @@ BOLT_LENGTH = 1.4
 BOLT_BIT_DIA = 0.2
 BOARD_THICKNESS = 0.1
 FOUR_CYL_DIA = 0.7
+#4 covex cyl
+C1_LENGTH = 1.9
+C2_LENGTH = 2.7
+C3_LENGTH = 1.1
+C4_LENGTH = 0.8
 
-SMALL_GEAR_LENGTH = 2.5
-LARGE_GEAR_LENGTH = 1.8
+#SMALL_GEAR_LENGTH = 2.5
+#LARGE_GEAR_LENGTH = 1.8
+
+orient_dict = {
+    'mf_West':((radians(0),"Z"), BOTTOM_DIA,True),
+    'mf_South':((radians(-90),"Z"),BOTTOM_HEIGHT,True),
+    'mf_East':((radians(0),"Z"), BOTTOM_DIA,False),
+    'mf_North':((radians(-90),"Z"),BOTTOM_HEIGHT,False)
+}
 
 
 # Definiert welchel operation gibt es
@@ -124,6 +137,7 @@ def create_middle(factory):
 
     size = 1
     thickness = BOARD_THICKNESS
+    bolt_orient = factory.mf_Bolt_Orientation
 
     main_hight = BOTTOM_HEIGHT * size
     main_width = BOTTOM_DIA * size
@@ -148,9 +162,36 @@ def create_middle(factory):
 
     cube_1 = create_motor_main((ub_lx,ub_ly,ub_lz),main_hight,main_width,cuboid_long)
 
-
     cube_1.name = 'cube1'
 
+
+    ##Part 2
+    height = BOARD_THICKNESS
+    width = 0.9 * main_width/2
+    p2_length = BOLT_LENGTH/2
+
+    x = init_x - main_hight/2 + height
+    y = init_y - 0.2
+    z = init_z + main_long + sub_long + p2_length
+
+    bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
+    bpy.ops.transform.resize(value=(height, width, p2_length))
+
+    cube_2 = bpy.context.object
+
+    ##Part 3
+    height = BOARD_THICKNESS
+    width = 0.9 * main_width/2
+    p3_length = BOLT_LENGTH/2
+
+    x = init_x + main_hight/2 - height
+    y = init_y - 0.2
+    z = init_z + main_long + sub_long + p3_length
+
+    bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
+    bpy.ops.transform.resize(value=(height, width, p3_length))
+
+    cube_3 = bpy.context.object
     #Create Engergy part
 
     height_en = 1.4/2
@@ -238,15 +279,15 @@ def create_middle(factory):
     bolt_y = init_y + main_width/2
     bolt_z = init_z+ sub_long+ main_long + BOLT_LENGTH/2# BOLT_LENGTH/4 #1.1 is fixed value of bolt
     rota=(radians(180), 'X')
-    bolt_1 = create_bolt((bolt_x, bolt_y, bolt_z),rota,bit_type)
+    bolt_1 = create_bolt((bolt_x, bolt_y, bolt_z),rota,bit_type,orientation=bolt_orient)
 
     #Cereate  Bolt 2
     bolt_x = init_x - main_hight/2 + BOLT_DIA
     bolt_y = init_y - main_width/2
     bolt_z = init_z+ sub_long+ main_long + BOLT_LENGTH/2# BOLT_LENGTH/4 #1.1 is fixed value of bolt
-    bolt_2 = create_bolt((bolt_x, bolt_y, bolt_z),rota,bit_type)
+    bolt_2 = create_bolt((bolt_x, bolt_y, bolt_z),rota,bit_type,orientation=bolt_orient)
 
-    en_part = combine_all_obj(cube_1,[en_1,en_2,en_3,en_4,en_5,en_6,bolt_1,bolt_2])
+    en_part = combine_all_obj(cube_1,[cube_2,cube_3,en_1,en_2,en_3,en_4,en_5,en_6,bolt_1,bolt_2])
     en_part.name = 'Energy Part'
 
    # bpy.context.view_layer.objects.active = en_part
@@ -350,86 +391,74 @@ def create_4_convex_cyl(factory):
     step = 0.1
 
     four_cyl_z = main_long + sub_long
-    c1_length = 1.9
-    c2_length = 2.7
-    c3_length = 1.1
-    c4_length = 0.8
+    
 
-    cy1_z = c1_length/2
-    cy2_z = (c1_length+c2_length)/2
-    cy3_z = (c1_length+c2_length+c3_length)/2
-    cy4_z = (c1_length+c2_length+c3_length+c4_length)/2
+    cy1_z = C1_LENGTH/2
+    cy2_z = (C1_LENGTH+C2_LENGTH)/2
+    cy3_z = (C1_LENGTH+C2_LENGTH+C3_LENGTH)/2
+    cy4_z = (C1_LENGTH+C2_LENGTH+C3_LENGTH+C4_LENGTH)/2
     #Create 4 Covex cylinder
-    bpy.ops.mesh.primitive_cylinder_add(radius=FOUR_CYL_DIA, depth=c1_length, location=(0,0,four_cyl_z+cy1_z))
+    bpy.ops.mesh.primitive_cylinder_add(radius=FOUR_CYL_DIA, depth=C1_LENGTH, location=(0,0,four_cyl_z+cy1_z))
     cyl_1 = bpy.context.object
-    bpy.ops.mesh.primitive_cylinder_add(radius=FOUR_CYL_DIA - step, depth=c1_length+c2_length, location=(0,0,four_cyl_z+cy2_z))
+    bpy.ops.mesh.primitive_cylinder_add(radius=FOUR_CYL_DIA - step, depth=C1_LENGTH+C2_LENGTH, location=(0,0,four_cyl_z+cy2_z))
     cyl_2 = bpy.context.object
 
-    bpy.ops.mesh.primitive_cylinder_add(radius=FOUR_CYL_DIA- step *2, depth= c1_length+c2_length+c3_length, location=(0,0,four_cyl_z+cy3_z))
+    bpy.ops.mesh.primitive_cylinder_add(radius=FOUR_CYL_DIA- step *2, depth= C1_LENGTH+C2_LENGTH+C3_LENGTH, location=(0,0,four_cyl_z+cy3_z))
     cyl_3 = bpy.context.object
 
-    bpy.ops.mesh.primitive_cylinder_add(radius=FOUR_CYL_DIA - step *3, depth=c1_length+c2_length+c3_length+c4_length, location=(0,0,four_cyl_z+cy4_z))
+    bpy.ops.mesh.primitive_cylinder_add(radius=FOUR_CYL_DIA - step *3, depth=C1_LENGTH+C2_LENGTH+C3_LENGTH+C4_LENGTH, location=(0,0,four_cyl_z+cy4_z))
     cyl_4 = bpy.context.object
     
-    #Create Side board
+    
 
-    ##Part 1
-    height = BOARD_THICKNESS
-    width = 0.9 * main_width/2
-    p1_length = 2.4/2
-
-    x = init_x - main_hight/2 + height
-    y = init_y - 0.2
-    z = init_z + main_long + sub_long + p1_length
-
-    bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
-    bpy.ops.transform.resize(value=(height, width, p1_length))
-
-    cube_1 = bpy.context.object
-
-    ##Part 2
-
-    height = 0.1
-    width = 0.9 * main_width/2
-    p2_length = math.sqrt((c1_length+c2_length+c3_length-p1_length*2)**2 + (main_hight/2)**2 )/2
-    angel = math.atan((main_hight/2)/(c1_length+c2_length+c3_length - p1_length*2))
-
-    x = init_x - main_hight/4 + height
-    y = init_y - 0.2
-    z = init_z + main_long + sub_long + p1_length*2 + (c1_length+c2_length+c3_length - p1_length*2)/2
-
-    bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
-    bpy.ops.transform.resize(value=(height, width, p2_length))
-    cube_2 = bpy.context.object
-
-    bpy.context.view_layer.objects.active = cube_2
-    bpy.ops.transform.rotate(value=-angel,orient_axis='Y') 
-    #cube_2.matrix_world @= Matrix.Rotation(radians(angel),4,'Y') 
-
-    ##Part 3
-    height = BOARD_THICKNESS
-    width = 0.9 * main_width/2
-    p3_length = BOLT_LENGTH/2
-
-    x = init_x + main_hight/2 - height
-    y = init_y - 0.2
-    z = init_z + main_long + sub_long + p3_length
-
-    bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
-    bpy.ops.transform.resize(value=(height, width, p3_length))
-
-    cube_3 = bpy.context.object
-
-    up = combine_all_obj(cyl_1,[cyl_2,cyl_3,cyl_4,cube_1,cube_2,cube_3])
+    up = combine_all_obj(cyl_1,[cyl_2,cyl_3,cyl_4])
 
     return up
 
 
-def create_up1(factory):
+def create_upper_part(factory):
+    rotation, length_relativ, mirror = orient_dict[factory.mf_Gear_Orientation]
+    up1 = create_up1(factory,length_relativ)
+    up2 = create_up2(factory,length_relativ)
+    board = create_side_board(factory)
+    upper_part = combine_all_obj(up1,[up2,board])
+    #bpy.ops.transform.translate(value=(0,-0.5,0))
+    x,y,z = upper_part.location
+    bpy.context.view_layer.objects.active = upper_part
+
+    if factory.mf_Gear_Orientation == 'mf_West' :
+        bpy.ops.transform.translate(value=(0,-2*y,0))
+        #bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1])
+        bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(False, mirror, False))
+    elif factory.mf_Gear_Orientation == 'mf_North' :
+        nx,ny = rotate_around_point((0,0),-90,(x,y))
+
+        #upper_part.location = (n_x,n_y,z)
+        bpy.ops.transform.translate(value=(-1.25,ny-y,0))
+        bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1])
+        bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(True, True, False))
+    elif factory.mf_Gear_Orientation == 'mf_South' :
+        nx,ny = rotate_around_point((0,0),90,(x,y))
+        #upper_part.location = (n_x,n_y,z)
+        bpy.ops.transform.translate(value=(-2.75,-y-ny,0))
+
+        bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1])
+        bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(False, True, False))
+
+    
+        #bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(mirror, False, False))
+
+    
+    return upper_part
+
+
+def create_up1(factory,length_relativ):
     
     init_x = factory.init_x
     init_y = factory.init_y
     init_z = factory.init_z
+    #rotation, length_relativ, mirror = orient_dict[factory.mf_Gear_Orientation]
+
 
     size = 1
     main_height = BOTTOM_HEIGHT * size
@@ -449,7 +478,7 @@ def create_up1(factory):
 
     rotation_s = (radians(-90),"X")
 
-    s_gear = create_gear(factory,(x,y,z),rotation_s,"small")
+    s_gear = create_gear(factory,(x,y,z),"small",length_relativ)
 
     #Create board
     width = 2.5
@@ -462,6 +491,8 @@ def create_up1(factory):
 
     angel = math.atan((x-FOUR_CYL_DIA)/small_gear_position)
 
+   
+
     bpy.ops.mesh.primitive_cube_add(location=(x_board,y_board,z_board))
     bpy.ops.transform.resize(value=(height/2, width/2, length/2))
     cube_2 = bpy.context.object
@@ -471,65 +502,227 @@ def create_up1(factory):
 
     #Create large Gear
     x_large = init_x + small_gear_dia/2 - 0.8
-    y_large = init_y - main_width/4 - (SMALL_GEAR_LENGTH/2-LARGE_GEAR_LENGTH/2)
+    y_large = init_y - main_width/4 - length_relativ/6
     z_large = main_long + sub_long + small_gear_position + large_gear_dia/2 + 0.2
     rotation_l = (radians(-90),"X")
 
-    l_gear = create_gear(factory,(x_large,y_large,z_large),rotation_l,"large")
+    l_gear = create_gear(factory,(x_large,y_large,z_large),"large",length_relativ)
 
-    extension_zone = create_extension_zone(factory,(x_large,y_large,z_large))
 
-    up1 = combine_all_obj(s_gear,[cube_2,l_gear,extension_zone])
+    #extension_zone = create_extension_zone(factory,(x_large,y_large,z_large))
+    up1 = combine_all_obj(s_gear,[cube_2,l_gear])
+    bpy.context.view_layer.objects.active = up1
+
+    if factory.mf_Gear_Orientation in ['mf_North','mf_South'] :
+        bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(False, True, False))
+        bpy.ops.transform.translate(value=(0,-length_relativ/3,0))
 
 
     return up1
 
 
-def create_extension_zone(factory,large_gear_position):
+def create_side_board(factory):
+        #Create Side board
+    init_x = factory.init_x
+    init_y = factory.init_y
+    init_z = factory.init_z
+    #rotation, length_relativ, mirror = orient_dict[factory.mf_Gear_Orientation]
+
+
+    size = 1
+    main_height = BOTTOM_HEIGHT * size
+    main_width = BOTTOM_DIA * size
+    main_long = factory.mf_Bottom_Length * size
+
+    sub_long = SUB_BOTTOM_LENGTH * size
+
+
+    ##Part 1
+    if factory.mf_Gear_Orientation in ['mf_West', 'mf_East'] :
+        width = 0.9 * BOTTOM_DIA/2
+    elif factory.mf_Gear_Orientation in ['mf_North', 'mf_South'] :
+        width = 0.9 *BOTTOM_HEIGHT/2
+    height = BOARD_THICKNESS
+    p1_length = 2.4/2
+
+    if factory.mf_Gear_Orientation in ['mf_West', 'mf_East'] :
+        x = init_x - BOTTOM_HEIGHT/2 + BOARD_THICKNESS
+        y = init_y - 2*BOARD_THICKNESS
+        z = init_z + main_long + sub_long + BOLT_LENGTH + p1_length - BOLT_LENGTH/2
+        bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
+        bpy.ops.transform.resize(value=(height, width, p1_length - BOLT_LENGTH/2 ))
+
+    elif factory.mf_Gear_Orientation in ['mf_North', 'mf_South'] :
+        x = init_x + 2*BOARD_THICKNESS
+        y = init_y + BOTTOM_HEIGHT/2 - BOARD_THICKNESS
+        z = init_z + main_long + sub_long + BOLT_LENGTH + p1_length - BOLT_LENGTH/2
+
+        bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
+        bpy.ops.transform.resize(value=(width, height, p1_length - BOLT_LENGTH/2 ))
+       
+
+   
+
+    board_1 = bpy.context.object
+
+    ##Part 2
+
+    z = init_z + main_long + sub_long + p1_length*2 + (C1_LENGTH+C2_LENGTH+C3_LENGTH - p1_length*2 )/2
+
+    if factory.mf_Gear_Orientation in ['mf_West', 'mf_East'] :
+        x = init_x - BOTTOM_HEIGHT/4 + BOARD_THICKNESS
+        p2_length = math.sqrt((C1_LENGTH+C2_LENGTH+C3_LENGTH-p1_length*2)**2 + (main_height/2)**2 )/2
+        angel = math.atan((main_height/2)/(C1_LENGTH+C2_LENGTH+C3_LENGTH - p1_length*2))
+        bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
+        bpy.ops.transform.resize(value=(height, width, p2_length))
+        board_2 = bpy.context.object
+        bpy.context.view_layer.objects.active = board_2
+        bpy.ops.transform.rotate(value=-angel,orient_axis='Y') 
+    elif factory.mf_Gear_Orientation in ['mf_North', 'mf_South'] :
+        y = init_y + BOTTOM_HEIGHT/4 - BOARD_THICKNESS
+        p2_length = math.sqrt((C1_LENGTH+C2_LENGTH+C3_LENGTH-p1_length*2)**2 + (main_height/2)**2 )/2
+        angel = math.atan((main_height/2)/(C1_LENGTH+C2_LENGTH+C3_LENGTH - p1_length*2))
+
+        bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
+        bpy.ops.transform.resize(value=(width, height, p2_length))
+
+        board_2 = bpy.context.object
+
+        bpy.context.view_layer.objects.active = board_2
+        bpy.ops.transform.rotate(value=-angel,orient_axis='X') 
+    #cube_2.matrix_world @= Matrix.Rotation(radians(angel),4,'Y') 
+
+    board = combine_all_obj(board_1,[board_2])
+
+    return board
+
+
+def create_up2(factory,length_relativ):
+
+    #rotation, length_relativ, mirror = orient_dict[factory.mf_Gear_Orientation]
+
+    init_x = factory.init_x
+    init_y = factory.init_y
+    init_z = factory.init_z
+
+    size = 1
+    main_height = BOTTOM_HEIGHT * size
+    main_width = BOTTOM_DIA * size
+    main_long = factory.mf_Bottom_Length * size
+
+    sub_long = SUB_BOTTOM_LENGTH * size
 
     small_gear_dia = factory.mf_Small_Gear_Dia
     small_gear_position = factory.mf_Small_Gear_Position
     large_gear_dia = factory.mf_Large_Gear_Dia
-    r = 2.9/2
+
+    #Create small gear
+    x = init_x + small_gear_dia/2
+    y = init_y - main_width/4 - length_relativ/3 - 0.15
+    z = main_long + sub_long + small_gear_position
+
+    rotation_s = (radians(-90),"X")
+
+    s_gear = create_gear(factory,(x,y,z),"small",length_relativ,extension_zone=True)
+
+
+    #Create large Gear
+    x_large = init_x + small_gear_dia/2 - 0.8
+    y_large = init_y - main_width/4 - length_relativ/6 - length_relativ/6 - 0.15
+    z_large = main_long + sub_long + small_gear_position + large_gear_dia/2 + 0.2
+    rotation_l = (radians(-90),"X")
+
+    l_gear = create_gear(factory,(x_large,y_large,z_large),"large",length_relativ,extension_zone=True)
+
+    gears = combine_all_obj(s_gear,[l_gear])
+
+    if factory.mf_Gear_Orientation in ['mf_North','mf_South'] :
+        bpy.context.view_layer.objects.active = gears
+
+        bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(False, True, False))
+        bpy.ops.transform.translate(value=(0,1.25,0))
+
+        
+    extension_zone = create_extension_zone(factory,(x_large,y_large,z_large),0.3)
+    if factory.mf_Gear_Orientation in ['mf_North','mf_South'] :
+        bpy.context.view_layer.objects.active = extension_zone
+        bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(True, True, False))
+        bpy.ops.transform.translate(value=(5.5/2-0.65+0.3, -length_relativ+0.05,0))
+       # bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(False, True, False))
+
+    #else:
+     #   extension_zone = create_extension_zone(factory,(x_large,y_large,z_large),0.3)
+
+
+    up2 = combine_all_obj(gears,[extension_zone])
+    return up2
+
+
+def create_extension_zone(factory,large_gear_position,gear_length):
+
+    small_gear_dia = factory.mf_Small_Gear_Dia
+    small_gear_position = factory.mf_Small_Gear_Position
+    large_gear_dia = factory.mf_Large_Gear_Dia
+    s_length_1 = 2.9/2
+    s_length_2 = 5.5
+    s_length_3 = 1.5
+    s_length_4 = 4.5
+    s_length_6 = 3
+
+    if factory.mf_Type == 'mf_Type_B':
+        angle_1 = 15
+        angle_2 = 0
+        s_length_5 = 3.5
+    elif factory.mf_Type == 'mf_Type_A':
+        angle_1 = 30
+        s_length_5 = 5
+        angle_2 = 25
+
+    angle_3 = 35
 
     x = large_gear_position[0]
-    y = large_gear_position[1] - LARGE_GEAR_LENGTH/2 + 0.4
+    y = large_gear_position[1] - gear_length/2 + 0.4
     z = large_gear_position[2]
 
-    x_thickness = math.cos(radians(35)) * 0.2
+    x_thickness = math.cos(radians(angle_3)) * 0.2
 
-    p1x = x + r * math.cos(radians(30))
-    p1z = z + r * math.sin(radians(30))
+    p1x = x + s_length_1 * math.cos(radians(angle_1))
+    p1z = z + s_length_1 * math.sin(radians(angle_1))
 
-    p2x = x - r * math.cos(radians(30))
-    p2z = z - r * math.sin(radians(30))
+    p2x = x - s_length_1 * math.cos(radians(angle_1))
+    p2z = z - s_length_1 * math.sin(radians(angle_1))
 
-    p3x = p1x + 5.5 * math.sin(radians(30))
-    p3z = p1z - 5.5 * math.cos(radians(30))
+    p3x = p1x + s_length_2 * math.sin(radians(angle_1))
+    p3z = p1z - s_length_2 * math.cos(radians(angle_1))
 
-    p4x = p2x + 4.5 * math.sin(radians(25))
-    p4z = p2z - 4.5 * math.cos(radians(25))
+    p3hx = p3x - s_length_3 * math.sin(radians(angle_2))
+    p3hz = p3z - s_length_3 * math.cos(radians(angle_2))
 
-    p5x = p3x - 5 * math.sin(radians(25))
-    p5z = p3z - 5 * math.cos(radians(25))
+    p4x = p2x + s_length_4 * math.sin(radians(angle_2))
+    p4z = p2z - s_length_4 * math.cos(radians(angle_2))
+
+    p5x = p3x - s_length_5 * math.sin(radians(angle_2))
+    p5z = p3z - s_length_5 * math.cos(radians(angle_2))
 
     p6x = p4x
-    p6z = p4z - 3
+    p6z = p4z - s_length_6
+
+    y_of = 0
 
     #Create side board 1
     verts_b1 = [
         (p1x, y, p1z),
         (p1x - x_thickness, y, p1z),
-        (p1x, y - 0.5, p1z),
-        (p1x - x_thickness, y - 0.5, p1z),
-        (p3x, y, p3z),
+        (p1x, y - 0.5 +y_of, p1z),
+        (p1x - x_thickness, y - 0.5 +y_of, p1z),
+        (p3x, y , p3z),
         (p3x - x_thickness, y, p3z),
-        (p3x, y - 1.1, p3z),
-        (p3x - x_thickness, y - 1.1, p3z),
+        (p3x, y - 1.1 +y_of, p3z),
+        (p3x - x_thickness, y - 1.1 +y_of, p3z),
         (p5x, y, p5z),
         (p5x - x_thickness, y, p5z),
-        (p5x, y - 1.5, p5z),
-        (p5x - x_thickness, y - 1.5, p5z),
+        (p5x, y - 1.5 +y_of, p5z),
+        (p5x - x_thickness, y - 1.5 +y_of, p5z),
     ]
     faces_b1 = [
         [0, 1, 3, 2],
@@ -548,16 +741,16 @@ def create_extension_zone(factory,large_gear_position):
     verts_b2 = [
         (p2x, y, p2z),
         (p2x + x_thickness, y, p2z),
-        (p2x, y - 0.5, p2z),
-        (p2x + x_thickness, y - 0.5, p2z),
+        (p2x, y - 0.5 +y_of, p2z),
+        (p2x + x_thickness, y - 0.5 +y_of, p2z),
         (p4x, y, p4z),
         (p4x + x_thickness, y, p4z),
-        (p4x, y - 1.1, p4z),
-        (p4x + x_thickness, y - 1.1, p4z),
+        (p4x, y - 1.1 +y_of, p4z),
+        (p4x + x_thickness, y - 1.1 +y_of, p4z),
         (p6x, y, p6z),
         (p6x + x_thickness, y, p6z),
-        (p6x, y - 1.5, p6z),
-        (p6x + x_thickness, y - 1.5, p6z),
+        (p6x, y - 1.5 +y_of, p6z),
+        (p6x + x_thickness, y - 1.5 +y_of, p6z),
     ]
     faces_b2 = [
         [0,1,3,2],
@@ -574,18 +767,23 @@ def create_extension_zone(factory,large_gear_position):
     #Create bottom board
     thickness_bottom = 0.3
     verts_bottom = [
-        (p1x- x_thickness, y, p1z-large_gear_dia/6),
-        (p1x- x_thickness, y - thickness_bottom, p1z-large_gear_dia/6),    
-        (p3x- x_thickness, y, p3z),
-        (p3x- x_thickness, y - thickness_bottom, p3z),
-        (p5x- x_thickness, y, p5z),
-        (p5x- x_thickness, y - thickness_bottom, p5z),
-        (p6x , y, p6z),
-        (p6x, y - thickness_bottom, p6z),
-        (p4x , y, p4z),
-        (p4x, y - thickness_bottom, p4z),
-        (p2x, y, p2z-large_gear_dia/6),
-        (p2x , y - thickness_bottom, p2z-large_gear_dia/6),
+        (p1x- x_thickness + (large_gear_dia/6)* math.cos(radians(30)), y, p1z-(large_gear_dia/6)* math.sin(radians(30))), #0
+        (p1x- x_thickness + (large_gear_dia/6)* math.cos(radians(30)), y - thickness_bottom, p1z-(large_gear_dia/6* math.sin(radians(30)))), #1
+        (p3x- x_thickness, y, p3z), #2
+        (p3x- x_thickness, y - thickness_bottom, p3z), #3
+        (p5x- x_thickness, y, p5z), #4
+        (p5x- x_thickness, y - thickness_bottom, p5z), #5
+        (p6x , y, p6z), #6
+        (p6x, y - thickness_bottom, p6z), #7
+        (p4x , y, p4z), #8
+        (p4x, y - thickness_bottom, p4z), #9
+        (p2x, y, p2z-large_gear_dia/6), #10
+        (p2x , y - thickness_bottom, p2z-large_gear_dia/6), #11
+        (p3hx- x_thickness, y, p3hz), #12
+        (p3hx- x_thickness, y - 1.1 +y_of, p3hz), #13
+        (p4x , y - 1.1 +y_of, p4z), #14
+        (p5x- x_thickness, y - 1.5 +y_of, p5z), #15
+        (p6x , y - 1.5 +y_of, p6z), #16
     ]
 
     faces_bottom = [
@@ -597,125 +795,229 @@ def create_extension_zone(factory,large_gear_position):
         [10,11,1,0],
         [9,2,4,6,8,10],
         [1,3,5,7,9,11],
+        [12,13,14,8],
+        #[12, 4, 6, 8],
+        [13, 15, 16, 14],       
+
     ]
     bottom_board = add_mesh("bottom board", verts_bottom, faces_bottom)
 
 
     #Create end cylinder
+    if factory.mf_Type == 'mf_Type_B':
+        dia = math.sqrt((p5x-p6x)**2 + (p5z - p6z)**2)/3
+        x_cyl_1 = p5x - (p5x - p6x)*5/6
+        y_cyl_1 = (y - 0.8)
+        z_cyl_1 = p6z - (p6z -p5z)/3 
+        end_cly_1 = create_ring((x_cyl_1,y_cyl_1 - 0.5,z_cyl_1), 2.6, dia/2, 0.5)
+        end_cly_1.matrix_world @= mathutils.Matrix.Rotation(radians(90), 4, 'X')
+        bpy.ops.transform.rotate(value=radians(90),orient_axis='X') 
+        end_cly_1.name = 'End_cylinder'
+        
+        x_cyl_2 = p5x - (p5x - p6x)/6
+        y_cyl_2 = (y - 0.8)
+        z_cyl_2 = p6z - (p6z -p5z)*2/3 
+        end_cly_2 = create_ring((x_cyl_2,y_cyl_2 - 0.5,z_cyl_2), 2.6, dia/2, 0.5)
+        end_cly_2.matrix_world @= mathutils.Matrix.Rotation(radians(90), 4, 'X')
+        bpy.ops.transform.rotate(value=radians(90),orient_axis='X') 
+        end_cly_2.name = 'End_cylinder'
 
-    dia = math.sqrt((p5x-p6x)**2 + (p5z - p6z)**2)
-    x_cyl = p5x - (p5x - p6x)/2 
-    y_cyl = (y - 0.75)
-    z_cyl = p6z - (p6z -p5z)/2 
-    end_cly = create_ring((x_cyl,y_cyl,z_cyl), 1.5, dia/2, 0.5)
-    end_cly.matrix_world @= mathutils.Matrix.Rotation(radians(90), 4, 'X')
-    bpy.ops.transform.rotate(value=radians(90),orient_axis='X') 
-    end_cly.name = 'End_cylinder'
-    board = combine_all_obj(bottom_board,[board_1, board_2,end_cly])
+        board = combine_all_obj(bottom_board,[board_1, board_2,end_cly_1,end_cly_2])
 
-    bevel = board.modifiers.new(name='bevel', type='BEVEL')
-    
-    bevel.affect = 'EDGES'
-    bevel.angle_limit = 100
-    bevel.offset_type = 'WIDTH'
-    bevel.width = 1000000
-    bpy.context.view_layer.objects.active = board
-    res = bpy.ops.object.modifier_apply(modifier='bevel')
+        bevel = board.modifiers.new(name='bevel', type='BEVEL')
+        
+        bevel.affect = 'EDGES'
+        bevel.angle_limit = 100
+        bevel.offset_type = 'WIDTH'
+        bevel.width = 1000000
+        bpy.context.view_layer.objects.active = board
+        res = bpy.ops.object.modifier_apply(modifier='bevel')
+
+    elif factory.mf_Type == 'mf_Type_A':
+
+        dia = math.sqrt((p5x-p6x)**2 + (p5z - p6z)**2)
+        x_cyl = p5x - (p5x - p6x)/2 
+        y_cyl = (y - 0.8)
+        z_cyl = p6z - (p6z -p5z)/2 
+        end_cly = create_ring((x_cyl,y_cyl,z_cyl), 1.6, dia/2, 0.5)
+        end_cly.matrix_world @= mathutils.Matrix.Rotation(radians(90), 4, 'X')
+        bpy.ops.transform.rotate(value=radians(90),orient_axis='X') 
+        end_cly.name = 'End_cylinder'
+        board = combine_all_obj(bottom_board,[board_1, board_2,end_cly])
+
+        bevel = board.modifiers.new(name='bevel', type='BEVEL')
+        
+        bevel.affect = 'EDGES'
+        bevel.angle_limit = 100
+        bevel.offset_type = 'WIDTH'
+        bevel.width = 1000000
+        bpy.context.view_layer.objects.active = board
+        res = bpy.ops.object.modifier_apply(modifier='bevel')
 
     #bpy.ops.mesh.bevel(offset_type='OFFSET', offset=10.0, affect ='EDGES')
 
     return board
 
 
-def create_bolt(position,rotation=None,bit_type=None):
+def create_bolt(position,rotation=None,bit_type=None,orientation='mf_all_same',only_body=None):
     """[summary]
     create_bolt((0,0,0),(radians(45),'X'))
     """    
     out_dia = BOLT_DIA
-    out_length = BOLT_LENGTH
+    if only_body :
+        out_length = only_body
+        z_in = position[2] + out_length/2 - 0.15
 
-    in_dia = 0.8 * BOLT_DIA
-    
-    #in_length = BOLT_LENGTH+0.2
+        part = create_ring((position[0],position[1],z_in),out_length,BOLT_DIA,0.2*BOLT_DIA)
+        part.name = 'Bolt'
 
-    z_in = position[2] + out_length/2
-    bpy.ops.mesh.primitive_cylinder_add(radius=in_dia, depth=in_dia, location=(position[0],position[1],z_in))
-    in_cyl = bpy.context.object
-    in_cyl.name = 'in_cylinder'
-
-    z_sphe = z_in + in_dia/2
-
-    bpy.ops.mesh.primitive_cylinder_add(radius=out_dia, depth=out_length, location=position)
-    out_cyl = bpy.context.object
-    out_cyl.name = 'out_cylinder'
-
-    bpy.ops.mesh.primitive_uv_sphere_add(radius=in_dia, location=(position[0],position[1],z_sphe))
-    sphere = bpy.context.object
-    sphere.name = 'sphere'
-    z_cut = z_sphe + in_dia/2 + in_dia/3
-    bpy.ops.mesh.primitive_cylinder_add(radius=in_dia, depth=in_dia, location=(position[0],position[1],z_cut))
-    cut_cyl = bpy.context.object
-    cut_cyl.name = 'cut_cylinder'
-
-    bool_in = sphere.modifiers.new('bool_in', 'BOOLEAN')
-    bool_in.operation = 'DIFFERENCE'
-    bool_in.object = cut_cyl
-    bpy.context.view_layer.objects.active = sphere
-    res = bpy.ops.object.modifier_apply(modifier='bool_in')
-    # Delete the cylinder.x
-    cut_cyl.select_set(True)
-    bpy.ops.object.delete() 
-
-    if bit_type == 'mf_Bit_Slot':
-        bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],z_sphe+ in_dia/3))
-        bpy.ops.transform.resize(value=(in_dia*1.5, 0.05, 0.2))
-        bit = bpy.context.object
-        bit.name = 'Slot'
     else:
-        bit = add_torx((position[0],position[1],z_sphe+ in_dia),in_dia*1.5,0.2)
-    
-    bool_bit = sphere.modifiers.new('bool_bit', 'BOOLEAN')
-    bool_bit.operation = 'DIFFERENCE'
-    bool_bit.object = bit
-    bpy.context.view_layer.objects.active = sphere
-    res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit')
+        out_length = BOLT_LENGTH
 
-    bool_bit_2 = in_cyl.modifiers.new('bool_bit_2', 'BOOLEAN')
-    bool_bit_2.operation = 'DIFFERENCE'
-    bool_bit_2.object = bit
-    bpy.context.view_layer.objects.active = in_cyl
-    res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_2')
+        in_dia = 0.8 * BOLT_DIA
+        
+        z_in = position[2] + out_length/2
+        bpy.ops.mesh.primitive_cylinder_add(radius=in_dia, depth=in_dia, location=(position[0],position[1],z_in))
+        in_cyl = bpy.context.object
+        in_cyl.name = 'in_cylinder'
 
-    bool_bit_3 = out_cyl.modifiers.new('bool_bit_3', 'BOOLEAN')
-    bool_bit_3.operation = 'DIFFERENCE'
-    bool_bit_3.object = bit
-    bpy.context.view_layer.objects.active = out_cyl
-    res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_3')
+        z_sphe = z_in + in_dia/2
 
-    bit.select_set(True)
-    bpy.ops.object.delete() 
+        bpy.ops.mesh.primitive_cylinder_add(radius=out_dia, depth=out_length, location=position)
+        out_cyl = bpy.context.object
+        out_cyl.name = 'out_cylinder'
+
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=in_dia, location=(position[0],position[1],z_sphe))
+        sphere = bpy.context.object
+        sphere.name = 'sphere'
+        z_cut = z_sphe + in_dia/2 + in_dia/3
+        bpy.ops.mesh.primitive_cylinder_add(radius=in_dia, depth=in_dia, location=(position[0],position[1],z_cut))
+        cut_cyl = bpy.context.object
+        cut_cyl.name = 'cut_cylinder'
+
+        bool_in = sphere.modifiers.new('bool_in', 'BOOLEAN')
+        bool_in.operation = 'DIFFERENCE'
+        bool_in.object = cut_cyl
+        bpy.context.view_layer.objects.active = sphere
+        res = bpy.ops.object.modifier_apply(modifier='bool_in')
+        # Delete the cylinder.x
+        cut_cyl.select_set(True)
+        bpy.ops.object.delete() 
+
+        if bit_type == 'mf_Bit_Slot':
+            bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],z_sphe+ in_dia/3))
+            bpy.ops.transform.resize(value=(in_dia*1.5, 0.05, 0.2))
+            bit = bpy.context.object
+        elif bit_type == 'mf_Bit_Torx':
+            bit = add_torx((position[0],position[1],z_sphe+ in_dia),in_dia*1.5,0.2)
+        elif bit_type == 'mf_Bit_Cross':
+            bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],z_sphe+ in_dia/3))
+            bpy.ops.transform.resize(value=(0.05, in_dia, 0.2))
+            bit_1 = bpy.context.object
+            bool_bit = sphere.modifiers.new('bool_bit', 'BOOLEAN')
+            bool_bit.operation = 'DIFFERENCE'
+            bool_bit.object = bit_1
+            bpy.context.view_layer.objects.active = sphere
+            res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit')
+
+            bool_bit_2 = in_cyl.modifiers.new('bool_bit_2', 'BOOLEAN')
+            bool_bit_2.operation = 'DIFFERENCE'
+            bool_bit_2.object = bit_1
+            bpy.context.view_layer.objects.active = in_cyl
+            res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_2')
+
+            bool_bit_3 = out_cyl.modifiers.new('bool_bit_3', 'BOOLEAN')
+            bool_bit_3.operation = 'DIFFERENCE'
+            bool_bit_3.object = bit_1
+            bpy.context.view_layer.objects.active = out_cyl
+            res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_3')
+
+            bit_1.select_set(True)
+            bpy.ops.object.delete() 
+            #bpy.ops.transform.rotate(value=radians(90),orient_axis='Z') 
+
+            bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],z_sphe+ in_dia/3))
+            bpy.ops.transform.resize(value=(in_dia, 0.05, 0.2))
+            bit_2 = bpy.context.object   
+            bool_bit = sphere.modifiers.new('bool_bit', 'BOOLEAN')
+            bool_bit.operation = 'DIFFERENCE'
+            bool_bit.object = bit_2
+            bpy.context.view_layer.objects.active = sphere
+            res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit')
+
+            bool_bit_2 = in_cyl.modifiers.new('bool_bit_2', 'BOOLEAN')
+            bool_bit_2.operation = 'DIFFERENCE'
+            bool_bit_2.object = bit_2
+            bpy.context.view_layer.objects.active = in_cyl
+            res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_2')
+
+            bool_bit_3 = out_cyl.modifiers.new('bool_bit_3', 'BOOLEAN')
+            bool_bit_3.operation = 'DIFFERENCE'
+            bool_bit_3.object = bit_2
+            bpy.context.view_layer.objects.active = out_cyl
+            res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_3')
+
+            bit_2.select_set(True)
+            bpy.ops.object.delete()          
+
+        if bit_type == 'mf_Bit_Cross':
+            pass
+           
+        else:
+            bool_bit = sphere.modifiers.new('bool_bit', 'BOOLEAN')
+            bool_bit.operation = 'DIFFERENCE'
+            bool_bit.object = bit
+            bpy.context.view_layer.objects.active = sphere
+            res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit')
+
+            bool_bit_2 = in_cyl.modifiers.new('bool_bit_2', 'BOOLEAN')
+            bool_bit_2.operation = 'DIFFERENCE'
+            bool_bit_2.object = bit
+            bpy.context.view_layer.objects.active = in_cyl
+            res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_2')
+
+            bool_bit_3 = out_cyl.modifiers.new('bool_bit_3', 'BOOLEAN')
+            bool_bit_3.operation = 'DIFFERENCE'
+            bool_bit_3.object = bit
+            bpy.context.view_layer.objects.active = out_cyl
+            res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_3')
+
+            bit.select_set(True)
+            bpy.ops.object.delete() 
 
 
-    part = combine_all_obj(out_cyl,[sphere,in_cyl])
-    part.name = 'Bolt'
+        part = combine_all_obj(out_cyl,[sphere,in_cyl])
+        part.name = 'Bolt'
 
-
+    if orientation == 'mf_all_random':
+        angel = random.randrange(0, 360, 10)     
+        bpy.context.view_layer.objects.active = part
+        bpy.ops.transform.rotate(value=radians(angel),orient_axis='Z') 
     if rotation:
         bpy.context.view_layer.objects.active = part
         bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
- 
+
     return part
 
 
-def create_gear(factory,position,rotation,gear_type):
+def create_gear(factory,position,gear_type,info,extension_zone = False):
     bit_type = factory.mf_Bit_Type
+    bolt_orient = factory.mf_Bolt_Orientation
+    rotation = (radians(-90),"X")
+    length_relativ = info
+    #orient_dict[factory.mf_Gear_Orientation]
     if gear_type == 'small':
         radius = factory.mf_Small_Gear_Dia/2
-        length = SMALL_GEAR_LENGTH
+        if extension_zone:
+            length = 0.3
+        else:
+            length = length_relativ*2/3
         inner_radius = 1/2
-        inner_length = length + 1
+        inner_length = 1.4 * length +1
         angel = factory.mf_Small_Gear_Bolt_Angel  * 10
         bolt_position_angel = factory.mf_Small_Gear_Bolt_Rotation * 10
+        if factory.mf_Gear_Orientation in ['mf_East','mf_West'] and factory.mf_Type == 'mf_Type_B':
+            bolt_position_angel -= 25
 
         #Create out
         bpy.ops.mesh.primitive_cylinder_add(radius=radius, depth=length, location=position)
@@ -727,17 +1029,21 @@ def create_gear(factory,position,rotation,gear_type):
         in_cyl.name = 'in_cylinder'
         
         #Crete Bolts
-  
+        if extension_zone:
+            body = length
+            z_bolt_init = position[2]
+        else:
+            body = None
+            z_bolt_init = position[2] + length/2 - BOLT_LENGTH/2 + 0.3
         #Init position
-        x_bolt_init = position[0]+ radius
+        x_bolt_init = position[0]+ radius + 0.9*BOLT_DIA
         y_bolt_init = position[1] 
-        z_bolt_init = position[2] + length/2 - BOLT_LENGTH/2
+        #z_bolt_init = position[2] + length/2 - BOLT_LENGTH/2
         #Calculate the rotation
         x_bolt_1,y_bolt_1 = rotate_around_point((position[0],position[1]),bolt_position_angel,(x_bolt_init,y_bolt_init))
         x_bolt_2,y_bolt_2 = rotate_around_point((position[0],position[1]),bolt_position_angel+angel,(x_bolt_init,y_bolt_init))       
-        bolt_1 = create_bolt((x_bolt_1,y_bolt_1,z_bolt_init),bit_type=bit_type)
-        bolt_1.name = "Test"
-        bolt_2 = create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),bit_type=bit_type)       
+        bolt_1 = create_bolt((x_bolt_1,y_bolt_1,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)
+        bolt_2 = create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)       
         part = combine_all_obj(out_cyl,[in_cyl,bolt_1,bolt_2])
         bpy.context.view_layer.objects.active = part
         bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
@@ -746,7 +1052,10 @@ def create_gear(factory,position,rotation,gear_type):
     elif gear_type == 'large':
 
         radius = factory.mf_Large_Gear_Dia/2
-        length = LARGE_GEAR_LENGTH
+        if extension_zone:
+            length = 0.3
+        else:
+            length = length_relativ/3
         inner_radius_1 = 1.6/2
         inner_radius_2 = 1.3/2
         inner_radius_3 = 2.9/2
@@ -777,23 +1086,27 @@ def create_gear(factory,position,rotation,gear_type):
         position_3 = (x,y,z)
 
         thickness_3 = 0.2
-        cly_3 = create_ring(position_3,length+0.2,inner_radius_3,thickness_3)
+        cly_3 = create_ring(position_3,length+0.3,inner_radius_3,thickness_3)
 
-        #Crete Bolts
+        if extension_zone:
+            body = length
+            z_bolt_init = position[2]
+        else:
+            body = None
+            z_bolt_init = position[2] + length/2 - BOLT_LENGTH/2 + 0.3
         #Init position
-        x_bolt_init = position[0]+ radius
+        x_bolt_init = position[0]+ radius + 0.9*BOLT_DIA
         y_bolt_init = position[1] 
-        z_bolt_init = position[2] + length/2 - BOLT_LENGTH/2
+        #z_bolt_init = position[2] + length/2 - BOLT_LENGTH/2
         #Calculate the rotation
         x_bolt_1,y_bolt_1 = rotate_around_point((position[0],position[1]),bolt_position_angel,(x_bolt_init,y_bolt_init))
         x_bolt_2,y_bolt_2 = rotate_around_point((position[0],position[1]),bolt_position_angel+angel,(x_bolt_init,y_bolt_init))       
-        bolt_1 = create_bolt((x_bolt_1,y_bolt_1,z_bolt_init),bit_type=bit_type)
-
-        bolt_2 = create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),bit_type=bit_type)
-
+        bolt_1 = create_bolt((x_bolt_1,y_bolt_1,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)
+        bolt_2 = create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)       
         part = combine_all_obj(cly_1,[cly_2,cly_3,bolt_1,bolt_2])
         bpy.context.view_layer.objects.active = part
         bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
+    
         return part
 
 
@@ -919,7 +1232,6 @@ def add_torx(position,size,depth):
     
     obj = add_mesh("torx", verts, faces)
     return obj
-
 
 
 def sub_obj(domain, slave):

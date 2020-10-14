@@ -4,3 +4,19 @@ src/__pycache__/__init__.cpython-37.pyc
 src/__pycache__/Motor_Factory.cpython-37.pyc
 
 src/__pycache__/util.cpython-37.pyc
+
+.vscode/.ropeproject/config.py
+
+.vscode/.ropeproject/objectdb
+
+docs/torx.webp
+
+src/__pycache__/Motor_Factory.cpython-37-Working.pyc
+
+src/__pycache__/util.cpython-37-Working.pyc
+
+src/backup/backup.txt
+
+src/Motor_Factory-Working.py
+
+src/util-Working.py

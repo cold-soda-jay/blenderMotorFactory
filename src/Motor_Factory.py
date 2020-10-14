@@ -11,10 +11,10 @@ from . import util as ut
 class Motor_Factory_Operator(bpy.types.Operator):
     #Set Genera information
     bl_idname = "mesh.add_motor"
-    bl_label = "Add Model"
+    bl_label = "Motor Property"
     bl_options = {'REGISTER', 'UNDO', 'PRESET'}
-    bl_description = "Add new Object"
-    MAX_INPUT_NUMBER = 50
+    bl_description = "Add new motor"
+    MAX_INPUT_NUMBER = 10
 
     motor : BoolProperty(name = "Motor",
                 default = True,
@@ -39,12 +39,13 @@ class Motor_Factory_Operator(bpy.types.Operator):
         "mf_Large_Gear_Dia",
         "mf_Large_Gear_Bolt_Angel",
         "mf_Large_Gear_Bolt_Rotation",
+        "mf_Gear_Orientation",
         ]
     #Create genera types
 
     #Bottom Types
-    Type_List = [('mf_Type_A','Type_A','Type A'),
-                 ('mf_Type_B','Type_B','Type B')  ]
+    Type_List = [('mf_Type_A','Type A','Type A'),
+                 ('mf_Type_B','Type B','Type B')  ]
     mf_Type = EnumProperty( attr='mf_Type',
             name='Type',
             description='Choose the type of Bottom you would like',
@@ -81,17 +82,17 @@ class Motor_Factory_Operator(bpy.types.Operator):
 
     mf_Sub_Bottom_Inner_Dia = FloatProperty(attr='mf_Sub_Bottom_Inner_Dia',
         name='Sub Bottom Inner Dia', default = 0.5,
-        min = 0, soft_min = 0, max = 1.9, 
+        min = 0, soft_min = 0, max = 0.9, 
         description='Length of the sub Bottom inner dia')
 
     mf_Small_Gear_Dia = FloatProperty(attr='mf_Small_Gear_Dia',
         name='Small Gear Dia', default = 4,
-        min = 0, soft_min = 0, max = MAX_INPUT_NUMBER, 
+        min = 3, soft_min = 0, max = 6, 
         description='Diameter of small Gear')
 
     mf_Small_Gear_Position = FloatProperty(attr='mf_Small_Gear_Position',
         name='Small Gear Position', default = 3.6,
-        min = 0, soft_min = 0, max = 6.5, 
+        min = 3.6, soft_min = 0, max = 4.2, 
         description='Position of small Gear in middel axe')
 
     mf_Small_Gear_Bolt_Angel = FloatProperty(attr='mf_Small_Gear_Bolt_Angel',
@@ -106,7 +107,7 @@ class Motor_Factory_Operator(bpy.types.Operator):
 
     mf_Large_Gear_Dia = FloatProperty(attr='mf_Large_Gear_Dia',
         name='Large Gear Dia', default = 5.5,
-        min = 0, soft_min = 0, max = MAX_INPUT_NUMBER, 
+        min = 5.5, soft_min = 0, max = 8, 
         description='Diameter of large Gear')
 
     mf_Large_Gear_Bolt_Angel = FloatProperty(attr='mf_Large_Gear_Bolt_Angel',
@@ -119,6 +120,25 @@ class Motor_Factory_Operator(bpy.types.Operator):
         min = 0, soft_min = 0, max = 36, 
         description='Angel between bolts on large gear')
 
+    Orientation_List = [
+                ('mf_East','East','East'),
+                ('mf_South','South','South'),             
+                ('mf_West','West','West'),
+                ('mf_North','North','North')
+ ]
+
+    mf_Gear_Orientation = EnumProperty( attr='mf_Gear_Orientation',
+            name='Gear Ortientation',
+            description='Orientation of gears and extension zone',
+            items = Orientation_List, default = 'mf_East')
+
+    bolt_orientation_list = [('mf_all_same', 'All Same','All Same'),
+                            ('mf_all_random', 'All Random', 'All Random')]
+    mf_Bolt_Orientation = EnumProperty( attr='mf_Gear_Orientation',
+            name='Bolt Ortientation',
+            description='Orientation of bolts',
+            items = bolt_orientation_list, default = 'mf_all_same')
+
             
     
     def draw(self, context):
@@ -128,6 +148,9 @@ class Motor_Factory_Operator(bpy.types.Operator):
         #ENUMS
         col.prop(self, 'mf_Type')
         col.prop(self, 'mf_Bit_Type')
+        col.prop(self, 'mf_Gear_Orientation')
+        col.prop(self, 'mf_Bolt_Orientation')
+
         col.prop(self, 'mf_Head_Type')
         col.prop(self, 'mf_Bottom_Length') 
         col.prop(self, 'mf_Sub_Bottom_Inner_Dia')
@@ -183,15 +206,17 @@ class Motor_Factory_Operator(bpy.types.Operator):
     def create_motor(self):
         bottom = ut.create_Bottom(self)
         middle = ut.create_middle(self)
-        if self.mf_Type == 'mf_Type_A':
-            up2 = ut.create_4_convex_cyl(self)
-            up1 =ut.create_up1(self)
-            obj_list=[middle,up2,up1]
+        #if self.mf_Type == 'mf_Type_A':
+        convex = ut.create_4_convex_cyl(self)
+        up = ut.create_upper_part(self)
+            #up1 =ut.create_up1(self)
+            #up2 = ut.create_up2(self)
+        obj_list=[convex,middle,up]
 
-            motor = ut.combine_all_obj(bottom,obj_list)
-            return motor
-        else:       
-            return bottom
+        motor = ut.combine_all_obj(bottom,obj_list)
+          #  return up
+        #else:       
+        return motor
 
     
 
