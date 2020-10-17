@@ -421,7 +421,7 @@ def create_upper_part(factory):
     up1 = create_up1(factory,length_relativ)
     up2 = create_up2(factory,length_relativ)
     board = create_side_board(factory)
-    upper_part = combine_all_obj(up1,[up2,board])
+    upper_part = combine_all_obj(up1,[up2])
     #bpy.ops.transform.translate(value=(0,-0.5,0))
     x,y,z = upper_part.location
     bpy.context.view_layer.objects.active = upper_part
@@ -448,8 +448,9 @@ def create_upper_part(factory):
     
         #bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(mirror, False, False))
 
-    
-    return upper_part
+    upper = combine_all_obj(upper_part,[board])
+
+    return upper
 
 
 def create_up1(factory,length_relativ):

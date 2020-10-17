@@ -12,9 +12,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 bl_info = {
-    "name" : "Test_addon",
+    "name" : "Motor Factory",
     "author" : "joe",
-    "description" : "Simple test",
+    "description" : "Motor Factory",
     "blender" : (2, 80, 0),
     "version" : (0, 0, 1),
     "location" : "View3D",
