@@ -13,9 +13,9 @@
 
 bl_info = {
     "name" : "Motor Factory",
-    "author" : "joe",
+    "author" : "Joe",
     "description" : "Motor Factory",
-    "blender" : (2, 80, 0),
+    "blender" : (2, 90, 0),
     "version" : (0, 0, 1),
     "location" : "View3D",
     "warning" : "",

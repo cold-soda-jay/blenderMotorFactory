@@ -1,7 +1,7 @@
 import bpy
 from bpy.props import *
 from bpy_extras import object_utils
-from . import util as ut
+from . import motor as mt
 
 
 
@@ -40,16 +40,23 @@ class Motor_Factory_Operator(bpy.types.Operator):
         "mf_Large_Gear_Bolt_Angel",
         "mf_Large_Gear_Bolt_Rotation",
         "mf_Gear_Orientation",
+        "mf_Color_Render",
+        "mf_Flip",
         ]
     #Create genera types
 
     #Bottom Types
-    Type_List = [('mf_Type_A','Type A','Type A'),
-                 ('mf_Type_B','Type B','Type B')  ]
+    Extention_Type_List = [('mf_Type_A','Type 1','Type 1'),
+                 ('mf_Type_B','Type 2','Type 2')  ]
     mf_Type = EnumProperty( attr='mf_Type',
-            name='Type',
+            name='Extention Area Type',
             description='Choose the type of Bottom you would like',
-            items = Type_List, default = 'mf_Type_A')
+            items = Extention_Type_List, default = 'mf_Type_A')
+
+
+    mf_Color_Render : BoolProperty(name = "Color Render",
+                default = False,
+                description = "Render clor or not")
 
     mf_Bottom_Size = FloatProperty(attr='mf_Bottom_Size',
             name='Bottom Size', default = 20,
@@ -67,11 +74,11 @@ class Motor_Factory_Operator(bpy.types.Operator):
 
 
     #Head Types 
-    Head_Type_List = [('mf_Head_Type_1','Type 1','Type 1')]
+    Head_Type_List = [('mf_Head_Type_A','Type A','Type A')]
     mf_Head_Type = EnumProperty( attr='mf_Head_Type',
-            name='Head',
-            description='Choose the type off Head you would like',
-            items = Head_Type_List, default = 'mf_Head_Type_1')
+            name='Type',
+            description='Choose the type of Motor you would like',
+            items = Head_Type_List, default = 'mf_Head_Type_A')
 
     #Bottom size      
     mf_Bottom_Length = FloatProperty(attr='mf_Bottom_Length',
@@ -121,16 +128,20 @@ class Motor_Factory_Operator(bpy.types.Operator):
         description='Angel between bolts on large gear')
 
     Orientation_List = [
-                ('mf_East','East','East'),
-                ('mf_South','South','South'),             
-                ('mf_West','West','West'),
-                ('mf_North','North','North')
+                ('mf_East','0','0'),
+                ('mf_South','90','90'),             
+                ('mf_West','180','180'),
+                ('mf_North','270','270')
  ]
 
     mf_Gear_Orientation = EnumProperty( attr='mf_Gear_Orientation',
             name='Gear Ortientation',
             description='Orientation of gears and extension zone',
             items = Orientation_List, default = 'mf_East')
+
+    mf_Flip : BoolProperty(name = "Flip",
+                default = False,
+                description = "Flip the gears")
 
     bolt_orientation_list = [('mf_all_same', 'All Same','All Same'),
                             ('mf_all_random', 'All Random', 'All Random')]
@@ -146,10 +157,16 @@ class Motor_Factory_Operator(bpy.types.Operator):
         col = layout.column()
         
         #ENUMS
+        col.prop(self, 'mf_Head_Type')
         col.prop(self, 'mf_Type')
         col.prop(self, 'mf_Bit_Type')
-        col.prop(self, 'mf_Gear_Orientation')
+        col.prop(self, 'mf_Color_Render')
+
+        col.prop(self, 'mf_Gear_Orientation')        
+        col.prop(self, 'mf_Flip')
+
         col.prop(self, 'mf_Bolt_Orientation')
+        
 
         col.prop(self, 'mf_Head_Type')
         col.prop(self, 'mf_Bottom_Length') 
@@ -204,16 +221,18 @@ class Motor_Factory_Operator(bpy.types.Operator):
 
 
     def create_motor(self):
-        bottom = ut.create_Bottom(self)
-        middle = ut.create_middle(self)
+
+        creator = mt.Motor_Creator(self)
+        bottom = creator.create_Bottom()
+        middle = creator.create_middle()
         #if self.mf_Type == 'mf_Type_A':
-        convex = ut.create_4_convex_cyl(self)
-        up = ut.create_upper_part(self)
+        convex = creator.create_4_convex_cyl()
+        up = creator.create_upper_part()
             #up1 =ut.create_up1(self)
             #up2 = ut.create_up2(self)
         obj_list=[convex,middle,up]
 
-        motor = ut.combine_all_obj(bottom,obj_list)
+        motor = creator.combine_all_obj(bottom,obj_list)
           #  return up
         #else:       
         return motor

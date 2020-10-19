@@ -20,3 +20,7 @@ src/backup/backup.txt
 src/Motor_Factory-Working.py
 
 src/util-Working.py
+
+src/backup/
+
+src/__pycache__/
