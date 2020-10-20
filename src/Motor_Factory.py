@@ -231,10 +231,17 @@ class Motor_Factory_Operator(bpy.types.Operator):
             #up1 =ut.create_up1(self)
             #up2 = ut.create_up2(self)
         obj_list=[convex,middle,up]
-
-        motor = creator.combine_all_obj(bottom,obj_list)
-          #  return up
-        #else:       
+        for area in bpy.context.screen.areas: # iterate through areas in current screen
+            if area.type == 'VIEW_3D':
+                for space in area.spaces: # iterate through spaces in current VIEW_3D area
+                    if space.type == 'VIEW_3D':
+                        if self.mf_Color_Render:
+                            space.shading.type = 'MATERIAL'
+                        else:
+                            space.shading.type = 'SOLID' # set the viewport shading to rendered
+    
+        motor = creator.combine_all_obj(bottom,obj_list)     
+            
         return motor
 
     

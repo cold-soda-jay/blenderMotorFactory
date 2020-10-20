@@ -431,7 +431,11 @@ class Motor_Creator:
                 bit.select_set(True)
                 bpy.ops.object.delete() 
 
-
+            if self.color_render:
+                self.rend_color(out_cyl,"Plastic")
+                self.rend_color(sphere,"Bit")
+                self.rend_color(in_cyl,"Bit")
+            
             part = self.combine_all_obj(out_cyl,[sphere,in_cyl])
             part.name = 'Bolt'
 
@@ -446,6 +450,40 @@ class Motor_Creator:
             pass
 
         return part
+
+    def rend_color(self, obj, part):
+
+        mat = bpy.data.materials.new(name="Material")
+        
+        if part == "Metall":
+            mat.metallic = 0.7
+            mat.roughness = 0.8
+            mat.diffuse_color = (0.5, 0.5, 0.5, 1)
+            mat.specular_intensity = 0.9
+
+        
+        elif part == "Energy":
+            mat.diffuse_color = (0.781, 0.775, 0.308, 1)
+        
+        elif part == "Plastic":
+            mat.diffuse_color = (0, 0, 0, 1)
+            mat.metallic = 0.4
+            mat.specular_intensity = 0.5
+            mat.roughness = 0.7
+
+        elif part == "Bit":
+            mat.diffuse_color = (0.9, 0.9, 0.9, 1)
+            mat.metallic = 0.85
+            mat.specular_intensity = 0.5
+            mat.roughness = 0.1
+
+        # Assign it to object
+        if obj.data.materials:
+            # assign to 1st material slot
+            obj.data.materials[0] = mat
+        else:
+            # no slots
+            obj.data.materials.append(mat)
 
 
     ##############################################################################################################################
@@ -523,6 +561,9 @@ class Motor_Creator:
         sub_cyl.select_set(True)
         bpy.ops.object.join()
 
+        if self.color_render:
+            self.rend_color(cyl, "Metall")
+
         return cyl
 
 
@@ -592,7 +633,56 @@ class Motor_Creator:
         bpy.ops.transform.resize(value=(height, width, p3_length))
 
         cube_3 = bpy.context.object
+
         #Create Engergy part
+        en_part = self.create_en_part()
+        if self.color_render:
+            self.rend_color(en_part, "Energy")
+
+        #Cereate  Bolt 1
+        bolt_x = init_x + main_hight/2 - self.BOLT_DIA
+        bolt_y = init_y + main_width/2
+        bolt_z = init_z+ sub_long+ main_long + self.BOLT_LENGTH/2# BOLT_LENGTH/4 #1.1 is fixed value of bolt
+        rota=(radians(180), 'X')
+        bolt_1 = self.create_bolt((bolt_x, bolt_y, bolt_z),rota,bit_type,orientation=bolt_orient)
+
+        #Cereate  Bolt 2
+        bolt_x = init_x - main_hight/2 + self.BOLT_DIA
+        bolt_y = init_y - main_width/2
+        bolt_z = init_z+ sub_long+ main_long + self.BOLT_LENGTH/2# BOLT_LENGTH/4 #1.1 is fixed value of bolt
+        bolt_2 = self.create_bolt((bolt_x, bolt_y, bolt_z),rota,bit_type,orientation=bolt_orient)
+
+        mid_1 = self.combine_all_obj(cube_1,[cube_2,cube_3])
+        mid_1.name = 'Energy Part'
+
+        if self.color_render:
+            self.rend_color(mid_1, "Plastic")
+
+        mid = self.combine_all_obj(mid_1,[en_part,bolt_1,bolt_2])
+        mid.name = 'Energy Part'
+
+        #bpy.ops.mesh.primitive_cube_add(location=(cut_x_3,cut_y_3,cut_z_3))
+        #bpy.ops.transform.resize(value=(cut_height_3, cut_width_3, cut_long_3))
+
+        #cut_3 = create_triangle((cut_x_3,cut_y_3,cut_z_3),cut_width_3,cut_long_3)
+        #cut_3.name = 'cube4'
+
+        return mid
+
+    def create_en_part(self):
+
+        size = 1
+        thickness = self.BOARD_THICKNESS
+
+        main_hight = self.BOTTOM_HEIGHT * size
+        main_width = self.BOTTOM_DIA * size
+        main_long = self.bottom_length * size
+        sub_long = self.SUB_BOTTOM_LENGTH * size
+
+        init_x = self.init_x 
+        init_y = self.init_y
+        init_z = self.init_z 
+
 
         height_en = 1.4/2
         length_en = 3/2
@@ -673,41 +763,9 @@ class Motor_Creator:
         en_6 = bpy.context.object
         en_6.name = 'cube7'
 
-
-        #Cereate  Bolt 1
-        bolt_x = init_x + main_hight/2 - self.BOLT_DIA
-        bolt_y = init_y + main_width/2
-        bolt_z = init_z+ sub_long+ main_long + self.BOLT_LENGTH/2# BOLT_LENGTH/4 #1.1 is fixed value of bolt
-        rota=(radians(180), 'X')
-        bolt_1 = self.create_bolt((bolt_x, bolt_y, bolt_z),rota,bit_type,orientation=bolt_orient)
-
-        #Cereate  Bolt 2
-        bolt_x = init_x - main_hight/2 + self.BOLT_DIA
-        bolt_y = init_y - main_width/2
-        bolt_z = init_z+ sub_long+ main_long + self.BOLT_LENGTH/2# BOLT_LENGTH/4 #1.1 is fixed value of bolt
-        bolt_2 = self.create_bolt((bolt_x, bolt_y, bolt_z),rota,bit_type,orientation=bolt_orient)
-
-        en_part = self.combine_all_obj(cube_1,[cube_2,cube_3,en_1,en_2,en_3,en_4,en_5,en_6,bolt_1,bolt_2])
-        en_part.name = 'Energy Part'
-
-        
-        ##Cut parts
-        cut_height_3 = main_hight/20
-        cut_width_3 = 4.5 * thickness
-        cut_long_3 = main_hight/4
-
-        cut_x_3 = init_x 
-        cut_y_3 = main_width + cut_width_3/2
-        cut_z_3 = init_z+ sub_long+ main_long
-
-        #bpy.ops.mesh.primitive_cube_add(location=(cut_x_3,cut_y_3,cut_z_3))
-        #bpy.ops.transform.resize(value=(cut_height_3, cut_width_3, cut_long_3))
-
-        #cut_3 = create_triangle((cut_x_3,cut_y_3,cut_z_3),cut_width_3,cut_long_3)
-        #cut_3.name = 'cube4'
+        en_part = self.combine_all_obj(en_1,[en_2,en_3,en_4,en_5,en_6])
 
         return en_part
-
 
     ##############################################################################################################################
     ######################## 4 Convex Cylinder Part ##############################################################################
@@ -752,6 +810,9 @@ class Motor_Creator:
         cyl_4 = bpy.context.object
 
         up = self.combine_all_obj(cyl_1,[cyl_2,cyl_3,cyl_4])
+
+        if self.color_render:
+            self.rend_color(up, "Plastic")
 
         return up
 
@@ -870,7 +931,12 @@ class Motor_Creator:
             x_bolt_2,y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_position_angel+angel,(x_bolt_init,y_bolt_init))       
             bolt_1 = self.create_bolt((x_bolt_1,y_bolt_1,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)
             bolt_2 = self.create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)       
-            part = self.combine_all_obj(out_cyl,[in_cyl,bolt_1,bolt_2])
+            part_1 = self.combine_all_obj(out_cyl,[in_cyl])
+            
+            if self.color_render:
+                self.rend_color(part_1, "Plastic")
+
+            part = self.combine_all_obj(part_1,[bolt_1,bolt_2])
             bpy.context.view_layer.objects.active = part
             bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
         
@@ -928,8 +994,14 @@ class Motor_Creator:
             x_bolt_1,y_bolt_1 = self.rotate_around_point((position[0],position[1]),bolt_position_angel,(x_bolt_init,y_bolt_init))
             x_bolt_2,y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_position_angel+angel,(x_bolt_init,y_bolt_init))       
             bolt_1 = self.create_bolt((x_bolt_1,y_bolt_1,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)
-            bolt_2 = self.create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)       
-            part = self.combine_all_obj(cly_1,[cly_2,cly_3,bolt_1,bolt_2])
+            bolt_2 = self.create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)   
+
+            part_1 = self.combine_all_obj(cly_1,[cly_2,cly_3])
+            if self.color_render:
+                self.rend_color(part_1, "Plastic")
+
+            part = self.combine_all_obj(part_1,[bolt_1,bolt_2])
+
             bpy.context.view_layer.objects.active = part
             bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
         
@@ -1132,6 +1204,8 @@ class Motor_Creator:
             res = bpy.ops.object.modifier_apply(modifier='bevel')
 
         #bpy.ops.mesh.bevel(offset_type='OFFSET', offset=10.0, affect ='EDGES')
+        if self.color_render:
+            self.rend_color(board, "Plastic")
 
         return board
 
@@ -1188,6 +1262,9 @@ class Motor_Creator:
             bpy.ops.transform.translate(value=(5.5/2-0.65+0.3, -length_relativ+0.05,0))
 
         up2 = self.combine_all_obj(gears,[extension_zone])
+
+        if self.color_render:
+            self.rend_color(up2, "Plastic")
         return up2
 
     def create_side_board(self):
@@ -1246,6 +1323,7 @@ class Motor_Creator:
             board_2 = bpy.context.object
             bpy.context.view_layer.objects.active = board_2
             bpy.ops.transform.rotate(value=-angel,orient_axis='Y') 
+
         elif self.gear_orientation in ['mf_North', 'mf_South'] :
             y = init_y + self.BOTTOM_HEIGHT/4 - self.BOARD_THICKNESS
             p2_length = math.sqrt((self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH-p1_length*2)**2 +
@@ -1260,6 +1338,9 @@ class Motor_Creator:
             bpy.context.view_layer.objects.active = board_2
             bpy.ops.transform.rotate(value=-angel,orient_axis='X') 
         #cube_2.matrix_world @= Matrix.Rotation(radians(angel),4,'Y') 
+
+        #Middle Board
+        board_4 = self.create_middle_board_mesh()
 
 
         #Create board
@@ -1303,8 +1384,58 @@ class Motor_Creator:
 
 
 
-        board = self.combine_all_obj(board_1,[board_2,board_3])
+        board = self.combine_all_obj(board_1,[board_2,board_3,board_4])
 
+        if self.color_render:
+            self.rend_color(board, "Plastic")
+
+        return board
+
+    def create_middle_board_mesh(self):
+        main_long = self.bottom_length 
+
+        sub_long = self.SUB_BOTTOM_LENGTH
+        l1 = 2.4
+        l2 = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH
+
+        east = self.BOTTOM_HEIGHT/2
+        north = self.BOTTOM_HEIGHT/2
+
+        thickness = self.BOARD_THICKNESS/2
+
+        z_offset = main_long + sub_long
+
+        if self.gear_orientation in ['mf_East','mf_West'] :
+            p1 = [0, thickness, z_offset]
+            p2 = [0, thickness, z_offset+l2]
+            p3 = [-east, thickness ,z_offset+l1]
+            p4 = [-east, thickness, z_offset]
+            p_thick = [0, -2* thickness, 0]
+
+
+        elif self.gear_orientation in ['mf_North', 'mf_South'] :
+            p1 = [thickness, 0, z_offset]
+            p2 = [thickness, 0, z_offset+l2]
+            p3 = [thickness, north, z_offset+l1]
+            p4 = [thickness, north, z_offset]
+            p_thick = [-2* thickness,0, 0]
+
+        verts = []
+        
+        for n in [p1,p2,p3,p4]:
+            verts.append(n)
+            verts.append(self.add_vector(n,p_thick))
+
+        faces = [
+            [0, 1, 3, 2],
+            [2, 3 ,5, 4],
+            [4, 5, 7, 6],
+            [6, 7, 1, 0],
+            [0, 2, 4, 6],
+            [1, 3, 5, 7]
+        ]
+
+        board = self.add_mesh("board", verts, faces)
         return board
 
     def create_upper_part(self):
