@@ -3,6 +3,7 @@ import math
 import mathutils
 import random
 from math import radians
+import bmesh
 
 class Motor_Creator:
 
@@ -485,6 +486,33 @@ class Motor_Creator:
             # no slots
             obj.data.materials.append(mat)
 
+    def create_fake_pc(self):
+        import bpy
+
+        def point_cloud(ob_name, coords):
+            """Create point cloud object based on given coordinates and name."""
+            me = bpy.data.meshes.new(ob_name + "Mesh")
+            ob = bpy.data.objects.new(ob_name, me)
+            me.from_pydata(coords, [], [])
+            ob.show_name = True
+            me.update()
+            return ob
+
+        def face_centers(obj):
+            """Returns median center coordinates for each face of given mesh object."""
+            if obj.type == 'MESH':
+                bm = bmesh.new()
+                bm.from_mesh(obj.data)
+                return [obj.matrix_world @ f.calc_center_median() for f in bm.faces]
+            else:
+                return [(0.0, 0.0, 0.0)]
+
+
+        ob = bpy.context.active_object
+        pc = point_cloud(ob.name + "-pointcloud", face_centers(ob))
+
+        # Link object to the active collection
+        bpy.context.collection.objects.link(pc)
 
     ##############################################################################################################################
     ######################## Bottom Part #########################################################################################
@@ -1398,8 +1426,8 @@ class Motor_Creator:
         l1 = 2.4
         l2 = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH
 
-        east = self.BOTTOM_HEIGHT/2
-        north = self.BOTTOM_HEIGHT/2
+        east = self.BOTTOM_HEIGHT/2 - 0.1
+        north = self.BOTTOM_HEIGHT/2 - 0.1
 
         thickness = self.BOARD_THICKNESS/2
 
