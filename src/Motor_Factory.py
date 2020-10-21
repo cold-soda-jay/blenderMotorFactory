@@ -34,10 +34,10 @@ class Motor_Factory_Operator(bpy.types.Operator):
         "mf_Sub_Bottom_Inner_Dia",
         "mf_Small_Gear_Dia",
         "mf_Small_Gear_Position",
-        "mf_Small_Gear_Bolt_Angel",
+        "mf_Small_Gear_Bolt_Angle",
         "mf_Small_Gear_Bolt_Rotation",
         "mf_Large_Gear_Dia",
-        "mf_Large_Gear_Bolt_Angel",
+        "mf_Large_Gear_Bolt_Angle",
         "mf_Large_Gear_Bolt_Rotation",
         "mf_Gear_Orientation",
         "mf_Color_Render",
@@ -94,7 +94,7 @@ class Motor_Factory_Operator(bpy.types.Operator):
 
     mf_Small_Gear_Dia = FloatProperty(attr='mf_Small_Gear_Dia',
         name='Small Gear Dia', default = 4,
-        min = 3, soft_min = 0, max = 6, 
+        min = 3.5, soft_min = 0, max = 4.5, 
         description='Diameter of small Gear')
 
     mf_Small_Gear_Position = FloatProperty(attr='mf_Small_Gear_Position',
@@ -102,10 +102,10 @@ class Motor_Factory_Operator(bpy.types.Operator):
         min = 3.6, soft_min = 0, max = 4.2, 
         description='Position of small Gear in middel axe')
 
-    mf_Small_Gear_Bolt_Angel = FloatProperty(attr='mf_Small_Gear_Bolt_Angel',
-        name='Angel between bolts on small gear', default = 12,
+    mf_Small_Gear_Bolt_Angle = FloatProperty(attr='mf_Small_Gear_Bolt_Angle',
+        name='Angle between bolts on small gear', default = 12,
         min = 6, soft_min = 0, max = 18, 
-        description='Angel between bolts on small gear')
+        description='Angle between bolts on small gear')
 
     mf_Small_Gear_Bolt_Rotation = FloatProperty(attr='mf_Small_Gear_Bolt_Rotation',
         name='Position of bolts on small gear', default = 20,
@@ -114,18 +114,18 @@ class Motor_Factory_Operator(bpy.types.Operator):
 
     mf_Large_Gear_Dia = FloatProperty(attr='mf_Large_Gear_Dia',
         name='Large Gear Dia', default = 5.5,
-        min = 5.5, soft_min = 0, max = 8, 
+        min = 5, soft_min = 0, max = 6.5, 
         description='Diameter of large Gear')
 
-    mf_Large_Gear_Bolt_Angel = FloatProperty(attr='mf_Large_Gear_Bolt_Angel',
-        name='Angel between bolts on large gear', default = 17,
+    mf_Large_Gear_Bolt_Angle = FloatProperty(attr='mf_Large_Gear_Bolt_Angle',
+        name='Angle between bolts on large gear', default = 17,
         min = 6, soft_min = 0, max = 18, 
-        description='Angel between bolts on large gear')
+        description='Angle between bolts on large gear')
 
     mf_Large_Gear_Bolt_Rotation = FloatProperty(attr='mf_Large_Gear_Bolt_Rotation',
         name='Position of bolts on large gear', default = 1.3,
         min = 0, soft_min = 0, max = 36, 
-        description='Angel between bolts on large gear')
+        description='Position of bolts on large gear')
 
     Orientation_List = [
                 ('mf_East','0','0'),
@@ -161,28 +161,20 @@ class Motor_Factory_Operator(bpy.types.Operator):
         col.prop(self, 'mf_Type')
         col.prop(self, 'mf_Bit_Type')
         col.prop(self, 'mf_Color_Render')
-
         col.prop(self, 'mf_Gear_Orientation')        
         col.prop(self, 'mf_Flip')
-
-        col.prop(self, 'mf_Bolt_Orientation')
-        
-
-        col.prop(self, 'mf_Head_Type')
+        col.prop(self, 'mf_Bolt_Orientation')       
         col.prop(self, 'mf_Bottom_Length') 
         col.prop(self, 'mf_Sub_Bottom_Inner_Dia')
-
         col.prop(self, 'mf_Small_Gear_Dia') 
         col.prop(self, 'mf_Small_Gear_Position')         
-        col.prop(self, 'mf_Small_Gear_Bolt_Angel')     
+        col.prop(self, 'mf_Small_Gear_Bolt_Angle')     
         col.prop(self, 'mf_Small_Gear_Bolt_Rotation')
-
         col.prop(self, 'mf_Large_Gear_Dia')     
-        col.prop(self, 'mf_Large_Gear_Bolt_Angel') 
+        col.prop(self, 'mf_Large_Gear_Bolt_Angle') 
         col.prop(self, 'mf_Large_Gear_Bolt_Rotation')
      
-    
-        
+           
         #col.prop(self, 'bf_presets')
         col.separator()
 

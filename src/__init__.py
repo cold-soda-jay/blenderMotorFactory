@@ -12,12 +12,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 bl_info = {
-    "name" : "Motor Factory",
+    "name" : "MotorFactory",
     "author" : "Joe",
     "description" : "Motor Factory",
     "blender" : (2, 90, 0),
     "version" : (0, 0, 1),
-    "location" : "View3D",
+    "location" : "View3D > Add > Mesh",
     "warning" : "",
     "category" : "Generic"
 }

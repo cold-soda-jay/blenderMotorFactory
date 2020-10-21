@@ -54,10 +54,10 @@ class Motor_Creator:
     small_gear_position = None
     large_gear_dia = 0
 
-    samll_gear_angel = 0
-    samll_gear_bolt_position_angel = 0
-    large_gear_angel = 0
-    large_gear_bolt_position_angel = 0
+    samll_gear_Angle = 0
+    samll_gear_bolt_position_Angle = 0
+    large_gear_Angle = 0
+    large_gear_bolt_position_Angle = 0
 
     orient_dict = {
         'mf_West':((radians(0),"Z"), BOTTOM_DIA,True),
@@ -90,10 +90,10 @@ class Motor_Creator:
         self.ex_type = factory.mf_Type
         self.gear_Flip = factory.mf_Flip
         self.color_render = factory.mf_Color_Render
-        self.samll_gear_angel = factory.mf_Small_Gear_Bolt_Angel
-        self.samll_gear_bolt_position_angel = factory.mf_Small_Gear_Bolt_Rotation        
-        self.large_gear_angel = factory.mf_Large_Gear_Bolt_Angel
-        self.large_gear_bolt_position_angel = factory.mf_Large_Gear_Bolt_Rotation
+        self.samll_gear_Angle = factory.mf_Small_Gear_Bolt_Angle
+        self.samll_gear_bolt_position_Angle = factory.mf_Small_Gear_Bolt_Rotation        
+        self.large_gear_Angle = factory.mf_Large_Gear_Bolt_Angle
+        self.large_gear_bolt_position_Angle = factory.mf_Large_Gear_Bolt_Rotation
 
 
     ##############################################################################################################################
@@ -115,8 +115,8 @@ class Motor_Creator:
         bpy.context.view_layer.objects.active = None
         return main_obj
 
-    def rotate_around_point(self, origin, angel, obj_position):
-        rot = radians(angel)   
+    def rotate_around_point(self, origin, Angle, obj_position):
+        rot = radians(Angle)   
         relativ_point = [obj_position[0]-origin[0], obj_position[1]-origin[1]]
         x = relativ_point[0] * math.cos(rot) - relativ_point[1] * math.sin(rot) 
         y = relativ_point[0] * math.sin(rot)  + relativ_point[1] * math.cos(rot)
@@ -441,9 +441,9 @@ class Motor_Creator:
             part.name = 'Bolt'
 
         if orientation == 'mf_all_random':
-            angel = random.randrange(0, 360, 10)     
+            Angle = random.randrange(0, 360, 10)     
             bpy.context.view_layer.objects.active = part
-            bpy.ops.transform.rotate(value=radians(angel),orient_axis='Z') 
+            bpy.ops.transform.rotate(value=radians(Angle),orient_axis='Z') 
         if rotation:
             bpy.context.view_layer.objects.active = part
             bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
@@ -457,11 +457,10 @@ class Motor_Creator:
         mat = bpy.data.materials.new(name="Material")
         
         if part == "Metall":
-            mat.metallic = 0.7
-            mat.roughness = 0.8
-            mat.diffuse_color = (0.5, 0.5, 0.5, 1)
+            mat.metallic = 0.8
+            mat.roughness = 0.4
+            mat.diffuse_color = (0.3, 0.3, 0.3, 1)
             mat.specular_intensity = 0.9
-
         
         elif part == "Energy":
             mat.diffuse_color = (0.781, 0.775, 0.308, 1)
@@ -885,7 +884,7 @@ class Motor_Creator:
         #y_board = y + 0.5
         #z_board = main_long + sub_long + (small_gear_position)/2
 
-        #angel = math.atan((x-self.FOUR_CYL_DIA)/small_gear_position)
+        #Angle = math.atan((x-self.FOUR_CYL_DIA)/small_gear_position)
 
     
         #bpy.ops.mesh.primitive_cube_add(location=(x_board,y_board,z_board))
@@ -893,7 +892,7 @@ class Motor_Creator:
         #board = bpy.context.object
 
         #bpy.context.view_layer.objects.active = board
-        #bpy.ops.transform.rotate(value=-angel,orient_axis='Y') 
+        #bpy.ops.transform.rotate(value=-Angle,orient_axis='Y') 
 
         #Create large Gear
         x_large = init_x + small_gear_dia/2 - 0.8
@@ -927,10 +926,10 @@ class Motor_Creator:
                 length = length_relativ*2/3
             inner_radius = 1/2
             inner_length = 1.4 * length +1
-            angel = self.samll_gear_angel  * 10
-            bolt_position_angel = self.samll_gear_bolt_position_angel * 10
+            Angle = self.samll_gear_Angle  * 10
+            bolt_position_Angle = self.samll_gear_bolt_position_Angle * 10
             if self.gear_orientation in ['mf_East','mf_West'] and self.ex_type == 'mf_Type_B':
-                bolt_position_angel -= 25
+                bolt_position_Angle -= 25
 
             #Create out
             bpy.ops.mesh.primitive_cylinder_add(radius=radius, depth=length, location=position)
@@ -955,8 +954,8 @@ class Motor_Creator:
             y_bolt_init = position[1] 
 
             #Calculate the rotation
-            x_bolt_1,y_bolt_1 = self.rotate_around_point((position[0],position[1]),bolt_position_angel,(x_bolt_init,y_bolt_init))
-            x_bolt_2,y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_position_angel+angel,(x_bolt_init,y_bolt_init))       
+            x_bolt_1,y_bolt_1 = self.rotate_around_point((position[0],position[1]),bolt_position_Angle,(x_bolt_init,y_bolt_init))
+            x_bolt_2,y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_position_Angle+Angle,(x_bolt_init,y_bolt_init))       
             bolt_1 = self.create_bolt((x_bolt_1,y_bolt_1,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)
             bolt_2 = self.create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)       
             part_1 = self.combine_all_obj(out_cyl,[in_cyl])
@@ -982,8 +981,8 @@ class Motor_Creator:
             
 
             inner_length = length + 1
-            angel = self.large_gear_angel * 10
-            bolt_position_angel = self.large_gear_bolt_position_angel * 10
+            Angle = self.large_gear_Angle * 10
+            bolt_position_Angle = self.large_gear_bolt_position_Angle * 10
             
             #Ring 1
             thickness_1 = radius - inner_radius_1
@@ -1019,8 +1018,8 @@ class Motor_Creator:
             y_bolt_init = position[1] 
 
             #Calculate the rotation
-            x_bolt_1,y_bolt_1 = self.rotate_around_point((position[0],position[1]),bolt_position_angel,(x_bolt_init,y_bolt_init))
-            x_bolt_2,y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_position_angel+angel,(x_bolt_init,y_bolt_init))       
+            x_bolt_1,y_bolt_1 = self.rotate_around_point((position[0],position[1]),bolt_position_Angle,(x_bolt_init,y_bolt_init))
+            x_bolt_2,y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_position_Angle+Angle,(x_bolt_init,y_bolt_init))       
             bolt_1 = self.create_bolt((x_bolt_1,y_bolt_1,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)
             bolt_2 = self.create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),bit_type=bit_type,orientation=bolt_orient,only_body=body)   
 
@@ -1344,19 +1343,19 @@ class Motor_Creator:
             x = init_x - self.BOTTOM_HEIGHT/4 + self.BOARD_THICKNESS
             p2_length = math.sqrt((self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH-p1_length*2)**2 
                                     + (main_height/2)**2 )/2
-            angel = math.atan((main_height/2)/(self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH -
+            Angle = math.atan((main_height/2)/(self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH -
                                      p1_length*2))
             bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
             bpy.ops.transform.resize(value=(height, width, p2_length))
             board_2 = bpy.context.object
             bpy.context.view_layer.objects.active = board_2
-            bpy.ops.transform.rotate(value=-angel,orient_axis='Y') 
+            bpy.ops.transform.rotate(value=-Angle,orient_axis='Y') 
 
         elif self.gear_orientation in ['mf_North', 'mf_South'] :
             y = init_y + self.BOTTOM_HEIGHT/4 - self.BOARD_THICKNESS
             p2_length = math.sqrt((self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH-p1_length*2)**2 +
                                  (main_height/2)**2 )/2
-            angel = math.atan((main_height/2)/(self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH - p1_length*2))
+            Angle = math.atan((main_height/2)/(self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH - p1_length*2))
 
             bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
             bpy.ops.transform.resize(value=(width, height, p2_length))
@@ -1364,12 +1363,30 @@ class Motor_Creator:
             board_2 = bpy.context.object
 
             bpy.context.view_layer.objects.active = board_2
-            bpy.ops.transform.rotate(value=-angel,orient_axis='X') 
-        #cube_2.matrix_world @= Matrix.Rotation(radians(angel),4,'Y') 
+            bpy.ops.transform.rotate(value=-Angle,orient_axis='X') 
+        #cube_2.matrix_world @= Matrix.Rotation(radians(Angle),4,'Y') 
 
         #Middle Board
         board_4 = self.create_middle_board_mesh()
 
+        #Middle Board 2
+        length = self.small_gear_position /2
+
+        if self.gear_orientation in ['mf_East','mf_West'] :
+            x = main_height/4
+            y = 0
+            z = init_z + main_long + sub_long + self.BOLT_LENGTH
+            bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
+            bpy.ops.transform.resize(value=(main_height*0.15, self.BOARD_THICKNESS/2, length))
+
+        elif self.gear_orientation in ['mf_North', 'mf_South'] :
+            x = 0
+            y = - main_width/4
+            z = init_z + main_long + sub_long + self.BOLT_LENGTH
+            bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
+            bpy.ops.transform.resize(value=(self.BOARD_THICKNESS/2, main_width*0.09, length))
+
+        board_5 = bpy.context.object
 
         #Create board
 
@@ -1393,7 +1410,7 @@ class Motor_Creator:
             just_rotate = True
 
 
-        angel = math.atan((x-self.FOUR_CYL_DIA)/ self.small_gear_position)
+        Angle = math.atan((x-self.FOUR_CYL_DIA)/ self.small_gear_position)
 
     
         bpy.ops.mesh.primitive_cube_add(location=(x_board,y_board,z_board))
@@ -1404,15 +1421,15 @@ class Motor_Creator:
         
 
         if just_rotate:
-            bpy.ops.transform.rotate(value=angel,orient_axis='Y') 
+            bpy.ops.transform.rotate(value=Angle,orient_axis='Y') 
             bpy.ops.transform.rotate(value=radians(-90),orient_axis='Z') 
         else:
-            bpy.ops.transform.rotate(value=-angel,orient_axis='Y') 
+            bpy.ops.transform.rotate(value=-Angle,orient_axis='Y') 
 
 
 
 
-        board = self.combine_all_obj(board_1,[board_2,board_3,board_4])
+        board = self.combine_all_obj(board_1,[board_2,board_3,board_4,board_5])
 
         if self.color_render:
             self.rend_color(board, "Plastic")
