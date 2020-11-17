@@ -32,6 +32,7 @@ class Motor_Factory_Operator(bpy.types.Operator):
         "mf_Bottom_Length",
         "mf_Bit_Type",
         "mf_Sub_Bottom_Inner_Dia",
+        "mf_Sub_Bottom_Length",
         "mf_Small_Gear_Dia",
         "mf_Small_Gear_Position",
         "mf_Small_Gear_Bolt_Angle",
@@ -46,12 +47,12 @@ class Motor_Factory_Operator(bpy.types.Operator):
     #Create genera types
 
     #Bottom Types
-    Extention_Type_List = [('mf_Type_A','Type 1','Type 1'),
-                 ('mf_Type_B','Type 2','Type 2')  ]
+    Extention_Type_List = [('mf_Type_1','Type 1','Type 1'),
+                 ('mf_Type_2','Type 2','Type 2')  ]
     mf_Type = EnumProperty( attr='mf_Type',
-            name='Extention Area Type',
-            description='Choose the type of Bottom you would like',
-            items = Extention_Type_List, default = 'mf_Type_A')
+            name='Extension Area Type',
+            description='Choose the type of extension area you would like',
+            items = Extention_Type_List, default = 'mf_Type_1')
 
 
     mf_Color_Render : BoolProperty(name = "Color Render",
@@ -85,7 +86,13 @@ class Motor_Factory_Operator(bpy.types.Operator):
             name='Bottom Length', default = 6.4,
             min = 0, soft_min = 0, max = MAX_INPUT_NUMBER, 
             description='Length of the Bottom')
-            
+
+    #Bottom size      
+    mf_Sub_Bottom_Length = FloatProperty(attr='mf_Sub_Bottom_Length',
+            name='Sub Bottom Length', default = 1.2,
+            min =0.6, soft_min = 0.1, max = 2, 
+            description='Length of the Sub Bottom')
+                    
 
     mf_Sub_Bottom_Inner_Dia = FloatProperty(attr='mf_Sub_Bottom_Inner_Dia',
         name='Sub Bottom Inner Dia', default = 0.5,
@@ -128,16 +135,16 @@ class Motor_Factory_Operator(bpy.types.Operator):
         description='Position of bolts on large gear')
 
     Orientation_List = [
-                ('mf_East','0','0'),
-                ('mf_South','90','90'),             
-                ('mf_West','180','180'),
-                ('mf_North','270','270')
+                ('mf_zero','0','0'),
+                ('mf_Ninety','90','90'),             
+                ('mf_HundredEighteen','180','180'),
+                ('mf_TwoHundredSeven','270','270')
  ]
 
     mf_Gear_Orientation = EnumProperty( attr='mf_Gear_Orientation',
-            name='Gear Ortientation',
-            description='Orientation of gears and extension zone',
-            items = Orientation_List, default = 'mf_East')
+            name='Gear Rotation',
+            description='Rotation of gears and extension zone',
+            items = Orientation_List, default = 'mf_zero')
 
     mf_Flip : BoolProperty(name = "Flip",
                 default = False,
@@ -145,7 +152,7 @@ class Motor_Factory_Operator(bpy.types.Operator):
 
     bolt_orientation_list = [('mf_all_same', 'All Same','All Same'),
                             ('mf_all_random', 'All Random', 'All Random')]
-    mf_Bolt_Orientation = EnumProperty( attr='mf_Gear_Orientation',
+    mf_Bolt_Orientation = EnumProperty( attr='mf_Bolt_Orientation',
             name='Bolt Ortientation',
             description='Orientation of bolts',
             items = bolt_orientation_list, default = 'mf_all_same')
@@ -157,20 +164,28 @@ class Motor_Factory_Operator(bpy.types.Operator):
         col = layout.column()
         
         #ENUMS
+        col.label(text="General")
         col.prop(self, 'mf_Head_Type')
         col.prop(self, 'mf_Type')
-        col.prop(self, 'mf_Bit_Type')
-        col.prop(self, 'mf_Color_Render')
         col.prop(self, 'mf_Gear_Orientation')        
         col.prop(self, 'mf_Flip')
-        col.prop(self, 'mf_Bolt_Orientation')       
+        col.prop(self, 'mf_Color_Render')
+
+        col.label(text="Bottom")
         col.prop(self, 'mf_Bottom_Length') 
-        col.prop(self, 'mf_Sub_Bottom_Inner_Dia')
+        col.prop(self, 'mf_Sub_Bottom_Length')
+
+        col.label(text="Gears")
         col.prop(self, 'mf_Small_Gear_Dia') 
-        col.prop(self, 'mf_Small_Gear_Position')         
+        col.prop(self, 'mf_Small_Gear_Position')  
+        col.prop(self, 'mf_Large_Gear_Dia')     
+
+        col.label(text="Bolts")
+        col.prop(self, 'mf_Bit_Type')
+        col.prop(self, 'mf_Bolt_Orientation')       
+       
         col.prop(self, 'mf_Small_Gear_Bolt_Angle')     
         col.prop(self, 'mf_Small_Gear_Bolt_Rotation')
-        col.prop(self, 'mf_Large_Gear_Dia')     
         col.prop(self, 'mf_Large_Gear_Bolt_Angle') 
         col.prop(self, 'mf_Large_Gear_Bolt_Rotation')
      
@@ -178,10 +193,13 @@ class Motor_Factory_Operator(bpy.types.Operator):
         #col.prop(self, 'bf_presets')
         col.separator()
 
+    @classmethod
+    def poll(cls, context):
+        return context.scene is not None
 
     def execute(self, context):
-        if  context.active_object and \
-            ('Motor' in context.active_object.name_full) and (self.change == True):
+        if  context.selected_objects != [] and context.active_object and \
+            ('Motor' in context.active_object.name_full):
             obj = context.active_object
             oldmesh = obj.data
             oldmeshname = obj.data.name
@@ -190,6 +208,7 @@ class Motor_Factory_Operator(bpy.types.Operator):
             try:
                 bpy.ops.object.vertex_group_remove(all=True)
             except:
+
                 pass
 
             for material in oldmesh.materials:
@@ -217,7 +236,7 @@ class Motor_Factory_Operator(bpy.types.Operator):
         creator = mt.Motor_Creator(self)
         bottom = creator.create_Bottom()
         middle = creator.create_middle()
-        #if self.mf_Type == 'mf_Type_A':
+        #if self.mf_Type == 'mf_Type_1':
         convex = creator.create_4_convex_cyl()
         up = creator.create_upper_part()
             #up1 =ut.create_up1(self)
