@@ -2,13 +2,15 @@ import bpy
 from bpy.props import *
 from bpy_extras import object_utils
 from . import motor as mt
+from bpy_extras.object_utils import AddObjectHelper
+
 
 
 
 #from math import *
 
 
-class Motor_Factory_Operator(bpy.types.Operator):
+class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     #Set Genera information
     bl_idname = "mesh.add_motor"
     bl_label = "Motor Property"
@@ -40,9 +42,11 @@ class Motor_Factory_Operator(bpy.types.Operator):
         "mf_Large_Gear_Dia",
         "mf_Large_Gear_Bolt_Angle",
         "mf_Large_Gear_Bolt_Rotation",
-        "mf_Gear_Orientation",
+        "mf_Gear_Orientation_1",
+        "mf_Gear_Orientation_2",
         "mf_Color_Render",
-        "mf_Flip",
+        "mf_Flip_1",
+        "mf_Flip_2",
         ]
     #Create genera types
 
@@ -134,21 +138,37 @@ class Motor_Factory_Operator(bpy.types.Operator):
         min = 0, soft_min = 0, max = 36, 
         description='Position of bolts on large gear')
 
-    Orientation_List = [
+
+    Orientation_List_Type_2 = [
+                ('mf_Ninety','90','90'),             
+                ('mf_HundredEighteen','180','180'),
+                ('mf_TwoHundredSeven','270','270')
+        ]
+
+    Orientation_List_Type_1 = [
                 ('mf_zero','0','0'),
                 ('mf_Ninety','90','90'),             
                 ('mf_HundredEighteen','180','180'),
                 ('mf_TwoHundredSeven','270','270')
- ]
+        ]
 
-    mf_Gear_Orientation = EnumProperty( attr='mf_Gear_Orientation',
+    mf_Gear_Orientation_1 = EnumProperty( attr='mf_Gear_Orientation',
             name='Gear Rotation',
             description='Rotation of gears and extension zone',
-            items = Orientation_List, default = 'mf_zero')
+            items = Orientation_List_Type_1, default = 'mf_zero')   
 
-    mf_Flip : BoolProperty(name = "Flip",
+    mf_Gear_Orientation_2 = EnumProperty( attr='mf_Gear_Orientation',
+            name='Gear Rotation',
+            description='Rotation of gears and extension zone',
+            items = Orientation_List_Type_2, default = 'mf_TwoHundredSeven')
+
+    mf_Flip_1 : BoolProperty(name = "Flip",
                 default = False,
                 description = "Flip the gears")
+
+    mf_Flip_2 : BoolProperty(name = "Flip",
+            default = True,
+            description = "Flip the gears")
 
     bolt_orientation_list = [('mf_all_same', 'All Same','All Same'),
                             ('mf_all_random', 'All Random', 'All Random')]
@@ -167,8 +187,12 @@ class Motor_Factory_Operator(bpy.types.Operator):
         col.label(text="General")
         col.prop(self, 'mf_Head_Type')
         col.prop(self, 'mf_Type')
-        col.prop(self, 'mf_Gear_Orientation')        
-        col.prop(self, 'mf_Flip')
+        if self.mf_Type == 'mf_Type_1':
+            col.prop(self, 'mf_Gear_Orientation_1')        
+            col.prop(self, 'mf_Flip_1')
+        elif self.mf_Type == 'mf_Type_2':
+            col.prop(self, 'mf_Gear_Orientation_2')        
+            col.prop(self, 'mf_Flip_2')
         col.prop(self, 'mf_Color_Render')
 
         col.label(text="Bottom")
@@ -232,7 +256,6 @@ class Motor_Factory_Operator(bpy.types.Operator):
 
 
     def create_motor(self):
-
         creator = mt.Motor_Creator(self)
         bottom = creator.create_Bottom()
         middle = creator.create_middle()
