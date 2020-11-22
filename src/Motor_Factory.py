@@ -267,6 +267,9 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         obj_list=[convex,middle,up]
         for area in bpy.context.screen.areas: # iterate through areas in current screen
             if area.type == 'VIEW_3D':
+                override = bpy.context.copy()
+                override['area'] = area
+                bpy.ops.view3d.view_axis(override, type='LEFT')
                 for space in area.spaces: # iterate through spaces in current VIEW_3D area
                     if space.type == 'VIEW_3D':
                         if self.mf_Color_Render:
