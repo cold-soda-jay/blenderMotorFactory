@@ -19,13 +19,14 @@ class Motor_Creator:
 
     BOTTOM_DIA = 4
     BOTTOM_HEIGHT = 3
-    sub_bottom_length = 1.2
     SUB_BOTTOM_DIA = 1
     SUB_BOTTOM_INNER_DEPTH = 0.5
     ##Bolt
     BOLT_DIA = 0.4
     BOLT_LENGTH = 1.4
     BOLT_BIT_DIA = 0.2
+    BOLT_THREAD_LENGTH = 1.4
+    BOLT_THREAD_DIA = 0.2
     BOARD_THICKNESS = 0.1
     FOUR_CYL_DIA = 0.7
     #4 covex cyl
@@ -80,6 +81,7 @@ class Motor_Creator:
 
     #Save path
     motor_param = [
+        "Nr.",
         "mf_Head_Type",
         "mf_Extension_Type",
         "mf_Gear_Orientation",
@@ -131,7 +133,8 @@ class Motor_Creator:
         self.large_gear_Angle = factory.mf_Large_Gear_Bolt_Angle
         self.large_gear_bolt_position_Angle = factory.mf_Large_Gear_Bolt_Rotation
         self.save_path = factory.mf_Save_Path
-        self.id_Nr = factory.id_Nr        
+        self.id_Nr = factory.id_Nr    
+    
 
 
     ##############################################################################################################################
@@ -362,13 +365,21 @@ class Motor_Creator:
 
             in_dia = 0.8 * self.BOLT_DIA
             
+            #Create first BIt base of Bolt
             z_in = position[2] + out_length/2
             bpy.ops.mesh.primitive_cylinder_add(radius=in_dia, depth=in_dia, location=(position[0],position[1],z_in))
             in_cyl = bpy.context.object
             in_cyl.name = 'in_cylinder'
 
+            #Create Thread of Bolt
+
+            bpy.ops.mesh.primitive_cylinder_add(radius=self.BOLT_THREAD_DIA, depth=self.BOLT_THREAD_LENGTH, location=position)
+            thread = bpy.context.object
+            thread.name = 'thread'
+
             z_sphe = z_in + in_dia/2
 
+            #Create Shell for Bolt
             bpy.ops.mesh.primitive_cylinder_add(radius=out_dia, depth=out_length, location=position)
             out_cyl = bpy.context.object
             out_cyl.name = 'out_cylinder'
@@ -475,9 +486,12 @@ class Motor_Creator:
                 self.rend_color(out_cyl,"Plastic")
                 self.rend_color(sphere,"Bit")
                 self.rend_color(in_cyl,"Bit")
-            
-            part = self.combine_all_obj(out_cyl,[sphere,in_cyl])
-            part.name = 'Bolt'
+                self.rend_color(thread,"Bit")
+            bolt = self.combine_all_obj(thread,[sphere,in_cyl])
+            bolt.name = 'Bolt'
+            self.save_modell(bolt)
+            part = self.combine_all_obj(out_cyl,[bolt])
+
 
         if orientation == 'mf_all_random':
             Angle = random.randrange(0, 360, 10)     
@@ -578,7 +592,6 @@ class Motor_Creator:
     def init_csv(self,path):
         with open(path, "a+", encoding='utf-8') as log:
             writer = csv.writer(log)
-            self.motor_param.insert(0, 'Nr.')
             writer.writerow(self.motor_param)
 
     def write_data(self, path, data):
@@ -596,7 +609,7 @@ class Motor_Creator:
         if self.save_path == "None":
             pass
         else:
-           
+            
             csv_path= self.save_path + 'data.csv'
             if not os.path.isfile(csv_path):
                 self.init_csv(csv_path)
@@ -633,8 +646,10 @@ class Motor_Creator:
             bpy.ops.object.select_all(action='DESELECT')
             modell.select_set(True)
             name = modell.name
+            if name == "Bolt" and os.path.isfile(path_of_folder+name+'.stl'):
+                return
             try:
-                bpy.ops.export_mesh.stl(filepath=path_of_folder+name+'.stl', check_existing=True, use_selection=True)
+                bpy.ops.export_mesh.stl(filepath=path_of_folder+name+'.stl', check_existing=True, use_selection=True, filter_glob='*.stl',)
             except:
                 print("Error!")
             bpy.ops.object.select_all(action='DESELECT')
@@ -814,7 +829,6 @@ class Motor_Creator:
 
         mid = self.combine_all_obj(mid_1,[bolt_1,bolt_2,convex])
         mid.name = 'Middle_Part'
-        self.save_modell(mid)
 
         return mid
 
@@ -949,7 +963,7 @@ class Motor_Creator:
         bpy.context.view_layer.objects.active = None
         en_part = self.combine_all_obj(en_part_1,[en_part_2])
 
-        en_part.name = "Energy_Part"
+        en_part.name = "Charger"
         self.save_modell(en_part)
 
         return en_part
@@ -1629,7 +1643,7 @@ class Motor_Creator:
 
         extension_zone = self.create_up2(length_relativ)
         self.rotate_object(extension_zone)       
-        extension_zone.name = "Extension_Zone"
+        extension_zone.name = "Up2"
         self.save_modell(extension_zone)
 
 
@@ -1641,9 +1655,11 @@ class Motor_Creator:
             bpy.ops.transform.translate(value=(2*self.BOARD_THICKNESS,0,0))
         elif self.gear_orientation == 'mf_TwoHundredSeven' :
             bpy.ops.transform.translate(value=(-2*self.BOARD_THICKNESS,0,0))
+        
+        middle = self. create_middle()
 
-        gear = self.combine_all_obj(board,[up1])
-        gear.name = "Gear_Part"
+        gear = self.combine_all_obj(board,[up1,middle])
+        gear.name = "Up1"
         self.save_modell(gear)
 
 

@@ -292,14 +292,14 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         bottom = creator.create_Bottom()
         #creator.save_modell(bottom.name)
 
-        middle = creator.create_middle()
+        #middle = creator.create_middle()
 
         en_part = creator.create_en_part()
 
         #convex = creator.create_4_convex_cyl()
         upper_part = creator.create_upper_part()
 
-        obj_list=[middle,upper_part,en_part]
+        obj_list=[upper_part,en_part]
         for area in bpy.context.screen.areas: # iterate through areas in current screen
 
             if area.type == 'VIEW_3D':
