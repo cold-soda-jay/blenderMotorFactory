@@ -1,4 +1,5 @@
 import bpy
+import os
 from bpy.props import *
 from bpy_extras import object_utils
 from . import motor as mt
@@ -28,37 +29,42 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     init_x = 0
     init_y = 0
     init_z = 0
-
-    default_view = True
+    id_Nr = 0
 
     MotorParameters = [
-        "mf_Type",
-        "mf_Bottom_Length",
-        "mf_Bit_Type",
-        "mf_Sub_Bottom_Inner_Dia",
-        "mf_Sub_Bottom_Length",
-        "mf_Small_Gear_Dia",
-        "mf_Small_Gear_Position",
-        "mf_Small_Gear_Bolt_Angle",
-        "mf_Small_Gear_Bolt_Rotation",
-        "mf_Large_Gear_Dia",
-        "mf_Large_Gear_Bolt_Angle",
-        "mf_Large_Gear_Bolt_Rotation",
+        "mf_Head_Type",
+        "mf_Extension_Type",
         "mf_Gear_Orientation_1",
         "mf_Gear_Orientation_2",
-        "mf_Color_Render",
         "mf_Flip_1",
         "mf_Flip_2",
+        "mf_Color_Render",
+        "mf_Bottom_Length",
+        "mf_Sub_Bottom_Length",
+
+        "mf_Small_Gear_Dia",
+        "mf_Small_Gear_Position",
+        "mf_Large_Gear_Dia",
+
+        "mf_Bit_Type",
+        "mf_Bolt_Orientation",
+        "mf_Save_Path",
+
+        "mf_Small_Gear_Bolt_Angle",
+        "mf_Small_Gear_Bolt_Rotation",
+        "mf_Large_Gear_Bolt_Angle",
+        "mf_Large_Gear_Bolt_Rotation",   
+        "mf_Default_View",
         ]
     #Create genera types
 
     #Bottom Types
-    Extention_Type_List = [('mf_Type_1','Type 1','Type 1'),
-                 ('mf_Type_2','Type 2','Type 2')  ]
-    mf_Type = EnumProperty( attr='mf_Type',
+    Extention_Type_List = [('mf_Extension_Type_1','Type 1','Type 1'),
+                 ('mf_Extension_Type_2','Type 2','Type 2')  ]
+    mf_Extension_Type = EnumProperty( attr='mf_Extension_Type',
             name='Extension Area Type',
             description='Choose the type of extension area you would like',
-            items = Extention_Type_List, default = 'mf_Type_1')
+            items = Extention_Type_List, default = 'mf_Extension_Type_1')
 
 
     mf_Color_Render : BoolProperty(name = "Color Render",
@@ -171,6 +177,10 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     mf_Flip_2 : BoolProperty(name = "Flip",
             default = True,
             description = "Flip the gears")
+            
+    mf_Default_View : BoolProperty(name = "Default View",
+            default = True,
+            description = "Change to default view")
 
     bolt_orientation_list = [('mf_all_same', 'All Same','All Same'),
                             ('mf_all_random', 'All Random', 'All Random')]
@@ -178,8 +188,11 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             name='Bolt Ortientation',
             description='Orientation of bolts',
             items = bolt_orientation_list, default = 'mf_all_same')
-
-            
+    
+    mf_Save_Path = StringProperty(name = "Save",
+                default = "None", maxlen=4096,
+                description = "Save the modell")        
+    
     
     def draw(self, context):
         layout = self.layout
@@ -188,14 +201,15 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         #ENUMS
         col.label(text="General")
         col.prop(self, 'mf_Head_Type')
-        col.prop(self, 'mf_Type')
-        if self.mf_Type == 'mf_Type_1':
+        col.prop(self, 'mf_Extension_Type')
+        if self.mf_Extension_Type == 'mf_Extension_Type_1':
             col.prop(self, 'mf_Gear_Orientation_1')        
             col.prop(self, 'mf_Flip_1')
-        elif self.mf_Type == 'mf_Type_2':
+        elif self.mf_Extension_Type == 'mf_Extension_Type_2':
             col.prop(self, 'mf_Gear_Orientation_2')        
             col.prop(self, 'mf_Flip_2')
         col.prop(self, 'mf_Color_Render')
+        col.prop(self, 'mf_Default_View')
 
         col.label(text="Bottom")
         col.prop(self, 'mf_Bottom_Length') 
@@ -225,7 +239,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
     def execute(self, context):
         if  context.selected_objects != [] and context.active_object and \
-            ('Motor' in context.active_object.name_full):
+            ('Motor' in context.active_object.data.name) :
             obj = context.active_object
             oldmesh = obj.data
             oldmeshname = obj.data.name
@@ -258,22 +272,42 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
 
     def create_motor(self):
+
+        if self.mf_Save_Path == "None":
+            pass
+        else:  
+            self.mf_Save_Path = self.mf_Save_Path.replace("\\","/")
+            if not self.mf_Save_Path.endswith('/'):
+                self.mf_Save_Path += '/'                   
+            self.id_Nr = len(os.listdir(self.mf_Save_Path))
+            if self.id_Nr == 0:
+                self.id_Nr = 1
+            path_of_folder = self.mf_Save_Path + str(self.id_Nr)+'/'
+            try:
+                os.mkdir(path_of_folder)
+            except:
+                pass
+        
         creator = mt.Motor_Creator(self)
         bottom = creator.create_Bottom()
+        #creator.save_modell(bottom.name)
+
         middle = creator.create_middle()
-        #if self.mf_Type == 'mf_Type_1':
-        convex = creator.create_4_convex_cyl()
-        up = creator.create_upper_part()
-            #up1 =ut.create_up1(self)
-            #up2 = ut.create_up2(self)
-        obj_list=[convex,middle,up]
+
+        en_part = creator.create_en_part()
+
+        #convex = creator.create_4_convex_cyl()
+        upper_part = creator.create_upper_part()
+
+        obj_list=[middle,upper_part,en_part]
         for area in bpy.context.screen.areas: # iterate through areas in current screen
+
             if area.type == 'VIEW_3D':
-                if  self.default_view:
+                if  self.mf_Default_View:
                     override = bpy.context.copy()
                     override['area'] = area
                     bpy.ops.view3d.view_axis(override, type='LEFT')
-                    #self.default_view = False
+                    self.mf_Default_View = False
                 for space in area.spaces: # iterate through spaces in current VIEW_3D area
                     if space.type == 'VIEW_3D':
                         if self.mf_Color_Render:
@@ -282,6 +316,10 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                             space.shading.type = 'SOLID' # set the viewport shading to rendered
     
         motor = creator.combine_all_obj(bottom,obj_list)     
+        motor.name = "Motor"
+        motor.data.name = "Motor"
+        creator.save_modell(motor)
+        creator.save_csv()
             
         return motor
 

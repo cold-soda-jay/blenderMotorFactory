@@ -1,9 +1,12 @@
 import bpy
+import os
 import math
 import mathutils
 import random
 from math import radians
 import bmesh
+import csv
+
 
 class Motor_Creator:
 
@@ -16,7 +19,7 @@ class Motor_Creator:
 
     BOTTOM_DIA = 4
     BOTTOM_HEIGHT = 3
-    SUB_BOTTOM_LENGTH = 1.2
+    sub_bottom_length = 1.2
     SUB_BOTTOM_DIA = 1
     SUB_BOTTOM_INNER_DEPTH = 0.5
     ##Bolt
@@ -58,7 +61,7 @@ class Motor_Creator:
     samll_gear_bolt_position_Angle = 0
     large_gear_Angle = 0
     large_gear_bolt_position_Angle = 0
-
+    
     # Define the behavior of rotation and flip
     orient_dict = {
         'mf_zero':((radians(0),"Z"), BOTTOM_DIA, -1.33*BOTTOM_HEIGHT),
@@ -68,32 +71,57 @@ class Motor_Creator:
     }
 
     #Extention Zone
+    head_Type = None
     ex_type = None
 
     #Color Render
     color_render = False
     gear_Flip = False
 
+    #Save path
+    motor_param = [
+        "mf_Head_Type",
+        "mf_Extension_Type",
+        "mf_Gear_Orientation",
+        "mf_Flip",
+        "mf_Color_Render",
+        "mf_Bottom_Length",
+        "mf_Sub_Bottom_Length",
 
+        "mf_Small_Gear_Dia",
+        "mf_Small_Gear_Position",
+        "mf_Large_Gear_Dia",
+
+        "mf_Bit_Type",
+        "mf_Bolt_Orientation",
+        "mf_Save_Path"
+    ]
+
+    save_path = "None"
+    id_Nr = 0
 
     def __init__(self,factory):
+        self.head_Type = factory.mf_Head_Type
         self.init_x = factory.init_x
         self.init_y = factory.init_y
         self.init_z = factory.init_z
         self.bottom_length = factory.mf_Bottom_Length
         self.inner_radius = 0.5
-        self.SUB_BOTTOM_LENGTH = factory.mf_Sub_Bottom_Length
+        self.sub_bottom_length = factory.mf_Sub_Bottom_Length
         self.bolt_ortientation = factory.mf_Bolt_Orientation
         self.bit_type = factory.mf_Bit_Type
-        self.ex_type = factory.mf_Type
+        self.ex_type = factory.mf_Extension_Type
 
-        if self.ex_type == 'mf_Type_1':
+        if self.ex_type == 'mf_Extension_Type_1':
             self.gear_orientation = factory.mf_Gear_Orientation_1
             self.gear_Flip = factory.mf_Flip_1
 
-        elif self.ex_type == 'mf_Type_2':
+
+        elif self.ex_type == 'mf_Extension_Type_2':
             self.gear_orientation = factory.mf_Gear_Orientation_2
             self.gear_Flip = factory.mf_Flip_2
+
+
         self.small_gear_dia = factory.mf_Small_Gear_Dia
         self.small_gear_position = factory.mf_Small_Gear_Position
         self.large_gear_dia = factory.mf_Large_Gear_Dia
@@ -102,6 +130,8 @@ class Motor_Creator:
         self.samll_gear_bolt_position_Angle = factory.mf_Small_Gear_Bolt_Rotation        
         self.large_gear_Angle = factory.mf_Large_Gear_Bolt_Angle
         self.large_gear_bolt_position_Angle = factory.mf_Large_Gear_Bolt_Rotation
+        self.save_path = factory.mf_Save_Path
+        self.id_Nr = factory.id_Nr        
 
 
     ##############################################################################################################################
@@ -544,7 +574,73 @@ class Motor_Creator:
 
         else:
             pass
-            
+
+    def init_csv(self,path):
+        with open(path, "a+", encoding='utf-8') as log:
+            writer = csv.writer(log)
+            self.motor_param.insert(0, 'Nr.')
+            writer.writerow(self.motor_param)
+
+    def write_data(self, path, data):
+        csvdict = csv.DictReader(open(path, 'rt', encoding='utf-8', newline=''))
+        dictrow = [row for row in csvdict]
+        dictrow.append(data)
+        with open(path, "w+", encoding='utf-8', newline='') as lloo:
+            # lloo.write(new_a_buf.getvalue())
+            wrier = csv.DictWriter(lloo, self.motor_param)
+            wrier.writeheader()
+            for wowow in dictrow:
+                wrier.writerow(wowow)
+
+    def save_csv(self):
+        if self.save_path == "None":
+            pass
+        else:
+           
+            csv_path= self.save_path + 'data.csv'
+            if not os.path.isfile(csv_path):
+                self.init_csv(csv_path)
+            data_list = self.create_data_list()
+            data = dict(zip(self.motor_param,data_list))
+            self.write_data(csv_path,data)
+
+    def create_data_list(self):
+        data_list=[str(self.id_Nr)]
+        data_list.append(self.head_Type)
+        data_list.append(self.ex_type)
+        data_list.append(self.gear_orientation)
+        data_list.append(self.gear_Flip)
+
+
+        data_list.append(self.color_render)
+        data_list.append(self.bottom_length)
+        data_list.append(self.sub_bottom_length)
+        data_list.append(self.small_gear_dia)
+        data_list.append(self.small_gear_position)
+        data_list.append(self.large_gear_dia)
+        data_list.append(self.bit_type)
+        data_list.append(self.bolt_ortientation)
+        data_list.append(self.save_path)
+        return data_list
+
+    def save_modell(self,modell):
+        
+        if self.save_path == "None":
+            pass
+        else:
+                    
+            path_of_folder = self.save_path + str(self.id_Nr)+'/'
+            bpy.ops.object.select_all(action='DESELECT')
+            modell.select_set(True)
+            name = modell.name
+            try:
+                bpy.ops.export_mesh.stl(filepath=path_of_folder+name+'.stl', check_existing=True, use_selection=True)
+            except:
+                print("Error!")
+            bpy.ops.object.select_all(action='DESELECT')
+
+
+
     ##############################################################################################################################
     ######################## Bottom Part #########################################################################################
 
@@ -564,7 +660,7 @@ class Motor_Creator:
         main_long = self.bottom_length * size
 
         sub_radius = self.SUB_BOTTOM_DIA * size
-        sub_long = self.SUB_BOTTOM_LENGTH * size
+        sub_long = self.sub_bottom_length * size
 
         inner_radius = self.inner_radius * size
         inner_long = self.SUB_BOTTOM_INNER_DEPTH * size
@@ -622,7 +718,8 @@ class Motor_Creator:
 
         if self.color_render:
             self.rend_color(cyl, "Metall")
-
+        cyl.name = "Bottom_part"
+        self.save_modell(cyl)
         return cyl
 
 
@@ -644,7 +741,7 @@ class Motor_Creator:
         main_long = self.bottom_length * size
 
         sub_radius = self.SUB_BOTTOM_DIA * size
-        sub_long = self.SUB_BOTTOM_LENGTH * size
+        sub_long = self.sub_bottom_length * size
 
         inner_radius = self.inner_radius * size
         inner_long = self.SUB_BOTTOM_INNER_DEPTH * size
@@ -694,8 +791,7 @@ class Motor_Creator:
         cube_3 = bpy.context.object
 
         #Create Engergy part
-        en_part = self.create_en_part()
-        
+        convex = self.create_4_convex_cyl()
 
         #Cereate  Bolt 1
         bolt_x = init_x + main_hight/2 - self.BOLT_DIA
@@ -711,19 +807,14 @@ class Motor_Creator:
         bolt_2 = self.create_bolt((bolt_x, bolt_y, bolt_z),rota,bit_type,orientation=bolt_orient)
 
         mid_1 = self.combine_all_obj(cube_1,[cube_2,cube_3])
-        mid_1.name = 'Energy Part'
+        mid_1.name = 'Middle_Part'
 
         if self.color_render:
             self.rend_color(mid_1, "Plastic")
 
-        mid = self.combine_all_obj(mid_1,[en_part,bolt_1,bolt_2])
-        mid.name = 'Energy Part'
-
-        #bpy.ops.mesh.primitive_cube_add(location=(cut_x_3,cut_y_3,cut_z_3))
-        #bpy.ops.transform.resize(value=(cut_height_3, cut_width_3, cut_long_3))
-
-        #cut_3 = create_triangle((cut_x_3,cut_y_3,cut_z_3),cut_width_3,cut_long_3)
-        #cut_3.name = 'cube4'
+        mid = self.combine_all_obj(mid_1,[bolt_1,bolt_2,convex])
+        mid.name = 'Middle_Part'
+        self.save_modell(mid)
 
         return mid
 
@@ -735,7 +826,7 @@ class Motor_Creator:
         main_hight = self.BOTTOM_HEIGHT * size
         main_width = self.BOTTOM_DIA * size
         main_long = self.bottom_length * size
-        sub_long = self.SUB_BOTTOM_LENGTH * size
+        sub_long = self.sub_bottom_length * size
 
         init_x = self.init_x 
         init_y = self.init_y
@@ -858,6 +949,9 @@ class Motor_Creator:
         bpy.context.view_layer.objects.active = None
         en_part = self.combine_all_obj(en_part_1,[en_part_2])
 
+        en_part.name = "Energy_Part"
+        self.save_modell(en_part)
+
         return en_part
 
     ##############################################################################################################################
@@ -875,7 +969,7 @@ class Motor_Creator:
         main_width = self.BOTTOM_DIA * size
         main_long = self.bottom_length * size
 
-        sub_long = self.SUB_BOTTOM_LENGTH * size
+        sub_long = self.sub_bottom_length * size
 
 
         #four_cyl_dia = 1.4/2
@@ -925,7 +1019,7 @@ class Motor_Creator:
         main_width = self.BOTTOM_DIA * size
         main_long = self.bottom_length * size
 
-        sub_long = self.SUB_BOTTOM_LENGTH * size
+        sub_long = self.sub_bottom_length * size
 
         small_gear_dia = self.small_gear_dia
         small_gear_position = self.small_gear_position
@@ -995,7 +1089,7 @@ class Motor_Creator:
             inner_length = 1.4 * length +1
             Angle = self.samll_gear_Angle  * 10
             bolt_position_Angle = self.samll_gear_bolt_position_Angle * 10
-            if self.gear_orientation in ['mf_zero','mf_HundredEighteen'] and self.ex_type == 'mf_Type_2':
+            if self.gear_orientation in ['mf_zero','mf_HundredEighteen'] and self.ex_type == 'mf_Extension_Type_2':
                 bolt_position_Angle -= 25
 
             #Create out
@@ -1131,11 +1225,11 @@ class Motor_Creator:
         s_length_4 = 4.5
         s_length_6 = 3
 
-        if self.ex_type == 'mf_Type_2':
+        if self.ex_type == 'mf_Extension_Type_2':
             angle_1 = 15
             angle_2 = 0
             s_length_5 = 3.5
-        elif self.ex_type == 'mf_Type_1':
+        elif self.ex_type == 'mf_Extension_Type_1':
             angle_1 = 30
             s_length_5 = 5
             angle_2 = 25
@@ -1264,7 +1358,7 @@ class Motor_Creator:
         bottom_board = self.add_mesh("bottom board", verts_bottom, faces_bottom)
 
         #Create end cylinder
-        if self.ex_type == 'mf_Type_2':
+        if self.ex_type == 'mf_Extension_Type_2':
             dia = math.sqrt((p5x-p6x)**2 + (p5z - p6z)**2)/3
             x_cyl_1 = p5x - (p5x - p6x)*5/6
             y_cyl_1 = (y - 0.8)
@@ -1293,7 +1387,7 @@ class Motor_Creator:
             bpy.context.view_layer.objects.active = board
             res = bpy.ops.object.modifier_apply(modifier='bevel')
 
-        elif self.ex_type == 'mf_Type_1':
+        elif self.ex_type == 'mf_Extension_Type_1':
 
             dia = math.sqrt((p5x-p6x)**2 + (p5z - p6z)**2)
             x_cyl = p5x - (p5x - p6x)/2 
@@ -1305,7 +1399,7 @@ class Motor_Creator:
             end_cly.name = 'End_cylinder'
             board = self.combine_all_obj(board_1,[board_1, board_2,end_cly])
 
-        if self.ex_type == 'mf_Type_2':
+        if self.ex_type == 'mf_Extension_Type_2':
             bpy.ops.transform.mirror(orient_type='LOCAL',constraint_axis=(True, False, False))
             bpy.ops.transform.translate(value=(2.9/2*1.6,0,0))
             bpy.ops.object.select_all(action='DESELECT')
@@ -1334,7 +1428,7 @@ class Motor_Creator:
         main_width = self.BOTTOM_DIA * size
         main_long = self.bottom_length * size
 
-        sub_long = self.SUB_BOTTOM_LENGTH * size
+        sub_long = self.sub_bottom_length * size
 
         small_gear_dia = self.small_gear_dia
         small_gear_position = self.small_gear_position
@@ -1384,7 +1478,7 @@ class Motor_Creator:
         main_width = self.BOTTOM_DIA * size
         main_long = self.bottom_length * size
 
-        sub_long = self.SUB_BOTTOM_LENGTH * size
+        sub_long = self.sub_bottom_length * size
 
         height = self.BOARD_THICKNESS
         p1_length = 2.4/2
@@ -1424,13 +1518,7 @@ class Motor_Creator:
         board_in = self.create_middle_board_mesh()
         outer_board = self.combine_all_obj(board_out,[board_in])
 
-        self.rotate_object(outer_board)
-        if self.gear_orientation == 'mf_HundredEighteen' :
-            bpy.ops.transform.translate(value=(0,-self.BOLT_DIA,0))
-        elif self.gear_orientation == 'mf_Ninety' :
-            bpy.ops.transform.translate(value=(2*self.BOARD_THICKNESS,0,0))
-        elif self.gear_orientation == 'mf_TwoHundredSeven' :
-            bpy.ops.transform.translate(value=(-2*self.BOARD_THICKNESS,0,0))
+        
 
         return outer_board
 
@@ -1445,7 +1533,7 @@ class Motor_Creator:
         main_width = self.BOTTOM_DIA * size
         main_long = self.bottom_length * size
 
-        sub_long = self.SUB_BOTTOM_LENGTH * size
+        sub_long = self.sub_bottom_length * size
 
         height = self.BOARD_THICKNESS
 
@@ -1498,7 +1586,7 @@ class Motor_Creator:
     def create_middle_board_mesh(self):
         main_long = self.bottom_length 
 
-        sub_long = self.SUB_BOTTOM_LENGTH
+        sub_long = self.sub_bottom_length
         l1 = 2.4
         l2 = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH
 
@@ -1537,16 +1625,31 @@ class Motor_Creator:
     def create_upper_part(self):
         rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
         up1 = self.create_up1(length_relativ)
-        up2 = self.create_up2(length_relativ)
+        self.rotate_object(up1)
+
+        extension_zone = self.create_up2(length_relativ)
+        self.rotate_object(extension_zone)       
+        extension_zone.name = "Extension_Zone"
+        self.save_modell(extension_zone)
+
+
         board = self.create_outer_board()
-        upper_part = self.combine_all_obj(up1,[up2])
-        #bpy.ops.transform.translate(value=(0,-0.5,0))
+        self.rotate_object(board)
+        if self.gear_orientation == 'mf_HundredEighteen' :
+            bpy.ops.transform.translate(value=(0,-self.BOLT_DIA,0))
+        elif self.gear_orientation == 'mf_Ninety' :
+            bpy.ops.transform.translate(value=(2*self.BOARD_THICKNESS,0,0))
+        elif self.gear_orientation == 'mf_TwoHundredSeven' :
+            bpy.ops.transform.translate(value=(-2*self.BOARD_THICKNESS,0,0))
 
-        self.rotate_object(upper_part)       
-        upper = self.combine_all_obj(upper_part,[board])
+        gear = self.combine_all_obj(board,[up1])
+        gear.name = "Gear_Part"
+        self.save_modell(gear)
 
 
-        if self.gear_Flip: 
+        upper = self.combine_all_obj(extension_zone,[gear])
+
+        if self.gear_Flip : 
             if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
                 bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(True, False, False))
                 bpy.ops.transform.translate(value=(mirror,0,0))
