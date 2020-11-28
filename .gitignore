@@ -24,3 +24,7 @@ src/util-Working.py
 src/backup/
 
 src/__pycache__/
+
+docs/Motor.zip
+
+*.stl

@@ -48,13 +48,19 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
         "mf_Bit_Type",
         "mf_Bolt_Orientation",
-        "mf_Save_Path",
 
+        "mf_Bolt_Nummber",
+        "mf_Large_Gear_Bolt_Random",
+        "mf_Large_Gear_Bolt_Rotation_1",
+        "mf_Large_Gear_Bolt_Rotation_2",
+        "mf_Large_Gear_Bolt_Rotation_3",
+
+        
+
+        "mf_Save_Path",
         "mf_Small_Gear_Bolt_Angle",
         "mf_Small_Gear_Bolt_Rotation",
         "mf_Large_Gear_Bolt_Angle",
-        "mf_Large_Gear_Bolt_Rotation",   
-        "mf_Default_View",
         ]
     #Create genera types
 
@@ -66,6 +72,37 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             description='Choose the type of extension area you would like',
             items = Extention_Type_List, default = 'mf_Extension_Type_1')
 
+    # Gear Orientation
+    Orientation_List_Type_2 = [
+                ('mf_Ninety','90','90'),             
+                ('mf_HundredEighteen','180','180'),
+                ('mf_TwoHundredSeven','270','270')
+        ]
+
+    Orientation_List_Type_1 = [
+                ('mf_zero','0','0'),
+                ('mf_Ninety','90','90'),             
+                ('mf_HundredEighteen','180','180'),
+                ('mf_TwoHundredSeven','270','270')
+        ]
+
+    mf_Gear_Orientation_1 = EnumProperty( attr='mf_Gear_Orientation',
+            name='Gear Rotation',
+            description='Rotation of gears and extension zone',
+            items = Orientation_List_Type_1, default = 'mf_zero')   
+
+    mf_Gear_Orientation_2 = EnumProperty( attr='mf_Gear_Orientation',
+            name='Gear Rotation',
+            description='Rotation of gears and extension zone',
+            items = Orientation_List_Type_2, default = 'mf_TwoHundredSeven')
+
+    mf_Flip_1 : BoolProperty(name = "Flip",
+                default = False,
+                description = "Flip the gears")
+
+    mf_Flip_2 : BoolProperty(name = "Flip",
+            default = True,
+            description = "Flip the gears")
 
     mf_Color_Render : BoolProperty(name = "Color Render",
                 default = False,
@@ -136,51 +173,42 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         min = 5, soft_min = 0, max = 6.5, 
         description='Diameter of large Gear')
 
+
+    #Bolt on large gear
+    mf_Bolt_Nummber = IntProperty( 
+            name='Number of Bolts',
+            default=1,
+            description='Number of Bolts on Large Gear',
+            min=1, max=3,step=1 )
+
+
+    mf_Large_Gear_Bolt_Random : BoolProperty(name = "Random Bolt Rotation",
+                default = True,
+                description = "Random Bolt Rotation")
+
     mf_Large_Gear_Bolt_Angle = FloatProperty(attr='mf_Large_Gear_Bolt_Angle',
         name='Angle between bolts on large gear', default = 17,
         min = 6, soft_min = 0, max = 18, 
         description='Angle between bolts on large gear')
 
-    mf_Large_Gear_Bolt_Rotation = FloatProperty(attr='mf_Large_Gear_Bolt_Rotation',
+    mf_Large_Gear_Bolt_Rotation_1 = FloatProperty(attr='mf_Large_Gear_Bolt_Rotation_1',
+        name='Position of bolts on large gear', default = 1.3,
+        min = 0, soft_min = 0, max = 36, 
+        description='Position of bolts on large gear')
+
+    mf_Large_Gear_Bolt_Rotation_2 = FloatProperty(attr='mf_Large_Gear_Bolt_Rotation_2',
+        name='Position of bolts on large gear', default = 1.3,
+        min = 0, soft_min = 0, max = 36, 
+        description='Position of bolts on large gear')
+
+    mf_Large_Gear_Bolt_Rotation_3 = FloatProperty(attr='mf_Large_Gear_Bolt_Rotation_3',
         name='Position of bolts on large gear', default = 1.3,
         min = 0, soft_min = 0, max = 36, 
         description='Position of bolts on large gear')
 
 
-    Orientation_List_Type_2 = [
-                ('mf_Ninety','90','90'),             
-                ('mf_HundredEighteen','180','180'),
-                ('mf_TwoHundredSeven','270','270')
-        ]
 
-    Orientation_List_Type_1 = [
-                ('mf_zero','0','0'),
-                ('mf_Ninety','90','90'),             
-                ('mf_HundredEighteen','180','180'),
-                ('mf_TwoHundredSeven','270','270')
-        ]
-
-    mf_Gear_Orientation_1 = EnumProperty( attr='mf_Gear_Orientation',
-            name='Gear Rotation',
-            description='Rotation of gears and extension zone',
-            items = Orientation_List_Type_1, default = 'mf_zero')   
-
-    mf_Gear_Orientation_2 = EnumProperty( attr='mf_Gear_Orientation',
-            name='Gear Rotation',
-            description='Rotation of gears and extension zone',
-            items = Orientation_List_Type_2, default = 'mf_TwoHundredSeven')
-
-    mf_Flip_1 : BoolProperty(name = "Flip",
-                default = False,
-                description = "Flip the gears")
-
-    mf_Flip_2 : BoolProperty(name = "Flip",
-            default = True,
-            description = "Flip the gears")
             
-    mf_Default_View : BoolProperty(name = "Default View",
-            default = True,
-            description = "Change to default view")
 
     bolt_orientation_list = [('mf_all_same', 'All Same','All Same'),
                             ('mf_all_random', 'All Random', 'All Random')]
@@ -224,10 +252,17 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         col.prop(self, 'mf_Bit_Type')
         col.prop(self, 'mf_Bolt_Orientation')       
        
-        col.prop(self, 'mf_Small_Gear_Bolt_Angle')     
-        col.prop(self, 'mf_Small_Gear_Bolt_Rotation')
-        col.prop(self, 'mf_Large_Gear_Bolt_Angle') 
-        col.prop(self, 'mf_Large_Gear_Bolt_Rotation')
+        #col.prop(self, 'mf_Small_Gear_Bolt_Angle')     
+        #col.prop(self, 'mf_Small_Gear_Bolt_Rotation')
+        col.prop(self, 'mf_Bolt_Nummber')
+        col.prop(self, 'mf_Large_Gear_Bolt_Random')
+        if not self.mf_Large_Gear_Bolt_Random:
+            col.prop(self, 'mf_Large_Gear_Bolt_Rotation_1') 
+            if self.mf_Bolt_Nummber == 2:
+                col.prop(self, 'mf_Large_Gear_Bolt_Rotation_2') 
+            elif self.mf_Bolt_Nummber == 3:
+                col.prop(self, 'mf_Large_Gear_Bolt_Rotation_2')
+                col.prop(self, 'mf_Large_Gear_Bolt_Rotation_3')
      
            
         #col.prop(self, 'bf_presets')
@@ -244,7 +279,6 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             oldmesh = obj.data
             oldmeshname = obj.data.name
             obj = self.create_motor()
-            #obj.data = mesh
             try:
                 bpy.ops.object.vertex_group_remove(all=True)
             except:
@@ -302,12 +336,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         obj_list=[upper_part,en_part]
         for area in bpy.context.screen.areas: # iterate through areas in current screen
 
-            if area.type == 'VIEW_3D':
-                if  self.mf_Default_View:
-                    override = bpy.context.copy()
-                    override['area'] = area
-                    bpy.ops.view3d.view_axis(override, type='LEFT')
-                    self.mf_Default_View = False
+            if area.type == 'VIEW_3D':               
                 for space in area.spaces: # iterate through spaces in current VIEW_3D area
                     if space.type == 'VIEW_3D':
                         if self.mf_Color_Render:
