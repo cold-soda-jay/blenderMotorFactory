@@ -177,13 +177,13 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     #Bolt on large gear
     mf_Bolt_Nummber = IntProperty( 
             name='Number of Bolts',
-            default=1,
+            default=2,
             description='Number of Bolts on Large Gear',
             min=1, max=3,step=1 )
 
 
     mf_Large_Gear_Bolt_Random : BoolProperty(name = "Random Bolt Rotation",
-                default = True,
+                default = False,
                 description = "Random Bolt Rotation")
 
     mf_Large_Gear_Bolt_Angle = FloatProperty(attr='mf_Large_Gear_Bolt_Angle',
