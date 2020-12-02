@@ -49,6 +49,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Bit_Type",
         "mf_Bolt_Orientation",
 
+        "mf_Small_Gear_Bolt_Rotation_1",
+        "mf_Small_Gear_Bolt_Rotation_2",
         "mf_Bolt_Nummber",
         "mf_Large_Gear_Bolt_Random",
         "mf_Large_Gear_Bolt_Rotation_1",
@@ -58,8 +60,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         
 
         "mf_Save_Path",
-        "mf_Small_Gear_Bolt_Angle",
-        "mf_Small_Gear_Bolt_Rotation",
+        "mf_Small_Gear_Bolt_Random",
+
         "mf_Large_Gear_Bolt_Angle",
         ]
     #Create genera types
@@ -163,9 +165,18 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         min = 6, soft_min = 0, max = 18, 
         description='Angle between bolts on small gear')
 
-    mf_Small_Gear_Bolt_Rotation = FloatProperty(attr='mf_Small_Gear_Bolt_Rotation',
-        name='Position of bolts on small gear', default = 20,
-        min = 0, soft_min = 0, max = 36, 
+    mf_Small_Gear_Bolt_Random : BoolProperty(name = "Random Bolt Rotation of lower gear", 
+                default = False,
+                description = "Random Bolt Rotation")
+
+    mf_Small_Gear_Bolt_Rotation_1 = IntProperty(attr='mf_Small_Gear_Bolt_Rotation',
+        name='Position of bolts on small gear', default = 200,
+        min = 190, max = 230, step=5,
+        description='Position of bolts on small gear')
+
+    mf_Small_Gear_Bolt_Rotation_2 = IntProperty(attr='mf_Small_Gear_Bolt_Rotation',
+        name='Position of bolts on small gear', default = 320,
+        min = 310, max = 350,  step=5,
         description='Position of bolts on small gear')
 
     mf_Large_Gear_Dia = FloatProperty(attr='mf_Large_Gear_Dia',
@@ -178,11 +189,11 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     mf_Bolt_Nummber = IntProperty( 
             name='Number of Bolts',
             default=2,
-            description='Number of Bolts on Large Gear',
+            description='Number of Bolts around upper Gear',
             min=1, max=3,step=1 )
 
 
-    mf_Large_Gear_Bolt_Random : BoolProperty(name = "Random Bolt Rotation",
+    mf_Large_Gear_Bolt_Random : BoolProperty(name = "Random Bolt Rotation of upper gear",
                 default = False,
                 description = "Random Bolt Rotation")
 
@@ -191,22 +202,20 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         min = 6, soft_min = 0, max = 18, 
         description='Angle between bolts on large gear')
 
-    mf_Large_Gear_Bolt_Rotation_1 = FloatProperty(attr='mf_Large_Gear_Bolt_Rotation_1',
-        name='Position of bolts on large gear', default = 1.3,
-        min = 0, soft_min = 0, max = 36, 
+    mf_Large_Gear_Bolt_Rotation_1 = IntProperty(attr='mf_Large_Gear_Bolt_Rotation_1',
+        name='Position of bolts on large gear', default = 13,
+        min = 0, max = 210, step=5,
         description='Position of bolts on large gear')
 
-    mf_Large_Gear_Bolt_Rotation_2 = FloatProperty(attr='mf_Large_Gear_Bolt_Rotation_2',
-        name='Position of bolts on large gear', default = 1.3,
-        min = 0, soft_min = 0, max = 36, 
+    mf_Large_Gear_Bolt_Rotation_2 = IntProperty(attr='mf_Large_Gear_Bolt_Rotation_2',
+        name='Position of bolts on large gear', default = 13,
+        min = 0, max = 210, step=5,
         description='Position of bolts on large gear')
 
-    mf_Large_Gear_Bolt_Rotation_3 = FloatProperty(attr='mf_Large_Gear_Bolt_Rotation_3',
-        name='Position of bolts on large gear', default = 1.3,
-        min = 0, soft_min = 0, max = 36, 
+    mf_Large_Gear_Bolt_Rotation_3 = IntProperty(attr='mf_Large_Gear_Bolt_Rotation_3',
+        name='Position of bolts on large gear', default = 13,
+        min = 0, max = 210, step=5,
         description='Position of bolts on large gear')
-
-
 
             
 
@@ -237,7 +246,6 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             col.prop(self, 'mf_Gear_Orientation_2')        
             col.prop(self, 'mf_Flip_2')
         col.prop(self, 'mf_Color_Render')
-        col.prop(self, 'mf_Default_View')
 
         col.label(text="Bottom")
         col.prop(self, 'mf_Bottom_Length') 
@@ -248,12 +256,19 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         col.prop(self, 'mf_Small_Gear_Position')  
         col.prop(self, 'mf_Large_Gear_Dia')     
 
-        col.label(text="Bolts")
+        col.label(text="Bolts Type")
         col.prop(self, 'mf_Bit_Type')
         col.prop(self, 'mf_Bolt_Orientation')       
-       
-        #col.prop(self, 'mf_Small_Gear_Bolt_Angle')     
-        #col.prop(self, 'mf_Small_Gear_Bolt_Rotation')
+
+        col.label(text="Bolts Position around lower gear")
+
+        col.prop(self, 'mf_Small_Gear_Bolt_Random')    
+        if not self.mf_Small_Gear_Bolt_Random: 
+            col.prop(self, 'mf_Small_Gear_Bolt_Rotation_1')
+            col.prop(self, 'mf_Small_Gear_Bolt_Rotation_2')
+            
+        col.label(text="Bolts Position around upper gear")
+
         col.prop(self, 'mf_Bolt_Nummber')
         col.prop(self, 'mf_Large_Gear_Bolt_Random')
         if not self.mf_Large_Gear_Bolt_Random:

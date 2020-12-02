@@ -59,8 +59,9 @@ class Motor_Creator:
     small_gear_position = None
     large_gear_dia = 0
 
-    samll_gear_Angle = 0
-    samll_gear_bolt_position_Angle = 0
+    small_gear_bolt_random = False
+    samll_gear_bolt_rotation_1 = 0
+    samll_gear_bolt_rotation_2 = 0
 
     l_bolt_num = 1
     large_Gear_Bolt_Random = True
@@ -136,15 +137,17 @@ class Motor_Creator:
         self.small_gear_position = factory.mf_Small_Gear_Position
         self.large_gear_dia = factory.mf_Large_Gear_Dia
         self.color_render = factory.mf_Color_Render
-        self.samll_gear_Angle = 12#factory.mf_Small_Gear_Bolt_Angle
-        self.samll_gear_bolt_position_Angle =20# factory.mf_Small_Gear_Bolt_Rotation 
+        #self.samll_gear_Angle = 12#factory.mf_Small_Gear_Bolt_Angle
+        self.small_gear_bolt_random = factory.mf_Small_Gear_Bolt_Random
+        self.samll_gear_bolt_rotation_1 = factory.mf_Small_Gear_Bolt_Rotation_1
+        self.samll_gear_bolt_rotation_2 = factory.mf_Small_Gear_Bolt_Rotation_2
 
         self.l_bolt_num = factory.mf_Bolt_Nummber
         self.large_Gear_Bolt_Random = factory.mf_Large_Gear_Bolt_Random
         #large_gear_Angle = 0
-        self.large_Gear_Bolt_Rotation_1 = factory.mf_Large_Gear_Bolt_Rotation_1 * 10
-        self.large_Gear_Bolt_Rotation_2 = factory.mf_Large_Gear_Bolt_Rotation_2 * 10
-        self.large_Gear_Bolt_Rotation_3 = factory.mf_Large_Gear_Bolt_Rotation_3 * 10
+        self.large_Gear_Bolt_Rotation_1 = factory.mf_Large_Gear_Bolt_Rotation_1
+        self.large_Gear_Bolt_Rotation_2 = factory.mf_Large_Gear_Bolt_Rotation_2
+        self.large_Gear_Bolt_Rotation_3 = factory.mf_Large_Gear_Bolt_Rotation_3
         self.l_bolt_lsit = []
         #self.large_gear_Angle = factory.mf_Large_Gear_Bolt_Angle
         #self.large_gear_bolt_position_Angle = factory.mf_Large_Gear_Bolt_Rotation
@@ -641,8 +644,6 @@ class Motor_Creator:
         data_list.append(self.ex_type)
         data_list.append(self.gear_orientation)
         data_list.append(self.gear_Flip)
-
-
         data_list.append(self.color_render)
         data_list.append(self.bottom_length)
         data_list.append(self.sub_bottom_length)
@@ -1117,10 +1118,11 @@ class Motor_Creator:
                 length = length_relativ*2/3
             inner_radius = 1/2
             inner_length = 1.4 * length +1
-            Angle = self.samll_gear_Angle  * 10
-            bolt_position_Angle = self.samll_gear_bolt_position_Angle * 10
-            if self.gear_orientation in ['mf_zero','mf_HundredEighteen'] and self.ex_type == 'mf_Extension_Type_2':
-                bolt_position_Angle -= 25
+            bolt_random = self.small_gear_bolt_random
+            bolt_rotation_1 = self.samll_gear_bolt_rotation_1
+            bolt_rotation_2 = self.samll_gear_bolt_rotation_2
+            #if self.gear_orientation in ['mf_zero','mf_HundredEighteen'] and self.ex_type == 'mf_Extension_Type_2':
+             #   bolt_position_Angle -= 25
 
             #Create out
             bpy.ops.mesh.primitive_cylinder_add(radius=radius, depth=length, location=position)
@@ -1152,8 +1154,12 @@ class Motor_Creator:
             y_bolt_init = position[1] 
 
             #Calculate the rotation
-            x_bolt_1,y_bolt_1 = self.rotate_around_point((position[0],position[1]),bolt_position_Angle,(x_bolt_init,y_bolt_init))
-            x_bolt_2,y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_position_Angle+Angle,(x_bolt_init,y_bolt_init))       
+            if bolt_random:
+                bolt_rotation_1 = random.uniform(190,230)
+                bolt_rotation_2 =  random.uniform(310,350)
+           
+            x_bolt_1,y_bolt_1 = self.rotate_around_point((position[0],position[1]),bolt_rotation_1,(x_bolt_init,y_bolt_init))
+            x_bolt_2,y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_rotation_2,(x_bolt_init,y_bolt_init))       
             bolt_1 = self.create_bolt((x_bolt_1,y_bolt_1,z_bolt_init),only_body=body)
             bolt_2 = self.create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),only_body=body)       
             part_1 = self.combine_all_obj(out_cyl,[in_cyl])
@@ -1177,7 +1183,7 @@ class Motor_Creator:
         
             return part
         elif gear_type == 'large':
-            range_of_bolt = 21
+            range_of_bolt = 210
             radius = self.large_gear_dia/2
             if extension_zone:
                 length = 0.3
@@ -1222,16 +1228,16 @@ class Motor_Creator:
             y_bolt_init = position[1] 
 
             #Calculate the rotation
-            single_bolt_area = range_of_bolt* 10/self.l_bolt_num
+            single_bolt_area = range_of_bolt/self.l_bolt_num
             if self.large_Gear_Bolt_Random:
                 bolt_list = []
                 bolt_position_angel = 0
                 # Create random bolt
                 for i in range(self.l_bolt_num):
-                    rand_angle = random.uniform(0,single_bolt_area)
-                    while rand_angle < single_bolt_area/2:
-                        rand_angle = random.uniform(0,single_bolt_area)
-                    new_angle = bolt_position_angel+rand_angle
+                    new_angle = random.uniform(i*single_bolt_area,(i+1)*single_bolt_area)
+                    while i>0 and new_angle -  bolt_position_angel< single_bolt_area/2:
+                        new_angle = random.uniform(i*single_bolt_area,(i+1)*single_bolt_area)
+
                     if body:
                         x_bolt, y_bolt = self.rotate_around_point((position[0],position[1]),self.l_bolt_lsit[i],(x_bolt_init,y_bolt_init))
                     else:
@@ -1242,8 +1248,7 @@ class Motor_Creator:
 
                     bolt_position_angel = new_angle
 
-            #Angle = self.single_bolt_area * 10
-            #bolt_position_Angle = self.large_gear_bolt_position_Angle * 10
+
             else:
                 if self.l_bolt_num == 1:
                     bolt_position_angle = self.large_Gear_Bolt_Rotation_1 
@@ -1284,7 +1289,6 @@ class Motor_Creator:
         
             return part
         
-
     def create_extension_zone(self, large_gear_position, gear_length):
 
         small_gear_dia = self.small_gear_dia
