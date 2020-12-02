@@ -104,11 +104,23 @@ class Motor_Creator:
 
         "mf_Bit_Type",
         "mf_Bolt_Orientation",
+
+        "mf_Small_Gear_Bolt_Random",
+        "mf_Small_Gear_Bolt_Rotation_1",
+        "mf_Small_Gear_Bolt_Rotation_2",
+
+        "mf_Bolt_Nummber",
+        "mf_Large_Gear_Bolt_Random",
+        "mf_Large_Gear_Bolt_Rotation_1",
+        "mf_Large_Gear_Bolt_Rotation_2",
+        "mf_Large_Gear_Bolt_Rotation_1",
+
         "mf_Save_Path"
     ]
 
     save_path = "None"
     id_Nr = 0
+    s_bolt_lsit = []
     l_bolt_lsit = []
 
     def __init__(self,factory):
@@ -137,18 +149,26 @@ class Motor_Creator:
         self.small_gear_position = factory.mf_Small_Gear_Position
         self.large_gear_dia = factory.mf_Large_Gear_Dia
         self.color_render = factory.mf_Color_Render
-        #self.samll_gear_Angle = 12#factory.mf_Small_Gear_Bolt_Angle
+
         self.small_gear_bolt_random = factory.mf_Small_Gear_Bolt_Random
+
         self.samll_gear_bolt_rotation_1 = factory.mf_Small_Gear_Bolt_Rotation_1
         self.samll_gear_bolt_rotation_2 = factory.mf_Small_Gear_Bolt_Rotation_2
 
         self.l_bolt_num = factory.mf_Bolt_Nummber
+        
         self.large_Gear_Bolt_Random = factory.mf_Large_Gear_Bolt_Random
         #large_gear_Angle = 0
         self.large_Gear_Bolt_Rotation_1 = factory.mf_Large_Gear_Bolt_Rotation_1
         self.large_Gear_Bolt_Rotation_2 = factory.mf_Large_Gear_Bolt_Rotation_2
         self.large_Gear_Bolt_Rotation_3 = factory.mf_Large_Gear_Bolt_Rotation_3
+        if  self.l_bolt_num == 1:
+            self.large_Gear_Bolt_Rotation_2 = -999
+            self.large_Gear_Bolt_Rotation_3 = -999
+        elif self.l_bolt_num == 2:
+            self.large_Gear_Bolt_Rotation_3 = -999
         self.l_bolt_lsit = []
+        self.s_bolt_lsit = []
         #self.large_gear_Angle = factory.mf_Large_Gear_Bolt_Angle
         #self.large_gear_bolt_position_Angle = factory.mf_Large_Gear_Bolt_Rotation
         self.save_path = factory.mf_Save_Path
@@ -652,6 +672,16 @@ class Motor_Creator:
         data_list.append(self.large_gear_dia)
         data_list.append(self.bit_type)
         data_list.append(self.bolt_ortientation)
+
+        data_list.append(self.small_gear_bolt_random)
+        data_list.append(self.samll_gear_bolt_rotation_1)
+        data_list.append(self.samll_gear_bolt_rotation_2)
+        data_list.append(self.l_bolt_num)
+        data_list.append(self.large_Gear_Bolt_Random)
+        data_list.append(self.large_Gear_Bolt_Rotation_1)
+        data_list.append(self.large_Gear_Bolt_Rotation_2)
+        data_list.append(self.large_Gear_Bolt_Rotation_3)
+        
         data_list.append(self.save_path)
         return data_list
 
@@ -1119,8 +1149,7 @@ class Motor_Creator:
             inner_radius = 1/2
             inner_length = 1.4 * length +1
             bolt_random = self.small_gear_bolt_random
-            bolt_rotation_1 = self.samll_gear_bolt_rotation_1
-            bolt_rotation_2 = self.samll_gear_bolt_rotation_2
+
             #if self.gear_orientation in ['mf_zero','mf_HundredEighteen'] and self.ex_type == 'mf_Extension_Type_2':
              #   bolt_position_Angle -= 25
 
@@ -1154,9 +1183,17 @@ class Motor_Creator:
             y_bolt_init = position[1] 
 
             #Calculate the rotation
+            bolt_rotation_1 = self.samll_gear_bolt_rotation_1
+            bolt_rotation_2 = self.samll_gear_bolt_rotation_2
             if bolt_random:
-                bolt_rotation_1 = random.uniform(190,230)
-                bolt_rotation_2 =  random.uniform(310,350)
+                if body:
+                    bolt_rotation_1, bolt_rotation_2 = self.s_bolt_lsit
+                else:
+                    bolt_rotation_1 = random.uniform(190,230)
+                    self.samll_gear_bolt_rotation_1 = bolt_rotation_1
+                    bolt_rotation_2 =  random.uniform(310,350)
+                    self.samll_gear_bolt_rotation_2 = bolt_rotation_2
+                    self.s_bolt_lsit = [bolt_rotation_1,bolt_rotation_2]
            
             x_bolt_1,y_bolt_1 = self.rotate_around_point((position[0],position[1]),bolt_rotation_1,(x_bolt_init,y_bolt_init))
             x_bolt_2,y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_rotation_2,(x_bolt_init,y_bolt_init))       
@@ -1229,52 +1266,65 @@ class Motor_Creator:
 
             #Calculate the rotation
             single_bolt_area = range_of_bolt/self.l_bolt_num
-            if self.large_Gear_Bolt_Random:
-                bolt_list = []
-                bolt_position_angel = 0
-                # Create random bolt
-                for i in range(self.l_bolt_num):
-                    new_angle = random.uniform(i*single_bolt_area,(i+1)*single_bolt_area)
-                    while i>0 and new_angle -  bolt_position_angel< single_bolt_area/2:
-                        new_angle = random.uniform(i*single_bolt_area,(i+1)*single_bolt_area)
+            bolt_position_angle_1 = self.large_Gear_Bolt_Rotation_1
+            bolt_position_angle_2 = self.large_Gear_Bolt_Rotation_2+single_bolt_area
+            bolt_position_angle_3 = self.large_Gear_Bolt_Rotation_3+single_bolt_area+single_bolt_area
+
+            if self.l_bolt_num == 1:
+                if self.large_Gear_Bolt_Random:                    
+                    if body:
+                        bolt_position_angle_1 = self.l_bolt_lsit[0]
+                    else:
+                        bolt_position_angle_1 = random.uniform(0,single_bolt_area)
+                        self.large_Gear_Bolt_Rotation_1 = bolt_position_angle_1
+                        self.l_bolt_lsit=[bolt_position_angle_1]
+
+                x_bolt, y_bolt = self.rotate_around_point((position[0],position[1]),bolt_position_angle_1,(x_bolt_init,y_bolt_init))
+                bolt = self.create_bolt((x_bolt,y_bolt,z_bolt_init),only_body=body)
+                bolt_list = [bolt]
+            elif self.l_bolt_num == 2:
+                if self.large_Gear_Bolt_Random:
+                    if body:
+                        bolt_position_angle_1 = self.l_bolt_lsit[0]
+                        bolt_position_angle_2 = self.l_bolt_lsit[1]
+                    else:
+                        bolt_position_angle_1 = random.uniform(0,single_bolt_area) 
+                        bolt_position_angle_2 = random.uniform(bolt_position_angle_1 + 0.5*single_bolt_area, 2*single_bolt_area)
+                        self.large_Gear_Bolt_Rotation_1 = bolt_position_angle_1
+                        self.large_Gear_Bolt_Rotation_2 = bolt_position_angle_2
+                        self.l_bolt_lsit=[bolt_position_angle_1, bolt_position_angle_2]
+
+                x_bolt_1, y_bolt_1 = self.rotate_around_point((position[0],position[1]),bolt_position_angle_1,(x_bolt_init,y_bolt_init))
+                x_bolt_2, y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_position_angle_2,(x_bolt_init,y_bolt_init))
+                bolt_1 = self.create_bolt((x_bolt_1, y_bolt_1,z_bolt_init),only_body=body)
+                bolt_2 = self.create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),only_body=body)
+                bolt_list = [bolt_1, bolt_2]
+
+
+            elif self.l_bolt_num == 3:
+                if self.large_Gear_Bolt_Random:
 
                     if body:
-                        x_bolt, y_bolt = self.rotate_around_point((position[0],position[1]),self.l_bolt_lsit[i],(x_bolt_init,y_bolt_init))
+                        bolt_position_angle_1 = self.l_bolt_lsit[0]
+                        bolt_position_angle_2 = self.l_bolt_lsit[1]
+                        bolt_position_angle_3 = self.l_bolt_lsit[2]
                     else:
-                        x_bolt, y_bolt = self.rotate_around_point((position[0],position[1]),new_angle,(x_bolt_init,y_bolt_init))
-                        self.l_bolt_lsit.append(new_angle)
-                    bolt = self.create_bolt((x_bolt,y_bolt,z_bolt_init),only_body=body)
-                    bolt_list.append(bolt)
+                        bolt_position_angle_1 = random.uniform(0,single_bolt_area) 
+                        bolt_position_angle_2 = random.uniform(bolt_position_angle_1 + 0.5*single_bolt_area, 2*single_bolt_area)
+                        bolt_position_angle_3 = random.uniform(bolt_position_angle_2 + 0.5*single_bolt_area, 3*single_bolt_area)
+                        self.large_Gear_Bolt_Rotation_1 = bolt_position_angle_1
+                        self.large_Gear_Bolt_Rotation_2 = bolt_position_angle_2
+                        self.large_Gear_Bolt_Rotation_3 = bolt_position_angle_3
+                        self.l_bolt_lsit=[bolt_position_angle_1, bolt_position_angle_2, bolt_position_angle_3]
+                 
+                x_bolt_1, y_bolt_1 = self.rotate_around_point((position[0],position[1]),bolt_position_angle_1,(x_bolt_init,y_bolt_init))
+                x_bolt_2, y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_position_angle_2,(x_bolt_init,y_bolt_init))
+                x_bolt_3, y_bolt_3 = self.rotate_around_point((position[0],position[1]),bolt_position_angle_3,(x_bolt_init,y_bolt_init))
+                bolt_1 = self.create_bolt((x_bolt_1, y_bolt_1,z_bolt_init),only_body=body)
+                bolt_2 = self.create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),only_body=body)
+                bolt_3 = self.create_bolt((x_bolt_3, y_bolt_3,z_bolt_init),only_body=body)
+                bolt_list = [bolt_1, bolt_2, bolt_3]
 
-                    bolt_position_angel = new_angle
-
-
-            else:
-                if self.l_bolt_num == 1:
-                    bolt_position_angle = self.large_Gear_Bolt_Rotation_1 
-                    x_bolt, y_bolt = self.rotate_around_point((position[0],position[1]),bolt_position_angle,(x_bolt_init,y_bolt_init))
-                    bolt = self.create_bolt((x_bolt,y_bolt,z_bolt_init),only_body=body)
-                    bolt_list = [bolt]
-                elif self.l_bolt_num == 2:
-                    bolt_position_angle_1 = self.large_Gear_Bolt_Rotation_1
-                    bolt_position_angle_2 = self.large_Gear_Bolt_Rotation_2+single_bolt_area
-                    x_bolt_1, y_bolt_1 = self.rotate_around_point((position[0],position[1]),bolt_position_angle_1,(x_bolt_init,y_bolt_init))
-                    x_bolt_2, y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_position_angle_2,(x_bolt_init,y_bolt_init))
-                    bolt_1 = self.create_bolt((x_bolt_1, y_bolt_1,z_bolt_init),only_body=body)
-                    bolt_2 = self.create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),only_body=body)
-                    bolt_list = [bolt_1, bolt_2]
-
-                elif self.l_bolt_num == 3:
-                    bolt_position_angle_1 = self.large_Gear_Bolt_Rotation_1
-                    bolt_position_angle_2 = self.large_Gear_Bolt_Rotation_2+single_bolt_area
-                    bolt_position_angle_3 = self.large_Gear_Bolt_Rotation_3+single_bolt_area+single_bolt_area
-                    x_bolt_1, y_bolt_1 = self.rotate_around_point((position[0],position[1]),bolt_position_angle_1,(x_bolt_init,y_bolt_init))
-                    x_bolt_2, y_bolt_2 = self.rotate_around_point((position[0],position[1]),bolt_position_angle_2,(x_bolt_init,y_bolt_init))
-                    x_bolt_3, y_bolt_3 = self.rotate_around_point((position[0],position[1]),bolt_position_angle_3,(x_bolt_init,y_bolt_init))
-                    bolt_1 = self.create_bolt((x_bolt_1, y_bolt_1,z_bolt_init),only_body=body)
-                    bolt_2 = self.create_bolt((x_bolt_2, y_bolt_2,z_bolt_init),only_body=body)
-                    bolt_3 = self.create_bolt((x_bolt_3, y_bolt_3,z_bolt_init),only_body=body)
-                    bolt_list = [bolt_1, bolt_2, bolt_3]
 
 
 
