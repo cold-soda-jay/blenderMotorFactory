@@ -68,7 +68,9 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
     #Bottom Types
     Extention_Type_List = [('mf_Extension_Type_1','Type 1','Type 1'),
-                 ('mf_Extension_Type_2','Type 2','Type 2')  ]
+                 ('mf_Extension_Type_2','Type 2','Type 2'),                 
+                 ('mf_None','None','None') 
+                 ]
     mf_Extension_Type = EnumProperty( attr='mf_Extension_Type',
             name='Extension Area Type',
             description='Choose the type of extension area you would like',
@@ -241,10 +243,15 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         col.prop(self, 'mf_Extension_Type')
         if self.mf_Extension_Type == 'mf_Extension_Type_1':
             col.prop(self, 'mf_Gear_Orientation_1')        
-            col.prop(self, 'mf_Flip_1')
+            #col.prop(self, 'mf_Flip_1')
         elif self.mf_Extension_Type == 'mf_Extension_Type_2':
-            col.prop(self, 'mf_Gear_Orientation_2')        
-            col.prop(self, 'mf_Flip_2')
+            col.prop(self, 'mf_Gear_Orientation_2') 
+        else:
+            col.prop(self, 'mf_Gear_Orientation_1')        
+      
+            #col.prop(self, 'mf_Flip_2')
+        col.prop(self, 'mf_Flip_1')
+
         col.prop(self, 'mf_Color_Render')
 
         col.label(text="Bottom")

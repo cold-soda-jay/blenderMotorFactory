@@ -132,18 +132,23 @@ class Motor_Creator:
         self.inner_radius = 0.5
         self.sub_bottom_length = factory.mf_Sub_Bottom_Length
         self.bolt_ortientation = factory.mf_Bolt_Orientation
+
         self.bit_type = factory.mf_Bit_Type
         self.ex_type = factory.mf_Extension_Type
-
+        
         if self.ex_type == 'mf_Extension_Type_1':
             self.gear_orientation = factory.mf_Gear_Orientation_1
-            self.gear_Flip = factory.mf_Flip_1
+            #self.gear_Flip = factory.mf_Flip_1
 
 
         elif self.ex_type == 'mf_Extension_Type_2':
             self.gear_orientation = factory.mf_Gear_Orientation_2
-            self.gear_Flip = factory.mf_Flip_2
+            #self.gear_Flip = factory.mf_Flip_2
+        else:
+            self.gear_orientation = factory.mf_Gear_Orientation_1
 
+
+        self.gear_Flip = factory.mf_Flip_1
 
         self.small_gear_dia = factory.mf_Small_Gear_Dia
         self.small_gear_position = factory.mf_Small_Gear_Position
@@ -1753,11 +1758,15 @@ class Motor_Creator:
         rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
         up1 = self.create_up1(length_relativ)
         self.rotate_object(up1)
-
-        extension_zone = self.create_up2(length_relativ)
-        self.rotate_object(extension_zone)       
-        extension_zone.name = "Up1"
-        self.save_modell(extension_zone)
+        if self.ex_type == "mf_None":
+            extension_zone = None
+            ex_list=[]
+        else:
+            extension_zone = self.create_up2(length_relativ)
+            self.rotate_object(extension_zone)       
+            extension_zone.name = "Up1"
+            self.save_modell(extension_zone)
+            ex_list = [extension_zone]
 
 
         board = self.create_outer_board()
@@ -1776,7 +1785,7 @@ class Motor_Creator:
         self.save_modell(gear)
 
 
-        upper = self.combine_all_obj(extension_zone,[gear])
+        upper = self.combine_all_obj(gear, ex_list)
 
         if self.gear_Flip : 
             if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
