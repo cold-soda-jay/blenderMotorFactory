@@ -326,7 +326,6 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         self.execute(context)
         return {'FINISHED'}
 
-
     def create_motor(self):
 
         if self.mf_Save_Path == "None":

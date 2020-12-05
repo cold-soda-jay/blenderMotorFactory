@@ -70,7 +70,7 @@ class Motor_Creator(Factory):
             
     ##############################################################################################################################
     ######################## Bottom Part #########################################################################################
-
+    
 
     def create_Bottom(self):
         """Create Bottom Part
@@ -615,15 +615,11 @@ class Motor_Creator(Factory):
         if gear_type == 'small':
             radius = self.small_gear_dia/2
             if extension_zone:
-                length = 0.3
+                length = 0.5
             else:
                 length = length_relativ*2/3
             inner_radius = 1/2
             inner_length = 1.4 * length +1
-            bolt_random = self.small_gear_bolt_random
-
-            #if self.gear_orientation in ['mf_zero','mf_HundredEighteen'] and self.ex_type == 'mf_Extension_Type_2':
-             #   bolt_position_Angle -= 25
 
             #Create out
             bpy.ops.mesh.primitive_cylinder_add(radius=radius, depth=length, location=position)
@@ -635,20 +631,15 @@ class Motor_Creator(Factory):
             in_cyl = bpy.context.object
             in_cyl.name = 'in_cylinder'
             
-            #Crete Bolts
             if extension_zone:
-                body = length
-                z_bolt_init = position[2]
-                cly_1 = self.create_ring(position,length+1,radius-0.5, 0.7)
+                cly_1 = self.create_ring((position[0],position[1],position[2]+0.1),0.4,radius-0.5, 0.7)
                 self.diff_obj(out_cyl, cly_1)
-            else:
-                body = None
-                z_bolt_init = position[2] + length/2 - self.BOLT_LENGTH/2 + 0.3
-                cly_1 = self.create_ring((position[0],position[1],position[2]+length/2),length/2,radius-0.5, 0.7)
-                self.diff_obj(out_cyl, cly_1)
+            #else:
+                #cly_1 = self.create_ring((position[0],position[1],position[2]+length/2),length/2,radius-0.5, 0.7)
+                #self.diff_obj(out_cyl, cly_1)
 
-            cly_1.select_set(True)
-            bpy.ops.object.delete() 
+                cly_1.select_set(True)
+                bpy.ops.object.delete() 
                
             part = self.combine_all_obj(out_cyl,[in_cyl])
 
@@ -674,13 +665,13 @@ class Motor_Creator(Factory):
             range_of_bolt = 210
             radius = self.large_gear_dia/2
             if extension_zone:
-                length = 0.3
+                length = 0.5
             else:
                 length = length_relativ/3
             inner_radius_1 = 1.6/2
             inner_radius_2 = 1.3/2
             inner_radius_3 = 2.9/2
-            inner_length = length + 1          
+            inner_length = length + 0.3          
             
             #Ring 1
             thickness_1 = radius - inner_radius_1
@@ -693,7 +684,7 @@ class Motor_Creator(Factory):
             position_in = (x,y,z)
 
             thickness_2 = inner_radius_1 - inner_radius_2
-            cly_2 = self.create_ring(position_in,inner_length,inner_radius_1,thickness_2)
+            cly_2 = self.create_ring(position,inner_length,inner_radius_1,thickness_2)
 
             #Ring 3
             x = position[0]
@@ -703,14 +694,6 @@ class Motor_Creator(Factory):
 
             thickness_3 = 0.2
             cly_3 = self.create_ring(position_3,length+0.3,inner_radius_3,thickness_3)
-
-            if extension_zone:
-                body = length
-                z_bolt_init = position[2]
-            else:
-                body = None
-                z_bolt_init = position[2] + length/2 - self.BOLT_LENGTH/2 + 0.3
-
 
 
             part = self.combine_all_obj(cly_1,[cly_2,cly_3])
@@ -925,8 +908,6 @@ class Motor_Creator(Factory):
 
         return board, bottom_board
 
-   
-
     def create_outer_board(self):
         init_x = self.init_x
         init_y = self.init_y
@@ -1118,6 +1099,8 @@ class Motor_Creator(Factory):
 
         upper = self.combine_all_obj(gear_2, [extension_zone_1])
         x,y,z = upper.location
+        self.calculate_bolt_position((x,y,z))
+
         if self.gear_Flip : 
             if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
                 bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(True, False, False))

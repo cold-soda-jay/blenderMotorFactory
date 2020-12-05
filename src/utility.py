@@ -113,6 +113,7 @@ class Factory:
         "mf_Large_Gear_Bolt_Rotation_2",
         "mf_Large_Gear_Bolt_Rotation_1",
 
+        "Bolt_position",
         "mf_Save_Path"
     ]
 
@@ -120,6 +121,8 @@ class Factory:
     id_Nr = 0
     s_bolt_lsit = []
     l_bolt_lsit = []
+    bolt_position = []
+    out_bolt_position = []
 
     def __init__(self,factory):
         self.head_Type = factory.mf_Head_Type
@@ -201,7 +204,10 @@ class Factory:
         return main_obj
 
     def rotate_around_point(self, origin, Angle, obj_position):
-        rot = radians(Angle)   
+        if type(Angle) == int or float:
+            rot = radians(Angle)   
+        else:
+            rot = Angle
         relativ_point = [obj_position[0]-origin[0], obj_position[1]-origin[1]]
         x = relativ_point[0] * math.cos(rot) - relativ_point[1] * math.sin(rot) 
         y = relativ_point[0] * math.sin(rot)  + relativ_point[1] * math.cos(rot)
@@ -556,7 +562,7 @@ class Factory:
             out_cyl.select_set(True)
             bolt.select_set(True)
             bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
-
+        self.bolt_position.append(position)
         return [out_cyl,bolt]
 
     def rend_color(self, obj, part):
@@ -696,7 +702,7 @@ class Factory:
         data_list.append(self.large_Gear_Bolt_Rotation_1)
         data_list.append(self.large_Gear_Bolt_Rotation_2)
         data_list.append(self.large_Gear_Bolt_Rotation_3)
-        
+        data_list.append(self.out_bolt_position)
         data_list.append(self.save_path)
         return data_list
 
@@ -722,3 +728,18 @@ class Factory:
                 print("Error!")
             bpy.ops.object.select_all(action='DESELECT')
 
+    def calculate_bolt_position(self,root_position):
+        x ,y, z = root_position
+        rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
+        self.out_bolt_position += self.bolt_position[0:2]
+        for b_position in self.bolt_position[2:]:
+            x_new, y_new = self.rotate_around_point((x,y),rotation[0],(b_position[0],b_position[1]))
+            if self.gear_Flip:
+                x_new = x- x_new
+                y_new = y - y_new
+                if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
+                    x_new -= 2*x
+                    
+                else:
+                    y_new -= 2*y
+            self.out_bolt_position.append((x_new, y_new, b_position[2]))
