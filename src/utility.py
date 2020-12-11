@@ -21,18 +21,29 @@ class Factory:
     SUB_BOTTOM_DIA = 1
     SUB_BOTTOM_INNER_DEPTH = 0.5
     ##Bolt
-    BOLT_DIA = 0.4
+    BOLT_RAD = 0.4
     BOLT_LENGTH = 1.4
     BOLT_BIT_DIA = 0.2
     BOLT_THREAD_LENGTH = 1.4
     BOLT_THREAD_DIA = 0.2
     BOARD_THICKNESS = 0.1
     FOUR_CYL_DIA = 0.7
-    #4 covex cyl
-    C1_LENGTH = 1.9
-    C2_LENGTH = 2.7
-    C3_LENGTH = 1.1
-    C4_LENGTH = 0.8
+
+    #4 covex cyl type A
+    C1_LENGTH_A = 1.9
+    C2_LENGTH_A = 2.7
+    C3_LENGTH_A = 1.1
+    C4_LENGTH_A = 0.8
+
+    #4 covex cyl type B
+    C1_LENGTH_B = 1.9
+    C2_LENGTH_B = 2.7
+    C3_LENGTH_B = 0.5
+    C4_LENGTH_B = 0.2
+    C5_LENGTH_B = 0.3
+
+    #
+    EXTENSION_THICKNESS = 0.2
 
 
     #######################################################################################################################
@@ -53,7 +64,7 @@ class Factory:
 
     #Gear
     gear_orientation = "mf_zero"
-    small_gear_dia = 0
+    lower_gear_dia = 0
     small_gear_position = None
     large_gear_dia = 0
 
@@ -151,7 +162,7 @@ class Factory:
 
         self.gear_Flip = factory.mf_Flip_1
 
-        self.small_gear_dia = factory.mf_Small_Gear_Dia
+        self.lower_gear_dia = factory.mf_Small_Gear_Dia
         self.small_gear_position = factory.mf_Small_Gear_Position
         self.large_gear_dia = factory.mf_Large_Gear_Dia
         self.color_render = factory.mf_Color_Render
@@ -404,7 +415,7 @@ class Factory:
         """   
         bit_type = self.bit_type
         orientation = self.bolt_ortientation
-        out_dia = self.BOLT_DIA
+        out_dia = self.BOLT_RAD
         if only_body :
             out_length = 0.3
             z_in = position[2] + out_length/2 - 0.15
@@ -421,7 +432,7 @@ class Factory:
         else:
             out_length = self.BOLT_LENGTH
 
-            in_dia = 0.8 * self.BOLT_DIA
+            in_dia = 0.8 * self.BOLT_RAD
             
             #Create first BIt base of Bolt
             z_in = position[2] + out_length/2
@@ -688,7 +699,7 @@ class Factory:
         data_list.append(self.color_render)
         data_list.append(self.bottom_length)
         data_list.append(self.sub_bottom_length)
-        data_list.append(self.small_gear_dia)
+        data_list.append(self.lower_gear_dia)
         data_list.append(self.small_gear_position)
         data_list.append(self.large_gear_dia)
         data_list.append(self.bit_type)
