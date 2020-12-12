@@ -33,7 +33,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
     MotorParameters = [
         "mf_Head_Type",
-        "mf_Extension_Type",
+        "mf_Extension_Type_A",
+        "mf_Extension_Type_B",
         "mf_Gear_Orientation_1",
         "mf_Gear_Orientation_2",
         "mf_Flip_1",
@@ -92,14 +93,22 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         min = 0, soft_min = 0, max = 0.9, 
         description='Length of the sub Bottom inner dia')
     #Bottom Types
-    Extention_Type_List = [('mf_Extension_Type_1','Type 1','Type 1'),
+    Extention_Type_List_A = [('mf_Extension_Type_1','Type 1','Type 1'),
                  ('mf_Extension_Type_2','Type 2','Type 2'),                 
                  ('mf_None','None','None') 
                  ]
-    mf_Extension_Type = EnumProperty( attr='mf_Extension_Type',
+    mf_Extension_Type_A = EnumProperty( attr='mf_Extension_Type',
             name='Extension Area Type',
             description='Choose the type of extension area you would like',
-            items = Extention_Type_List, default = 'mf_Extension_Type_1')
+            items = Extention_Type_List_A, default = 'mf_Extension_Type_1')
+    
+    Extention_Type_List_B = [('mf_Extension_Type_1','Type 1','Type 1'),                                 
+                 ('mf_None','None','None') 
+                 ]
+    mf_Extension_Type_B = EnumProperty( attr='mf_Extension_Type',
+            name='Extension Area Type',
+            description='Choose the type of extension area you would like',
+            items = Extention_Type_List_B, default = 'mf_Extension_Type_1')
 
     # Gear Orientation
     Orientation_List_Type_2 = [
@@ -242,14 +251,18 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         #ENUMS
         col.label(text="General")
         col.prop(self, 'mf_Head_Type')
-        col.prop(self, 'mf_Extension_Type')
-        if self.mf_Extension_Type == 'mf_Extension_Type_1':
-            col.prop(self, 'mf_Gear_Orientation_1')        
-            #col.prop(self, 'mf_Flip_1')
-        elif self.mf_Extension_Type == 'mf_Extension_Type_2':
-            col.prop(self, 'mf_Gear_Orientation_2') 
-        else:
-            col.prop(self, 'mf_Gear_Orientation_1')        
+        if self.mf_Head_Type == "mf_Head_Type_A":  
+            col.prop(self, 'mf_Extension_Type_A')
+            if self.mf_Extension_Type_A == 'mf_Extension_Type_1':
+                col.prop(self, 'mf_Gear_Orientation_1')        
+                #col.prop(self, 'mf_Flip_1')
+            elif self.mf_Extension_Type_A == 'mf_Extension_Type_2':
+                col.prop(self, 'mf_Gear_Orientation_2') 
+            else:
+                col.prop(self, 'mf_Gear_Orientation_1')      
+        elif self.mf_Head_Type == "mf_Head_Type_B":
+            col.prop(self, 'mf_Extension_Type_B')
+            col.prop(self, 'mf_Gear_Orientation_1')
       
             #col.prop(self, 'mf_Flip_2')
         col.prop(self, 'mf_Flip_1')

@@ -23,7 +23,10 @@ class Motor_Creator(Factory):
             self.bolt_ortientation = factory.mf_Bolt_Orientation
 
             self.bit_type = factory.mf_Bit_Type
-            self.ex_type = factory.mf_Extension_Type
+            if  self.head_Type == "mf_Head_Type_A":
+                self.ex_type = factory.mf_Extension_Type_A
+            elif  self.head_Type == "mf_Head_Type_B":
+                self.ex_type = factory.mf_Extension_Type_B
             
             if self.ex_type == 'mf_Extension_Type_1':
                 self.gear_orientation = factory.mf_Gear_Orientation_1
@@ -61,8 +64,8 @@ class Motor_Creator(Factory):
                 self.large_Gear_Bolt_Rotation_3 = -999
             elif self.l_bolt_num == 2:
                 self.large_Gear_Bolt_Rotation_3 = -999
-            self.l_bolt_lsit = []
-            self.s_bolt_lsit = []
+            self.l_bolt_list = []
+            self.s_bolt_list = []
             #self.large_gear_Angle = factory.mf_Large_Gear_Bolt_Angle
             #self.large_gear_bolt_position_Angle = factory.mf_Large_Gear_Bolt_Rotation
             self.save_path = factory.mf_Save_Path
@@ -505,12 +508,12 @@ class Motor_Creator(Factory):
         bolt_rotation_2 = self.samll_gear_bolt_rotation_2
         if self.small_gear_bolt_random:  
             if extension:
-                bolt_rotation_1,bolt_rotation_2 =  self.s_bolt_lsit     
+                bolt_rotation_1,bolt_rotation_2 =  self.s_bolt_list     
             bolt_rotation_1 = random.uniform(190,230)
             self.samll_gear_bolt_rotation_1 = bolt_rotation_1
             bolt_rotation_2 =  random.uniform(310,350)
             self.samll_gear_bolt_rotation_2 = bolt_rotation_2
-            self.s_bolt_lsit = [bolt_rotation_1,bolt_rotation_2]
+            self.s_bolt_list = [bolt_rotation_1,bolt_rotation_2]
 
         x_bolt_1, z_bolt_1 = self.rotate_around_point((x,z),bolt_rotation_1,(x_bolt_init,z_bolt_init))
         x_bolt_2, z_bolt_2 = self.rotate_around_point((x,z),bolt_rotation_2,(x_bolt_init,z_bolt_init))       
@@ -543,11 +546,11 @@ class Motor_Creator(Factory):
         if self.l_bolt_num == 1:
             if self.large_Gear_Bolt_Random:                    
                 if extension:
-                    bolt_position_angle_1 = self.l_bolt_lsit[0]
+                    bolt_position_angle_1 = self.l_bolt_list[0]
                 else:
                     bolt_position_angle_1 = random.uniform(0,single_bolt_area)
                     self.large_Gear_Bolt_Rotation_1 = bolt_position_angle_1
-                    self.l_bolt_lsit=[bolt_position_angle_1]
+                    self.l_bolt_list=[bolt_position_angle_1]
 
             x_bolt, z_bolt = self.rotate_around_point((x_large, z_large),bolt_position_angle_1,(x_bolt_init,z_bolt_init))
             bolt = self.create_bolt((x_bolt,y_bolt_init,z_bolt), rotation = rotation_s, only_body=extension)
@@ -556,14 +559,14 @@ class Motor_Creator(Factory):
         elif self.l_bolt_num == 2:
             if self.large_Gear_Bolt_Random:
                 if extension:
-                    bolt_position_angle_1 = self.l_bolt_lsit[0]
-                    bolt_position_angle_2 = self.l_bolt_lsit[1]
+                    bolt_position_angle_1 = self.l_bolt_list[0]
+                    bolt_position_angle_2 = self.l_bolt_list[1]
                 else:
                     bolt_position_angle_1 = random.uniform(0,single_bolt_area) 
                     bolt_position_angle_2 = random.uniform(bolt_position_angle_1 + 0.5*single_bolt_area, 2*single_bolt_area)
                     self.large_Gear_Bolt_Rotation_1 = bolt_position_angle_1
                     self.large_Gear_Bolt_Rotation_2 = bolt_position_angle_2
-                    self.l_bolt_lsit=[bolt_position_angle_1, bolt_position_angle_2]
+                    self.l_bolt_list=[bolt_position_angle_1, bolt_position_angle_2]
 
             x_bolt_1, z_bolt_1 = self.rotate_around_point((x_large,z_large),bolt_position_angle_1,(x_bolt_init,z_bolt_init))
             x_bolt_2, z_bolt_2 = self.rotate_around_point((x_large,z_large),bolt_position_angle_2,(x_bolt_init,z_bolt_init))
@@ -581,9 +584,9 @@ class Motor_Creator(Factory):
             if self.large_Gear_Bolt_Random:
 
                 if extension:
-                    bolt_position_angle_1 = self.l_bolt_lsit[0]
-                    bolt_position_angle_2 = self.l_bolt_lsit[1]
-                    bolt_position_angle_3 = self.l_bolt_lsit[2]
+                    bolt_position_angle_1 = self.l_bolt_list[0]
+                    bolt_position_angle_2 = self.l_bolt_list[1]
+                    bolt_position_angle_3 = self.l_bolt_list[2]
                 else:
                     bolt_position_angle_1 = random.uniform(0,single_bolt_area) 
                     bolt_position_angle_2 = random.uniform(bolt_position_angle_1 + 0.5*single_bolt_area, 2*single_bolt_area)
@@ -591,7 +594,7 @@ class Motor_Creator(Factory):
                     self.large_Gear_Bolt_Rotation_1 = bolt_position_angle_1
                     self.large_Gear_Bolt_Rotation_2 = bolt_position_angle_2
                     self.large_Gear_Bolt_Rotation_3 = bolt_position_angle_3
-                    self.l_bolt_lsit=[bolt_position_angle_1, bolt_position_angle_2, bolt_position_angle_3]
+                    self.l_bolt_list=[bolt_position_angle_1, bolt_position_angle_2, bolt_position_angle_3]
                 
             x_bolt_1, z_bolt_1 = self.rotate_around_point((x_large,z_large),bolt_position_angle_1,(x_bolt_init,z_bolt_init))
             x_bolt_2, z_bolt_2 = self.rotate_around_point((x_large,z_large),bolt_position_angle_2,(x_bolt_init,z_bolt_init))
@@ -1073,6 +1076,8 @@ class Motor_Creator(Factory):
     def create_upper_part_Type_A(self):
         rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
         #self.rotate_object(up1)
+        up1, bolt_list_1 = self.create_up(length_relativ)
+
         if self.ex_type == "mf_None":
             extension_zone = None
             bolt_list_2 = []
@@ -1088,7 +1093,6 @@ class Motor_Creator(Factory):
             ex_list=[extension_zone_1]
  
 
-        up1, bolt_list_1 = self.create_up(length_relativ)
         board = self.create_outer_board()  
         middle, bolt_list_middle = self. create_middle()
 
@@ -1127,13 +1131,127 @@ class Motor_Creator(Factory):
     ##############################################################################################################################
     ######################## Upper Part Type B ###################################################################################
     
-    def create_type_b_gear(self, extension=None):
+    def create_extension_zone_type_b(self, bolt_positions,length_relativ):
+        main_long = self.bottom_length 
+        sub_long = self.sub_bottom_length
+        radius = self.lower_gear_dia/2
+        thickness = self.EXTENSION_THICKNESS
+        mid_thick = 0.7
+        small_gear_position = self.small_gear_position
+        x = 0
+        y = 0 - radius
+        z = main_long + sub_long + small_gear_position
+        position = (x,y,z)
+        x_init = position[0] + length_relativ/2
+
+        y_b1 = bolt_positions[0][1] 
+        z_b1 = bolt_positions[0][2] + self.BOLT_RAD
+
+        y_b2 = bolt_positions[1][1] + self.BOLT_RAD
+        z_b2 = bolt_positions[1][2] -self.BOLT_RAD
+
+        y_b3 = bolt_positions[2][1]
+        z_b3 = bolt_positions[2][2] -self.BOLT_RAD
+
+        y_p0 = y_b3 + self.BOLT_RAD
+        z_p0 = z_b3 + 2*self.BOLT_RAD +0.1
+
+        y_p1 = position[1] - 3.5
+        z_p1 = position[2] - 1.3
+
+        y_p2 = position[1] - 3.5
+        z_p2 = position[2] + 1
+
+        y_p3 = position[1] - radius
+        z_p3 = position[2] + 1
+
+        verts_board_1 = [
+            (x_init, y_b1, z_b1), #0
+            (x_init + thickness , y_b1, z_b1), #1
+            
+            (x_init, y_b2, z_b2), #2
+            (x_init + thickness, y_b2, z_b2), #3
+            
+            (x_init, y_b3, z_b3), #4
+            (x_init + thickness, y_b3, z_b3), #5
+            
+            (x_init, y_p1, z_p1), #6
+            (x_init + thickness, y_p1, z_p1), #7
+            
+            (x_init, y_p2, z_p2), #8
+            (x_init + thickness, y_p2, z_p2), #9
+        ]
+
+        faces_board_1 = [
+            [0,1,3,2],
+            [2,3,5,4],
+            [4,5,7,6],
+            [6,7,9,8],
+            [8,9,1,0],
+            [0,2,4,6,8],
+            [1,3,5,7,9],
+
+        ]
+
+        board_1 = self.add_mesh("bottom board_1", verts_board_1, faces_board_1)
+        
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.5, depth=5, location=position)
+        cly_cut = bpy.context.object
+
+        bpy.ops.object.select_all(action='DESELECT')
+        cly_cut.select_set(True)
+        bpy.ops.transform.rotate(value=radians(90),orient_axis='X') 
+        bpy.ops.transform.rotate(value=radians(90),orient_axis='Z') 
+
+        self.diff_obj(board_1, cly_cut)
+        cly_cut.select_set(True)
+        bpy.ops.object.delete()
+
+        verts_board_2 = [
+            (x_init, y_p0, z_p0),
+            (x_init + mid_thick, y_p0, z_p0),
+            (x_init, y_p1, z_p1),
+            (x_init + mid_thick, y_p1, z_p1),
+            (x_init, y_p2, z_p2),
+            (x_init + mid_thick, y_p2, z_p2),
+            (x_init, y_p3, z_p3),
+            (x_init + mid_thick, y_p3, z_p3),
+        ]
+
+        faces_board_2 = [
+            [0,1,3,2],
+            [2,3,5,4],
+            [4,5,7,6],
+            [6,7,1,0],
+            [0,2,4,6],
+            [1,3,5,7],
+        ]
+
+        board_2 = self.add_mesh("bottom board_2", verts_board_2, faces_board_2)
+        
+        #Create Ring
+        ring_position = (x_init+mid_thick/2, position[1], position[2])
+        ring_1 = self.create_ring(ring_position, mid_thick, radius, 1.6)
+        ring_2 = self.create_ring(ring_position, mid_thick, 0.9, 0.4)
+        s_gear = self.combine_all_obj(ring_1, [ring_2])
+        #s_gear = self.create_gear((x,y,z),lower_gear_radius,"hollow",length_relativ)
+        s_gear.select_set(True)
+        bpy.ops.transform.rotate(value=radians(90),orient_axis='Y') 
+        
+        
+        extension = self.combine_all_obj(board_1, [board_2, s_gear])
+        
+        if self.color_render:
+            self.rend_color(extension, "Plastic")
+        return extension
+
+    def create_type_b_gear(self):
         init_x = self.init_x
         init_y = self.init_y
         #rotation, length_relativ, mirror = orient_dict[factory.mf_Gear_Orientation]
         #length_relativ = 1
         #rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
-        length_relativ = 4.5
+        length_relativ = 1.5
 
         rotation_s = (radians(-90),"Y")
         size = 1
@@ -1154,8 +1272,8 @@ class Motor_Creator(Factory):
 
         #Create gear
 
-        ring_1 = self.create_ring((x,y,z),length_relativ/3,lower_gear_radius, 1.6)
-        ring_2 = self.create_ring((x,y,z),length_relativ/3 +0.5, 0.9, 0.4)
+        ring_1 = self.create_ring((x,y,z),length_relativ,lower_gear_radius, 1.6)
+        ring_2 = self.create_ring((x,y,z),length_relativ +0.5, 0.9, 0.4)
         s_gear = self.combine_all_obj(ring_1, [ring_2])
         #s_gear = self.create_gear((x,y,z),lower_gear_radius,"hollow",length_relativ)
         s_gear.select_set(True)
@@ -1167,44 +1285,35 @@ class Motor_Creator(Factory):
 
         # Create Bolts
 
-        x_bolt_init = x + length_relativ/6 - self.BOLT_LENGTH/2 + self.EXTENSION_THICKNESS + 0.1
+        x_bolt_init = x + length_relativ/2 - self.BOLT_LENGTH/2 + self.EXTENSION_THICKNESS + 0.1
         y_bolt_init = y - lower_gear_radius - 0.9*self.BOLT_RAD
         z_bolt_init = z 
         # Calculate the rotate (x,z axis)
         bolt_rotation_1 = 45#self.samll_gear_bolt_rotation_1
         bolt_rotation_2 = -90#self.samll_gear_bolt_rotation_2
-        #if self.small_gear_bolt_random:  
-            #if extension:
-            #    bolt_rotation_1,bolt_rotation_2 =  self.s_bolt_lsit     
-           # bolt_rotation_1 = random.uniform(190,230)
-            #self.samll_gear_bolt_rotation_1 = bolt_rotation_1
-            #bolt_rotation_2 =  random.uniform(310,350)
-            #self.samll_gear_bolt_rotation_2 = bolt_rotation_2
-            #self.s_bolt_lsit = [bolt_rotation_1,bolt_rotation_2]
         
         y_bolt_1, z_bolt_1 = self.rotate_around_point((y,z),bolt_rotation_1,(y_bolt_init,z_bolt_init))
         y_bolt_2, z_bolt_2 = self.rotate_around_point((y,z),bolt_rotation_2,(y_bolt_init,z_bolt_init))       
-        bolt_1 = self.create_bolt((x_bolt_init, y_bolt_1,z_bolt_1), rotation = rotation_s, only_body = extension)
-        bolt_2 = self.create_bolt((x_bolt_init, y_bolt_2,z_bolt_2), rotation = rotation_s, only_body = extension) 
+        bolt_1 = self.create_bolt((x_bolt_init, y_bolt_1,z_bolt_1), rotation = rotation_s)
+        bolt_2 = self.create_bolt((x_bolt_init, y_bolt_2,z_bolt_2), rotation = rotation_s) 
 
         y_bolt_3 = self.FOUR_CYL_DIA + self.BOLT_RAD
 
-        bolt_3 = self.create_bolt((x_bolt_init, y_bolt_3,z_bolt_1), rotation = rotation_s, only_body = extension)
+        bolt_3 = self.create_bolt((x_bolt_init, y_bolt_3,z_bolt_1), rotation = rotation_s)
 
         bolt_shell_list = [bolt_1[0], bolt_2[0],bolt_3[0]]
-        bolt_bit_list = [bolt_1[1], bolt_2[1],bolt_3[1]]
+        bolt_bit_list = [bolt_2[1],bolt_3[1],bolt_1[1]]
 
 
 
         upper_1 = self.combine_all_obj(s_gear, [exte]+bolt_shell_list)
         return upper_1, bolt_bit_list
     
-
     def create_gear_extension(self, position, length_relative):
         main_long = self.bottom_length 
         sub_long = self.sub_bottom_length
         radius = self.lower_gear_dia/2
-        thickness = length_relative/6
+        thickness = length_relative/2
 
         x_up = position[0]
         y_up = position[1] - radius
@@ -1307,11 +1416,52 @@ class Motor_Creator(Factory):
 
     def create_upper_part_Type_B(self):
         rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
-
+  
         upper_1, bolt_list = self.create_type_b_gear()
+        upper_1.name = 'Up1'
 
-        middle, bolt_list_middle = self. create_middle()
-        gear = self.combine_all_obj(upper_1, [middle] + bolt_list_middle+bolt_list)
+        middle, bolt_list_middle = self. create_middle()       
+        self.save_modell(upper_1,middle)
+
+        bolt_position = []
+        for bl in bolt_list:
+            self.save_modell(bl)
+            bolt_position.append(bl.location)
+        
+        for bl in bolt_list_middle:
+            self.save_modell(bl)
+        
+        if self.ex_type == "mf_None":
+            extension_zone = None
+            bolt_list_2 = []
+            ex_list=[]
+        else:   
+            extension_zone = self.create_extension_zone_type_b(bolt_position, 1.5)        
+            extension_zone.name = "Up2"
+            
+            self.rotate_object(extension_zone)
+            self.save_modell(extension_zone)
+            ex_list=[extension_zone]
+
+        
+
+        up1 = self.combine_all_obj(upper_1, bolt_list)
+        self.rotate_object(up1)
+        
+        upper  = self.combine_all_obj(up1, ex_list)
+        x,y,z = upper.location
+        
+        upper.select_set(True)
+        if self.gear_Flip : 
+            if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
+                bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(True, False, False))
+                bpy.ops.transform.translate(value=(-2*x,0,0))
+      
+            else:
+                bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(False, True, False))
+                bpy.ops.transform.translate(value=(0,-2*y,0))
+                
+        gear = self.combine_all_obj(upper, [middle]+bolt_list_middle)
 
         return gear
 

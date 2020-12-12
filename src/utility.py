@@ -107,7 +107,7 @@ class Factory:
         "mf_Bottom_Length",
         "mf_Sub_Bottom_Length",
 
-        "mf_Small_Gear_Dia",
+        "mf_Lower_Gear_Dia",
         "mf_Small_Gear_Position",
         "mf_Large_Gear_Dia",
 
@@ -130,8 +130,8 @@ class Factory:
 
     save_path = "None"
     id_Nr = 0
-    s_bolt_lsit = []
-    l_bolt_lsit = []
+    s_bolt_list = []
+    l_bolt_list = []
     bolt_position = []
     out_bolt_position = []
 
@@ -162,7 +162,7 @@ class Factory:
 
         self.gear_Flip = factory.mf_Flip_1
 
-        self.lower_gear_dia = factory.mf_Small_Gear_Dia
+        self.lower_gear_dia = factory.mf_Lower_Gear_Dia
         self.small_gear_position = factory.mf_Small_Gear_Position
         self.large_gear_dia = factory.mf_Large_Gear_Dia
         self.color_render = factory.mf_Color_Render
@@ -184,8 +184,8 @@ class Factory:
             self.large_Gear_Bolt_Rotation_3 = -999
         elif self.l_bolt_num == 2:
             self.large_Gear_Bolt_Rotation_3 = -999
-        self.l_bolt_lsit = []
-        self.s_bolt_lsit = []
+        self.l_bolt_list = []
+        self.s_bolt_list = []
         #self.large_gear_Angle = factory.mf_Large_Gear_Bolt_Angle
         #self.large_gear_bolt_position_Angle = factory.mf_Large_Gear_Bolt_Rotation
         self.save_path = factory.mf_Save_Path
