@@ -64,6 +64,10 @@ class Motor_Creator(Factory):
                 self.large_Gear_Bolt_Rotation_3 = -999
             elif self.l_bolt_num == 2:
                 self.large_Gear_Bolt_Rotation_3 = -999
+                
+            self.type_B_Height_1 = factory.mf_Type_B_Height_1
+            self.type_B_Height_2 = factory.mf_Type_B_Height_2
+
             self.l_bolt_list = []
             self.s_bolt_list = []
             #self.large_gear_Angle = factory.mf_Large_Gear_Bolt_Angle
@@ -508,12 +512,13 @@ class Motor_Creator(Factory):
         bolt_rotation_2 = self.samll_gear_bolt_rotation_2
         if self.small_gear_bolt_random:  
             if extension:
-                bolt_rotation_1,bolt_rotation_2 =  self.s_bolt_list     
-            bolt_rotation_1 = random.uniform(190,230)
-            self.samll_gear_bolt_rotation_1 = bolt_rotation_1
-            bolt_rotation_2 =  random.uniform(310,350)
-            self.samll_gear_bolt_rotation_2 = bolt_rotation_2
-            self.s_bolt_list = [bolt_rotation_1,bolt_rotation_2]
+                bolt_rotation_1,bolt_rotation_2 =  self.s_bolt_list    
+            else: 
+                bolt_rotation_1 = random.uniform(190,230)
+                self.samll_gear_bolt_rotation_1 = bolt_rotation_1
+                bolt_rotation_2 =  random.uniform(310,350)
+                self.samll_gear_bolt_rotation_2 = bolt_rotation_2
+                self.s_bolt_list = [bolt_rotation_1,bolt_rotation_2]
 
         x_bolt_1, z_bolt_1 = self.rotate_around_point((x,z),bolt_rotation_1,(x_bolt_init,z_bolt_init))
         x_bolt_2, z_bolt_2 = self.rotate_around_point((x,z),bolt_rotation_2,(x_bolt_init,z_bolt_init))       
@@ -1317,7 +1322,7 @@ class Motor_Creator(Factory):
 
         x_up = position[0]
         y_up = position[1] - radius
-        z_up = position[2] + 3.1
+        z_up = main_long + sub_long + self.type_B_Height_1
 
         x_mid = x_up
         y_mid = position[1] + 0.1
@@ -1325,7 +1330,7 @@ class Motor_Creator(Factory):
 
         x_low = position[0]
         y_low = 2.4
-        z_low = main_long + sub_long + 3.5
+        z_low = main_long + sub_long + self.type_B_Height_2
 
 
         verts = [
@@ -1454,12 +1459,13 @@ class Motor_Creator(Factory):
         upper.select_set(True)
         if self.gear_Flip : 
             if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
-                bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(True, False, False))
-                bpy.ops.transform.translate(value=(-2*x,0,0))
-      
-            else:
                 bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(False, True, False))
                 bpy.ops.transform.translate(value=(0,-2*y,0))
+      
+            else:
+                
+                bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(True, False, False))
+                bpy.ops.transform.translate(value=(-2*x,0,0))
                 
         gear = self.combine_all_obj(upper, [middle]+bolt_list_middle)
 
