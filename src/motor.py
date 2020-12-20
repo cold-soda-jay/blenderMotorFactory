@@ -11,70 +11,6 @@ import csv
 
 
 class Motor_Creator(Factory):
-
-    def __init__(self,factory):
-            self.head_Type = factory.mf_Head_Type
-            self.init_x = factory.init_x
-            self.init_y = factory.init_y
-            self.init_z = factory.init_z
-            self.bottom_length = factory.mf_Bottom_Length
-            self.inner_radius = 0.5
-            self.sub_bottom_length = factory.mf_Sub_Bottom_Length
-            self.bolt_ortientation = factory.mf_Bolt_Orientation
-
-            self.bit_type = factory.mf_Bit_Type
-            if  self.head_Type == "mf_Head_Type_A":
-                self.ex_type = factory.mf_Extension_Type_A
-            elif  self.head_Type == "mf_Head_Type_B":
-                self.ex_type = factory.mf_Extension_Type_B
-            
-            if self.ex_type == 'mf_Extension_Type_1':
-                self.gear_orientation = factory.mf_Gear_Orientation_1
-                #self.gear_Flip = factory.mf_Flip_1
-
-            elif self.ex_type == 'mf_Extension_Type_2':
-                
-                
-                self.gear_orientation = factory.mf_Gear_Orientation_2
-                #self.gear_Flip = factory.mf_Flip_2
-            else:
-                self.gear_orientation = factory.mf_Gear_Orientation_1
-
-
-            self.gear_Flip = factory.mf_Flip_1
-
-            self.lower_gear_dia = factory.mf_Lower_Gear_Dia
-            self.lower_gear_position = factory.mf_Lower_Gear_Position
-            self.upper_gear_dia = factory.mf_Upper_Gear_Dia
-            self.color_render = factory.mf_Color_Render
-
-            self.lower_gear_bolt_random = factory.mf_Lower_Gear_Bolt_Random
-
-            self.lower_gear_bolt_position_1 = factory.mf_Lower_Gear_Bolt_Position_1
-            self.lower_gear_bolt_position_2 = factory.mf_Lower_Gear_Bolt_Position_2
-
-            self.l_bolt_num = factory.mf_Upper_Bolt_Nummber
-            
-            self.upper_Gear_Bolt_Random = factory.mf_Upper_Gear_Bolt_Random
-            #large_gear_Angle = 0
-            self.upper_Gear_Bolt_Position_1 = factory.mf_Upper_Gear_Bolt_Position_1
-            self.upper_Gear_Bolt_Position_2 = factory.mf_Upper_Gear_Bolt_Position_2
-            self.upper_Gear_Bolt_Position_3 = factory.mf_Upper_Gear_Bolt_Position_3
-            if  self.l_bolt_num == 1:
-                self.upper_Gear_Bolt_Position_2 = -999
-                self.upper_Gear_Bolt_Position_3 = -999
-            elif self.l_bolt_num == 2:
-                self.upper_Gear_Bolt_Position_3 = -999
-                
-            self.type_B_Height_1 = factory.mf_Type_B_Height_1
-            self.type_B_Height_2 = factory.mf_Type_B_Height_2
-
-            self.l_bolt_list = []
-            self.s_bolt_list = []
-            #self.large_gear_Angle = factory.mf_Upper_Gear_Bolt_Angle
-            #self.large_gear_bolt_position_Angle = factory.mf_Upper_Gear_Bolt_Rotation
-            self.save_path = factory.mf_Save_Path
-            self.id_Nr = factory.id_Nr    
             
     ##############################################################################################################################
     ######################## Bottom Part #########################################################################################
@@ -411,18 +347,12 @@ class Motor_Creator(Factory):
         step = 0.1
 
         four_cyl_z = main_long + sub_long
-        if self.head_Type == "mf_Head_Type_A":
-            length_1 = self.C1_LENGTH_A
-            length_2 = self.C1_LENGTH_A + self.C2_LENGTH_A
-            length_3 = self.C1_LENGTH_A + self.C2_LENGTH_A + self.C3_LENGTH_A
-            length_4 = self.C1_LENGTH_A + self.C2_LENGTH_A + self.C3_LENGTH_A + self.C4_LENGTH_A
-            length_5 = 0.1
-        elif self.head_Type == "mf_Head_Type_B":
-            length_1 = self.C1_LENGTH_B
-            length_2 = self.C1_LENGTH_B + self.C2_LENGTH_B
-            length_3 = self.C1_LENGTH_B + self.C2_LENGTH_B + self.C3_LENGTH_B
-            length_4 = self.C1_LENGTH_B + self.C2_LENGTH_B + self.C3_LENGTH_B + self.C4_LENGTH_B
-            length_5 = self.C1_LENGTH_B + self.C2_LENGTH_B + self.C3_LENGTH_B + self.C4_LENGTH_B + self.C5_LENGTH_B
+        length_1 = self.C1_LENGTH
+        length_2 = self.C1_LENGTH + self.C2_LENGTH
+        length_3 = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH
+        length_4 = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH + self.C4_LENGTH
+        length_5 = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH + self.C4_LENGTH + self.C5_LENGTH
+
 
         cy1_z = length_1/2
         cy2_z = length_2/2
@@ -456,9 +386,89 @@ class Motor_Creator(Factory):
 
 
 class Type_A(Motor_Creator):
+    
+    param = [
+        "mf_Lower_Gear_Dia",
+        "mf_Lower_Gear_Position",
+        "mf_Upper_Gear_Dia",
+        "mf_Lower_Gear_Bolt_Random",
+        "mf_Lower_Gear_Bolt_Position_1",
+        "mf_Lower_Gear_Bolt_Position_2",
+
+        "mf_Upper_Bolt_Nummber",
+        "mf_Upper_Gear_Bolt_Random",
+        "mf_Upper_Gear_Bolt_Position_1",
+
+    ]
+    #Gear
+    gear_orientation = "mf_zero"
+    lower_gear_dia = 0
+    lower_gear_position = None
+    upper_gear_dia = 0
+
+    lower_gear_bolt_random = False
+    lower_gear_bolt_position_1 = 0
+    lower_gear_bolt_position_2 = 0
+
+    l_bolt_num = 1
+    upper_Gear_Bolt_Random = True
+    #large_gear_Angle = 0
+    upper_Gear_Bolt_Position_1 = 1.3
+    upper_Gear_Bolt_Position_2 = 1.3
+    upper_Gear_Bolt_Position_3 = 1.3
+
+    #4 covex cyl type A
+    C1_LENGTH = 1.9
+    C2_LENGTH = 2.7
+    C3_LENGTH = 1.1
+    C4_LENGTH = 0.8
+    C5_LENGTH = -6.4
+
+    
 
     ##############################################################################################################################
     ######################## Upper Part Type A ###################################################################################
+
+
+    def init_modify(self,factory):    
+            self.ex_type = factory.mf_Extension_Type_A
+           
+            if self.ex_type == 'mf_Extension_Type_1':
+                self.gear_orientation = factory.mf_Gear_Orientation_1
+            elif self.ex_type == 'mf_Extension_Type_2':                          
+                self.gear_orientation = factory.mf_Gear_Orientation_2
+            else:
+                self.gear_orientation = factory.mf_Gear_Orientation_1
+
+            
+            self.upper_gear_dia = factory.mf_Upper_Gear_Dia
+
+            self.lower_gear_bolt_random = factory.mf_Lower_Gear_Bolt_Random
+
+            self.lower_gear_bolt_position_1 = factory.mf_Lower_Gear_Bolt_Position_1
+            self.lower_gear_bolt_position_2 = factory.mf_Lower_Gear_Bolt_Position_2
+
+            self.l_bolt_num = factory.mf_Upper_Bolt_Nummber
+            
+            self.upper_Gear_Bolt_Random = factory.mf_Upper_Gear_Bolt_Random
+            self.upper_Gear_Bolt_Position_1 = factory.mf_Upper_Gear_Bolt_Position_1
+            self.upper_Gear_Bolt_Position_2 = factory.mf_Upper_Gear_Bolt_Position_2
+            self.upper_Gear_Bolt_Position_3 = factory.mf_Upper_Gear_Bolt_Position_3
+            if  self.l_bolt_num == 1:
+                self.upper_Gear_Bolt_Position_2 = -999
+                self.upper_Gear_Bolt_Position_3 = -999
+            elif self.l_bolt_num == 2:
+                self.upper_Gear_Bolt_Position_3 = -999
+                self.param.append("mf_Upper_Gear_Bolt_Position_2")
+            elif self.l_bolt_num == 3:
+                self.param.append("mf_Upper_Gear_Bolt_Position_2")
+                self.param.append("mf_Upper_Gear_Bolt_Position_3")
+
+
+
+            self.motor_param += self.param
+            self.l_bolt_list = []
+            self.s_bolt_list = []
 
     def create_up(self, length_relativ, extension=False):
         
@@ -966,12 +976,12 @@ class Type_A(Motor_Creator):
         board_1 = bpy.context.object
 
         z2 = init_z + main_long + sub_long + p1_length*2 + (
-                        self.C1_LENGTH_A + self.C2_LENGTH_A + self.C3_LENGTH_A - p1_length*2 )/2
+                        self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH - p1_length*2 )/2
 
         x2 = init_x - self.BOTTOM_HEIGHT/4 + self.BOARD_THICKNESS
-        p2_length = math.sqrt((self.C1_LENGTH_A + self.C2_LENGTH_A + self.C3_LENGTH_A-p1_length*2)**2 
+        p2_length = math.sqrt((self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH-p1_length*2)**2 
                                 + (main_height/2)**2 )/2
-        Angle = math.atan((main_height/2)/(self.C1_LENGTH_A + self.C2_LENGTH_A + self.C3_LENGTH_A -
+        Angle = math.atan((main_height/2)/(self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH -
                                     p1_length*2))
         bpy.ops.mesh.primitive_cube_add(location=(x2,y1,z2))
         bpy.ops.transform.resize(value=(height, width, p2_length))
@@ -1056,7 +1066,7 @@ class Type_A(Motor_Creator):
 
         sub_long = self.sub_bottom_length
         l1 = 2.4
-        l2 = self.C1_LENGTH_A + self.C2_LENGTH_A + self.C3_LENGTH_A
+        l2 = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH
 
         east = self.BOTTOM_HEIGHT/2 - 0.1
         north = self.BOTTOM_HEIGHT/2 - 0.1
@@ -1144,6 +1154,44 @@ class Type_A(Motor_Creator):
 
     
 class Type_B(Motor_Creator):
+    
+    #4 covex cyl type B
+    C1_LENGTH = 1.9
+    C2_LENGTH = 2.7
+    C3_LENGTH = 0.5
+    C4_LENGTH = 0.2
+    C5_LENGTH = 0.3
+    type_B_Height_1 = 0
+    type_B_Height_2 = 0
+    
+    
+    param = [
+        "mf_Extension_Type_B",
+        "mf_Gear_Orientation_1",
+
+        "mf_Type_B_Height_1",
+        "mf_Type_B_Height_2",
+
+    ]
+    def init_modify(self,factory):
+            
+            self.ex_type = factory.mf_Extension_Type_B                   
+            self.gear_orientation = factory.mf_Gear_Orientation_1
+       
+            #####################################
+            self.lower_gear_bolt_random = factory.mf_Lower_Gear_Bolt_Random
+
+            self.lower_gear_bolt_position_1 = factory.mf_Lower_Gear_Bolt_Position_1
+            self.lower_gear_bolt_position_2 = factory.mf_Lower_Gear_Bolt_Position_2
+            #####################################
+            
+                
+            self.type_B_Height_1 = factory.mf_Type_B_Height_1
+            self.type_B_Height_2 = factory.mf_Type_B_Height_2
+            self.motor_param += self.param
+            #self.l_bolt_list = []
+            #self.s_bolt_list = []
+
     
     ##############################################################################################################################
     ######################## Upper Part Type B ###################################################################################
@@ -1294,7 +1342,6 @@ class Type_B(Motor_Creator):
 
         lower_gear_radius = self.lower_gear_dia/2
         lower_gear_position = self.lower_gear_position
-        upper_gear_dia = self.upper_gear_dia
 
    
         x = init_x

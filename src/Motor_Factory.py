@@ -37,8 +37,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Extension_Type_B",
         "mf_Gear_Orientation_1",
         "mf_Gear_Orientation_2",
-        "mf_Flip_1",
-        "mf_Flip_2",
+        "mf_Flip",
         "mf_Color_Render",
         "mf_Bottom_Length",
         "mf_Sub_Bottom_Length",
@@ -49,9 +48,15 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
         "mf_Bit_Type",
         "mf_Bolt_Orientation",
+        "mf_Lower_Gear_Bolt_Random",
 
         "mf_Lower_Gear_Bolt_Position_1",
         "mf_Lower_Gear_Bolt_Position_2",
+        
+        "mf_Gear_Bolt_Random_B",
+
+        "mf_Gear_Bolt_Position_B_1",
+        "mf_Gear_Bolt_Position_B_2",
         "mf_Upper_Bolt_Nummber",
         "mf_Upper_Gear_Bolt_Random",
         "mf_Upper_Gear_Bolt_Position_1",
@@ -61,8 +66,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Type_B_Height_1",
         "mf_Type_B_Height_2",
 
-        "mf_Save_Path",
-        "mf_Lower_Gear_Bolt_Random",
+        "save_path",
 
         ]
     #Create genera types
@@ -134,13 +138,11 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             description='Rotation of gears and extension zone',
             items = Orientation_List_Type_2, default = 'mf_TwoHundredSeven')
 
-    mf_Flip_1 : BoolProperty(name = "Flip",
+    mf_Flip : BoolProperty(name = "Flip",
                 default = False,
                 description = "Flip the gears")
 
-    mf_Flip_2 : BoolProperty(name = "Flip",
-            default = True,
-            description = "Flip the gears")
+
 
     mf_Color_Render : BoolProperty(name = "Color Render",
                 default = False,
@@ -171,24 +173,36 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         min = 3.6, soft_min = 0, max = 4.2, 
         description='Position of lower Gear in middel axe')
 
-    mf_Small_Gear_Bolt_Angle = FloatProperty(attr='mf_Small_Gear_Bolt_Angle',
-        name='Angle between bolts on lower gear', default = 12,
-        min = 6, soft_min = 0, max = 18, 
-        description='Angle between bolts on lower gear')
 
     mf_Lower_Gear_Bolt_Random : BoolProperty(name = "Random Bolt Position of lower gear", 
                 default = False,
                 description = "Random Bolt Rotation")
 
     mf_Lower_Gear_Bolt_Position_1 = IntProperty(attr='mf_Lower_Gear_Bolt_Position',
-        name='Position of bolts on lower gear', default = 200,
+        name='Position of bolt 1 on lower gear', default = 200,
         min = 190, max = 230, step=5,
         description='Position of bolts on lower gear')
 
     mf_Lower_Gear_Bolt_Position_2 = IntProperty(attr='mf_Lower_Gear_Bolt_Position',
         name='Position of bolts on lower gear', default = 320,
         min = 310, max = 350,  step=5,
-        description='Position of bolts on lower gear')
+        description='Position of bolt 2 on lower gear')
+    
+    ###############################################################################
+    mf_Gear_Bolt_Random_B : BoolProperty(name = "Random Bolt Position ", 
+                default = False,
+                description = "Random Bolt Rotation")
+
+    mf_Gear_Bolt_Position_B_1 = IntProperty(attr='mf_Gear_Bolt_Position_B_1',
+        name='Position of bolts on lower gear', default = 200,
+        min = 190, max = 230, step=5,
+        description='Position of bolt 1 on gear')
+
+    mf_Gear_Bolt_Position_B_2 = IntProperty(attr='mf_Gear_Bolt_Position_B_2',
+        name='Position of bolts on gear', default = 320,
+        min = 310, max = 350,  step=5,
+        description='Position of bolt 2 on lower gear')
+    #########################################################
 
     mf_Upper_Gear_Dia = FloatProperty(attr='mf_Upper_Gear_Dia',
         name='Upper Gear Dia', default = 5.5,
@@ -221,7 +235,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         description='Position of bolts on large gear')
 
     mf_Upper_Gear_Bolt_Position_3 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_3',
-        name='Position of bolts on large gear', default = 13,
+        name='Position of bolts on large gear', default =13,
         min = 0, max = 210, step=5,
         description='Position of bolts on large gear')
 
@@ -243,7 +257,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             description='Orientation of bolts',
             items = bolt_orientation_list, default = 'mf_all_same')
     
-    mf_Save_Path = StringProperty(name = "Save",
+    save_path = StringProperty(name = "Save",
                 default = "None", maxlen=4096,
                 description = "Save the modell")        
     
@@ -269,8 +283,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             col.prop(self, 'mf_Gear_Orientation_1')
         
       
-            #col.prop(self, 'mf_Flip_2')
-        col.prop(self, 'mf_Flip_1')
+        col.prop(self, 'mf_Flip')
 
         col.prop(self, 'mf_Color_Render')
 
@@ -353,16 +366,16 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
     def create_motor(self):
 
-        if self.mf_Save_Path == "None":
+        if self.save_path == "None":
             pass
         else:  
-            self.mf_Save_Path = self.mf_Save_Path.replace("\\","/")
-            if not self.mf_Save_Path.endswith('/'):
-                self.mf_Save_Path += '/'                   
-            self.id_Nr = len(os.listdir(self.mf_Save_Path))
+            self.save_path = self.save_path.replace("\\","/")
+            if not self.save_path.endswith('/'):
+                self.save_path += '/'                   
+            self.id_Nr = len(os.listdir(self.save_path))
             if self.id_Nr == 0:
                 self.id_Nr = 1
-            path_of_folder = self.mf_Save_Path + str(self.id_Nr)+'/'
+            path_of_folder = self.save_path + str(self.id_Nr)+'/'
             try:
                 os.mkdir(path_of_folder)
             except:
@@ -396,7 +409,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         motor.name = "Motor"
         motor.data.name = "Motor"
         creator.save_modell(motor)
-        creator.save_csv()
+        creator.save_csv(self)
             
         return motor
 

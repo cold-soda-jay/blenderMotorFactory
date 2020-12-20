@@ -26,27 +26,18 @@ class Factory:
     BOLT_BIT_DIA = 0.2
     BOLT_THREAD_LENGTH = 1.4
     BOLT_THREAD_DIA = 0.2
+    
     BOARD_THICKNESS = 0.1
     FOUR_CYL_DIA = 0.7
 
-    #4 covex cyl type A
-    C1_LENGTH_A = 1.9
-    C2_LENGTH_A = 2.7
-    C3_LENGTH_A = 1.1
-    C4_LENGTH_A = 0.8
+    C1_LENGTH = 0
+    C2_LENGTH = 0
+    C3_LENGTH = 0
+    C4_LENGTH = 0
+    C5_LENGTH = 0
 
-    #4 covex cyl type B
-    C1_LENGTH_B = 1.9
-    C2_LENGTH_B = 2.7
-    C3_LENGTH_B = 0.5
-    C4_LENGTH_B = 0.2
-    C5_LENGTH_B = 0.3
-
-    #
     EXTENSION_THICKNESS = 0.2
     
-    type_B_Height_1 = 0
-    type_B_Height_2 = 0
 
 
     #######################################################################################################################
@@ -64,24 +55,9 @@ class Factory:
     #Bolts
     bolt_ortientation = False
     bit_type = "Torx"
-
-    #Gear
+    bolt_num = 0
     gear_orientation = "mf_zero"
-    lower_gear_dia = 0
-    lower_gear_position = None
-    upper_gear_dia = 0
 
-    lower_gear_bolt_random = False
-    lower_gear_bolt_position_1 = 0
-    lower_gear_bolt_position_2 = 0
-
-    l_bolt_num = 1
-    upper_Gear_Bolt_Random = True
-    #large_gear_Angle = 0
-    upper_Gear_Bolt_Position_1 = 1.3
-    upper_Gear_Bolt_Position_2 = 1.3
-    upper_Gear_Bolt_Position_3 = 1.3
-    #large_gear_bolt_position_Angle = 0
     
     # Define the behavior of rotation and flip
     orient_dict = {
@@ -101,7 +77,6 @@ class Factory:
 
     #Save path
     motor_param = [
-        "Nr.",
         "mf_Head_Type",
         "mf_Extension_Type",
         "mf_Gear_Orientation",
@@ -110,27 +85,11 @@ class Factory:
         "mf_Bottom_Length",
         "mf_Sub_Bottom_Length",
 
-        "mf_Lower_Gear_Dia",
-        "mf_Lower_Gear_Position",
-        "mf_Upper_Gear_Dia",
-
         "mf_Bit_Type",
         "mf_Bolt_Orientation",
-
-        "mf_Lower_Gear_Bolt_Random",
-        "mf_Lower_Gear_Bolt_Position_1",
-        "mf_Lower_Gear_Bolt_Position_2",
-
-        "mf_Upper_Bolt_Nummber",
-        "mf_Upper_Gear_Bolt_Random",
-        "mf_Upper_Gear_Bolt_Rotation_1",
-        "mf_Upper_Gear_Bolt_Rotation_2",
-        "mf_Upper_Gear_Bolt_Rotation_3",
-
-        "Bolt_position",
-        "mf_Save_Path"
+        
     ]
-
+    key_list = []
     save_path = "None"
     id_Nr = 0
     s_bolt_list = []
@@ -149,52 +108,24 @@ class Factory:
         self.bolt_ortientation = factory.mf_Bolt_Orientation
 
         self.bit_type = factory.mf_Bit_Type
-        self.ex_type = factory.mf_Extension_Type
-        
-        if self.ex_type == 'mf_Extension_Type_1':
-            self.gear_orientation = factory.mf_Gear_Orientation_1
-            #self.gear_Flip = factory.mf_Flip_1
+        self.bolt_position = []
+        self.out_bolt_position = []
 
 
-        elif self.ex_type == 'mf_Extension_Type_2':
-            self.gear_orientation = factory.mf_Gear_Orientation_2
-            #self.gear_Flip = factory.mf_Flip_2
-        else:
-            self.gear_orientation = factory.mf_Gear_Orientation_1
-
-
-        self.gear_Flip = factory.mf_Flip_1
+        self.gear_Flip = factory.mf_Flip
 
         self.lower_gear_dia = factory.mf_Lower_Gear_Dia
         self.lower_gear_position = factory.mf_Lower_Gear_Position
-        self.upper_gear_dia = factory.mf_Upper_Gear_Dia
+        
         self.color_render = factory.mf_Color_Render
 
-        self.lower_gear_bolt_random = factory.mf_Lower_Gear_Bolt_Random
 
-        self.lower_gear_bolt_position_1 = factory.mf_Lower_Gear_Bolt_Position_1
-        self.lower_gear_bolt_position_2 = factory.mf_Lower_Gear_Bolt_Position_2
-
-        self.l_bolt_num = factory.mf_Upper_Bolt_Nummber
-        
-        self.upper_Gear_Bolt_Random = factory.mf_Upper_Gear_Bolt_Random
-        #large_gear_Angle = 0
-        self.upper_Gear_Bolt_Position_1 = factory.mf_Upper_Gear_Bolt_Rotation_1
-        self.upper_Gear_Bolt_Position_2 = factory.mf_Upper_Gear_Bolt_Rotation_2
-        self.upper_Gear_Bolt_Position_3 = factory.mf_Upper_Gear_Bolt_Rotation_3
-        if  self.l_bolt_num == 1:
-            self.upper_Gear_Bolt_Position_2 = -999
-            self.upper_Gear_Bolt_Position_3 = -999
-        elif self.l_bolt_num == 2:
-            self.upper_Gear_Bolt_Position_3 = -999
-        self.l_bolt_list = []
-        self.s_bolt_list = []
-        #self.large_gear_Angle = factory.mf_Large_Gear_Bolt_Angle
-        #self.large_gear_bolt_position_Angle = factory.mf_Upper_Gear_Bolt_Rotation
-        self.save_path = factory.mf_Save_Path
+        self.save_path = factory.save_path
         self.id_Nr = factory.id_Nr    
+        self.init_modify(factory)
     
-
+    def init_modify(self,factory):
+        pass
 
     ##############################################################################################################################
     ########################## Utility ###########################################################################################
@@ -536,7 +467,8 @@ class Factory:
                 self.rend_color(in_cyl,"Bit")
                 self.rend_color(thread,"Bit")
             bolt = self.combine_all_obj(thread,[sphere,in_cyl])
-            bolt.name = 'Bolt'
+            bolt.name = 'Bolt_'+str(self.bolt_num)
+            self.bolt_num+=1
             #self.save_modell(bolt)
             #part = self.combine_all_obj(out_cyl,[bolt])
 
@@ -612,60 +544,56 @@ class Factory:
         else:
             pass
 
-    def init_csv(self,path):
+    def init_key_list(self,factory):
+        key_list = ["Nr."]
+        for name in dir(factory):
+            if name[0:3] == "mf_":
+                key_list.append(name)
+        key_list.append("Bolts_Positions")
+        self.key_list=key_list
+
+    def init_csv(self,path, factory):
+        self.init_key_list(factory)
         with open(path, "a+", encoding='utf-8') as log:
             writer = csv.writer(log)
-            writer.writerow(self.motor_param)
+            writer.writerow(self.key_list)
 
-    def write_data(self, path, data):
+    def write_data(self, path, data, factory):
+
         csvdict = csv.DictReader(open(path, 'rt', encoding='utf-8', newline=''))
-        dictrow = [row for row in csvdict]
+        dictrow = [row for row in csvdict if len(row) > 0 ]
         dictrow.append(data)
         with open(path, "w+", encoding='utf-8', newline='') as lloo:
             # lloo.write(new_a_buf.getvalue())
-            wrier = csv.DictWriter(lloo, self.motor_param)
+            wrier = csv.DictWriter(lloo, self.key_list)
             wrier.writeheader()
             for wowow in dictrow:
                 wrier.writerow(wowow)
 
-    def save_csv(self):
+    def save_csv(self, factory):
         if self.save_path == "None":
             pass
         else:
-            
+            self.init_key_list(factory)
+
             csv_path= self.save_path + 'data.csv'
             if not os.path.isfile(csv_path):
-                self.init_csv(csv_path)
-            data_list = self.create_data_list()
-            data = dict(zip(self.motor_param,data_list))
-            self.write_data(csv_path,data)
+                self.init_csv(csv_path, factory)                             
+            data = self.create_data_list(factory)
+            self.write_data(csv_path,data, factory)
 
-    def create_data_list(self):
+    def create_data_list(self, factory):
         data_list=[str(self.id_Nr)]
-        data_list.append(self.head_Type)
-        data_list.append(self.ex_type)
-        data_list.append(self.gear_orientation)
-        data_list.append(self.gear_Flip)
-        data_list.append(self.color_render)
-        data_list.append(self.bottom_length)
-        data_list.append(self.sub_bottom_length)
-        data_list.append(self.lower_gear_dia)
-        data_list.append(self.lower_gear_position)
-        data_list.append(self.upper_gear_dia)
-        data_list.append(self.bit_type)
-        data_list.append(self.bolt_ortientation)
-
-        data_list.append(self.lower_gear_bolt_random)
-        data_list.append(self.lower_gear_bolt_position_1)
-        data_list.append(self.lower_gear_bolt_position_2)
-        data_list.append(self.l_bolt_num)
-        data_list.append(self.upper_Gear_Bolt_Random)
-        data_list.append(self.upper_Gear_Bolt_Position_1)
-        data_list.append(self.upper_Gear_Bolt_Position_2)
-        data_list.append(self.upper_Gear_Bolt_Position_3)
-        data_list.append(self.out_bolt_position)
-        data_list.append(self.save_path)
-        return data_list
+        
+        for name in dir(factory):
+            if name[0:3] == "mf_":
+                if name in self.motor_param:
+                    data_list.append(getattr(factory,name))
+                else:
+                    data_list.append('-')
+        data_list.append(self.bolt_position)
+        data = dict(zip(self.key_list,data_list))
+        return data
 
     def save_modell(self,modell, addtional = None):
         
@@ -691,6 +619,7 @@ class Factory:
 
     def calculate_bolt_position(self,root_position):
         x ,y, z = root_position
+        position=[]
         rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
         self.out_bolt_position += self.bolt_position[0:2]
         for b_position in self.bolt_position[2:]:
@@ -703,4 +632,5 @@ class Factory:
                     
                 else:
                     y_new -= 2*y
-            self.out_bolt_position.append((x_new, y_new, b_position[2]))
+            position.append((x_new, y_new, b_position[2]))
+        self.out_bolt_position = position
