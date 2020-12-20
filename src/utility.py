@@ -68,19 +68,19 @@ class Factory:
     #Gear
     gear_orientation = "mf_zero"
     lower_gear_dia = 0
-    small_gear_position = None
-    large_gear_dia = 0
+    lower_gear_position = None
+    upper_gear_dia = 0
 
-    small_gear_bolt_random = False
-    samll_gear_bolt_rotation_1 = 0
-    samll_gear_bolt_rotation_2 = 0
+    lower_gear_bolt_random = False
+    lower_gear_bolt_position_1 = 0
+    lower_gear_bolt_position_2 = 0
 
     l_bolt_num = 1
-    large_Gear_Bolt_Random = True
+    upper_Gear_Bolt_Random = True
     #large_gear_Angle = 0
-    large_Gear_Bolt_Rotation_1 = 1.3
-    large_Gear_Bolt_Rotation_2 = 1.3
-    large_Gear_Bolt_Rotation_3 = 1.3
+    upper_Gear_Bolt_Position_1 = 1.3
+    upper_Gear_Bolt_Position_2 = 1.3
+    upper_Gear_Bolt_Position_3 = 1.3
     #large_gear_bolt_position_Angle = 0
     
     # Define the behavior of rotation and flip
@@ -111,21 +111,21 @@ class Factory:
         "mf_Sub_Bottom_Length",
 
         "mf_Lower_Gear_Dia",
-        "mf_Small_Gear_Position",
-        "mf_Large_Gear_Dia",
+        "mf_Lower_Gear_Position",
+        "mf_Upper_Gear_Dia",
 
         "mf_Bit_Type",
         "mf_Bolt_Orientation",
 
-        "mf_Small_Gear_Bolt_Random",
-        "mf_Small_Gear_Bolt_Rotation_1",
-        "mf_Small_Gear_Bolt_Rotation_2",
+        "mf_Lower_Gear_Bolt_Random",
+        "mf_Lower_Gear_Bolt_Position_1",
+        "mf_Lower_Gear_Bolt_Position_2",
 
-        "mf_Bolt_Nummber",
-        "mf_Large_Gear_Bolt_Random",
-        "mf_Large_Gear_Bolt_Rotation_1",
-        "mf_Large_Gear_Bolt_Rotation_2",
-        "mf_Large_Gear_Bolt_Rotation_1",
+        "mf_Upper_Bolt_Nummber",
+        "mf_Upper_Gear_Bolt_Random",
+        "mf_Upper_Gear_Bolt_Rotation_1",
+        "mf_Upper_Gear_Bolt_Rotation_2",
+        "mf_Upper_Gear_Bolt_Rotation_3",
 
         "Bolt_position",
         "mf_Save_Path"
@@ -166,31 +166,31 @@ class Factory:
         self.gear_Flip = factory.mf_Flip_1
 
         self.lower_gear_dia = factory.mf_Lower_Gear_Dia
-        self.small_gear_position = factory.mf_Small_Gear_Position
-        self.large_gear_dia = factory.mf_Large_Gear_Dia
+        self.lower_gear_position = factory.mf_Lower_Gear_Position
+        self.upper_gear_dia = factory.mf_Upper_Gear_Dia
         self.color_render = factory.mf_Color_Render
 
-        self.small_gear_bolt_random = factory.mf_Small_Gear_Bolt_Random
+        self.lower_gear_bolt_random = factory.mf_Lower_Gear_Bolt_Random
 
-        self.samll_gear_bolt_rotation_1 = factory.mf_Small_Gear_Bolt_Rotation_1
-        self.samll_gear_bolt_rotation_2 = factory.mf_Small_Gear_Bolt_Rotation_2
+        self.lower_gear_bolt_position_1 = factory.mf_Lower_Gear_Bolt_Position_1
+        self.lower_gear_bolt_position_2 = factory.mf_Lower_Gear_Bolt_Position_2
 
-        self.l_bolt_num = factory.mf_Bolt_Nummber
+        self.l_bolt_num = factory.mf_Upper_Bolt_Nummber
         
-        self.large_Gear_Bolt_Random = factory.mf_Large_Gear_Bolt_Random
+        self.upper_Gear_Bolt_Random = factory.mf_Upper_Gear_Bolt_Random
         #large_gear_Angle = 0
-        self.large_Gear_Bolt_Rotation_1 = factory.mf_Large_Gear_Bolt_Rotation_1
-        self.large_Gear_Bolt_Rotation_2 = factory.mf_Large_Gear_Bolt_Rotation_2
-        self.large_Gear_Bolt_Rotation_3 = factory.mf_Large_Gear_Bolt_Rotation_3
+        self.upper_Gear_Bolt_Position_1 = factory.mf_Upper_Gear_Bolt_Rotation_1
+        self.upper_Gear_Bolt_Position_2 = factory.mf_Upper_Gear_Bolt_Rotation_2
+        self.upper_Gear_Bolt_Position_3 = factory.mf_Upper_Gear_Bolt_Rotation_3
         if  self.l_bolt_num == 1:
-            self.large_Gear_Bolt_Rotation_2 = -999
-            self.large_Gear_Bolt_Rotation_3 = -999
+            self.upper_Gear_Bolt_Position_2 = -999
+            self.upper_Gear_Bolt_Position_3 = -999
         elif self.l_bolt_num == 2:
-            self.large_Gear_Bolt_Rotation_3 = -999
+            self.upper_Gear_Bolt_Position_3 = -999
         self.l_bolt_list = []
         self.s_bolt_list = []
         #self.large_gear_Angle = factory.mf_Large_Gear_Bolt_Angle
-        #self.large_gear_bolt_position_Angle = factory.mf_Large_Gear_Bolt_Rotation
+        #self.large_gear_bolt_position_Angle = factory.mf_Upper_Gear_Bolt_Rotation
         self.save_path = factory.mf_Save_Path
         self.id_Nr = factory.id_Nr    
     
@@ -245,31 +245,6 @@ class Factory:
         #    bpy.context.view_layer.objects.active = cly_out
         #    bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
         return cly_out
-
-    def create_triangle(self, position,thickness,length,towards=None):
-        h=length
-        t=thickness
-        x=position[0]
-        y=position[1]
-        z=position[2]
-        verts=[
-            (x,y+t/2,z+h),
-            (x,y+t/2,z),
-            (x+h,y+t/2,z),
-            (x,y-t/2,z+h),
-            (x,y-t/2,z),
-            (x+h,y-t/2,z),
-        ]
-        faces = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [0,3,4,1],
-            [1,4,5,2],
-            [0,3,5,2],
-        ]
-
-        obj = self.add_mesh("triangle", verts, faces)
-        return obj
 
     def add_mesh(self, name, verts, faces, edges=None, col_name="Collection"):    
         if edges is None:
@@ -613,34 +588,6 @@ class Factory:
             obj.data.materials.append(mat)
         bpy.context.view_layer.objects.active = None
 
-    def create_fake_pc(self):
-        import bpy
-
-        def point_cloud(ob_name, coords):
-            """Create point cloud object based on given coordinates and name."""
-            me = bpy.data.meshes.new(ob_name + "Mesh")
-            ob = bpy.data.objects.new(ob_name, me)
-            me.from_pydata(coords, [], [])
-            ob.show_name = True
-            me.update()
-            return ob
-
-        def face_centers(obj):
-            """Returns median center coordinates for each face of given mesh object."""
-            if obj.type == 'MESH':
-                bm = bmesh.new()
-                bm.from_mesh(obj.data)
-                return [obj.matrix_world @ f.calc_center_median() for f in bm.faces]
-            else:
-                return [(0.0, 0.0, 0.0)]
-
-
-        ob = bpy.context.active_object
-        pc = point_cloud(ob.name + "-pointcloud", face_centers(ob))
-
-        # Link object to the active collection
-        bpy.context.collection.objects.link(pc)
-
     def rotate_object(self, object_rotate):
         rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
         x,y,z = object_rotate.location
@@ -703,19 +650,19 @@ class Factory:
         data_list.append(self.bottom_length)
         data_list.append(self.sub_bottom_length)
         data_list.append(self.lower_gear_dia)
-        data_list.append(self.small_gear_position)
-        data_list.append(self.large_gear_dia)
+        data_list.append(self.lower_gear_position)
+        data_list.append(self.upper_gear_dia)
         data_list.append(self.bit_type)
         data_list.append(self.bolt_ortientation)
 
-        data_list.append(self.small_gear_bolt_random)
-        data_list.append(self.samll_gear_bolt_rotation_1)
-        data_list.append(self.samll_gear_bolt_rotation_2)
+        data_list.append(self.lower_gear_bolt_random)
+        data_list.append(self.lower_gear_bolt_position_1)
+        data_list.append(self.lower_gear_bolt_position_2)
         data_list.append(self.l_bolt_num)
-        data_list.append(self.large_Gear_Bolt_Random)
-        data_list.append(self.large_Gear_Bolt_Rotation_1)
-        data_list.append(self.large_Gear_Bolt_Rotation_2)
-        data_list.append(self.large_Gear_Bolt_Rotation_3)
+        data_list.append(self.upper_Gear_Bolt_Random)
+        data_list.append(self.upper_Gear_Bolt_Position_1)
+        data_list.append(self.upper_Gear_Bolt_Position_2)
+        data_list.append(self.upper_Gear_Bolt_Position_3)
         data_list.append(self.out_bolt_position)
         data_list.append(self.save_path)
         return data_list

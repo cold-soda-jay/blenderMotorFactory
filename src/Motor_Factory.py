@@ -44,27 +44,26 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Sub_Bottom_Length",
 
         "mf_Lower_Gear_Dia",
-        "mf_Small_Gear_Position",
-        "mf_Large_Gear_Dia",
+        "mf_Lower_Gear_Position",
+        "mf_Upper_Gear_Dia",
 
         "mf_Bit_Type",
         "mf_Bolt_Orientation",
 
-        "mf_Small_Gear_Bolt_Rotation_1",
-        "mf_Small_Gear_Bolt_Rotation_2",
-        "mf_Bolt_Nummber",
-        "mf_Large_Gear_Bolt_Random",
-        "mf_Large_Gear_Bolt_Rotation_1",
-        "mf_Large_Gear_Bolt_Rotation_2",
-        "mf_Large_Gear_Bolt_Rotation_3",
+        "mf_Lower_Gear_Bolt_Position_1",
+        "mf_Lower_Gear_Bolt_Position_2",
+        "mf_Upper_Bolt_Nummber",
+        "mf_Upper_Gear_Bolt_Random",
+        "mf_Upper_Gear_Bolt_Position_1",
+        "mf_Upper_Gear_Bolt_Position_2",
+        "mf_Upper_Gear_Bolt_Position_3",
 
         "mf_Type_B_Height_1",
         "mf_Type_B_Height_2",
 
         "mf_Save_Path",
-        "mf_Small_Gear_Bolt_Random",
+        "mf_Lower_Gear_Bolt_Random",
 
-        "mf_Large_Gear_Bolt_Angle",
         ]
     #Create genera types
 
@@ -162,14 +161,12 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             items = Bit_Type_List, default = 'mf_Bit_Torx')
 
 
-
-
     mf_Lower_Gear_Dia = FloatProperty(attr='mf_Lower_Gear_Dia',
         name='Lower Gear Dia', default = 4,
         min = 3.5, soft_min = 0, max = 4.5, 
         description='Diameter of lower Gear')
 
-    mf_Small_Gear_Position = FloatProperty(attr='mf_Small_Gear_Position',
+    mf_Lower_Gear_Position = FloatProperty(attr='mf_Lower_Gear_Position',
         name='Lower Gear Position', default = 3.6,
         min = 3.6, soft_min = 0, max = 4.2, 
         description='Position of lower Gear in middel axe')
@@ -179,67 +176,64 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         min = 6, soft_min = 0, max = 18, 
         description='Angle between bolts on lower gear')
 
-    mf_Small_Gear_Bolt_Random : BoolProperty(name = "Random Bolt Position of lower gear", 
+    mf_Lower_Gear_Bolt_Random : BoolProperty(name = "Random Bolt Position of lower gear", 
                 default = False,
                 description = "Random Bolt Rotation")
 
-    mf_Small_Gear_Bolt_Rotation_1 = IntProperty(attr='mf_Small_Gear_Bolt_Rotation',
+    mf_Lower_Gear_Bolt_Position_1 = IntProperty(attr='mf_Lower_Gear_Bolt_Position',
         name='Position of bolts on lower gear', default = 200,
         min = 190, max = 230, step=5,
         description='Position of bolts on lower gear')
 
-    mf_Small_Gear_Bolt_Rotation_2 = IntProperty(attr='mf_Small_Gear_Bolt_Rotation',
+    mf_Lower_Gear_Bolt_Position_2 = IntProperty(attr='mf_Lower_Gear_Bolt_Position',
         name='Position of bolts on lower gear', default = 320,
         min = 310, max = 350,  step=5,
         description='Position of bolts on lower gear')
 
-    mf_Large_Gear_Dia = FloatProperty(attr='mf_Large_Gear_Dia',
+    mf_Upper_Gear_Dia = FloatProperty(attr='mf_Upper_Gear_Dia',
         name='Upper Gear Dia', default = 5.5,
         min = 5, soft_min = 0, max = 6.5, 
         description='Diameter of upper Gear')
 
 
     #Bolt on large gear
-    mf_Bolt_Nummber = IntProperty( 
+    mf_Upper_Bolt_Nummber = IntProperty( 
             name='Number of Bolts',
             default=2,
             description='Number of Bolts around upper Gear',
             min=1, max=3,step=1 )
 
 
-    mf_Large_Gear_Bolt_Random : BoolProperty(name = "Random Bolt Position of upper gear",
+    mf_Upper_Gear_Bolt_Random : BoolProperty(name = "Random Bolt Position of upper gear",
                 default = False,
                 description = "Random Bolt Rotation")
 
-    mf_Large_Gear_Bolt_Angle = FloatProperty(attr='mf_Large_Gear_Bolt_Angle',
-        name='Angle between bolts on large gear', default = 17,
-        min = 6, soft_min = 0, max = 18, 
-        description='Angle between bolts on large gear')
 
-    mf_Large_Gear_Bolt_Rotation_1 = IntProperty(attr='mf_Large_Gear_Bolt_Rotation_1',
+
+    mf_Upper_Gear_Bolt_Position_1 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_1',
         name='Position of bolts on large gear', default = 13,
         min = 0, max = 210, step=5,
         description='Position of bolts on large gear')
 
-    mf_Large_Gear_Bolt_Rotation_2 = IntProperty(attr='mf_Large_Gear_Bolt_Rotation_2',
+    mf_Upper_Gear_Bolt_Position_2 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_2',
         name='Position of bolts on large gear', default = 13,
         min = 0, max = 210, step=5,
         description='Position of bolts on large gear')
 
-    mf_Large_Gear_Bolt_Rotation_3 = IntProperty(attr='mf_Large_Gear_Bolt_Rotation_3',
+    mf_Upper_Gear_Bolt_Position_3 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_3',
         name='Position of bolts on large gear', default = 13,
         min = 0, max = 210, step=5,
         description='Position of bolts on large gear')
 
     mf_Type_B_Height_1 =   FloatProperty(attr='mf_Type_B_Height_1',
         name='Hieght of Extension ', default = 7,
-        min = 3.5, soft_min = 0, max = 10, 
+        min = 6.3, soft_min = 0, max = 8, 
         description='Angle between bolts on large gear') 
     
     
     mf_Type_B_Height_2 =   FloatProperty(attr='mf_Type_B_Height_2',
         name='Hieght of Extension ', default =3.5,
-        min = 3, soft_min = 0, max = 10, 
+        min = 2, soft_min = 0, max = 6, 
         description='Angle between bolts on large gear') 
 
     bolt_orientation_list = [('mf_all_same', 'All Same','All Same'),
@@ -286,9 +280,9 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
         col.label(text="Gears")
         col.prop(self, 'mf_Lower_Gear_Dia') 
-        col.prop(self, 'mf_Small_Gear_Position')
+        col.prop(self, 'mf_Lower_Gear_Position')
         if self.mf_Head_Type == "mf_Head_Type_A":  
-            col.prop(self, 'mf_Large_Gear_Dia')    
+            col.prop(self, 'mf_Upper_Gear_Dia')    
         elif  self.mf_Head_Type == "mf_Head_Type_B":  
             col.prop(self, 'mf_Type_B_Height_1')
             col.prop(self, 'mf_Type_B_Height_2')
@@ -301,21 +295,21 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
             col.label(text="Bolts Position around lower gear")
 
-            col.prop(self, 'mf_Small_Gear_Bolt_Random')    
-            if not self.mf_Small_Gear_Bolt_Random: 
-                col.prop(self, 'mf_Small_Gear_Bolt_Rotation_1')
-                col.prop(self, 'mf_Small_Gear_Bolt_Rotation_2')
+            col.prop(self, 'mf_Lower_Gear_Bolt_Random')    
+            if not self.mf_Lower_Gear_Bolt_Random: 
+                col.prop(self, 'mf_Lower_Gear_Bolt_Position_1')
+                col.prop(self, 'mf_Lower_Gear_Bolt_Position_2')
             col.label(text="Bolts Position around upper gear")
 
-            col.prop(self, 'mf_Bolt_Nummber')
-            col.prop(self, 'mf_Large_Gear_Bolt_Random')
-            if not self.mf_Large_Gear_Bolt_Random:
-                col.prop(self, 'mf_Large_Gear_Bolt_Rotation_1') 
-                if self.mf_Bolt_Nummber == 2:
-                    col.prop(self, 'mf_Large_Gear_Bolt_Rotation_2') 
-                elif self.mf_Bolt_Nummber == 3:
-                    col.prop(self, 'mf_Large_Gear_Bolt_Rotation_2')
-                    col.prop(self, 'mf_Large_Gear_Bolt_Rotation_3')
+            col.prop(self, 'mf_Upper_Bolt_Nummber')
+            col.prop(self, 'mf_Upper_Gear_Bolt_Random')
+            if not self.mf_Upper_Gear_Bolt_Random:
+                col.prop(self, 'mf_Upper_Gear_Bolt_Position_1') 
+                if self.mf_Upper_Bolt_Nummber == 2:
+                    col.prop(self, 'mf_Upper_Gear_Bolt_Position_2') 
+                elif self.mf_Upper_Bolt_Nummber == 3:
+                    col.prop(self, 'mf_Upper_Gear_Bolt_Position_2')
+                    col.prop(self, 'mf_Upper_Gear_Bolt_Position_3')
      
            
         #col.prop(self, 'bf_presets')
@@ -373,8 +367,10 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 os.mkdir(path_of_folder)
             except:
                 pass
-        
-        creator = mt.Motor_Creator(self)
+        if self.mf_Head_Type == "mf_Head_Type_A":
+            creator = mt.Type_A(self)
+        elif self.mf_Head_Type == "mf_Head_Type_B":
+            creator = mt.Type_B(self) 
         bottom = creator.create_Bottom()
         #creator.save_modell(bottom.name)
 
