@@ -388,6 +388,7 @@ class Motor_Creator(Factory):
 class Type_A(Motor_Creator):
     
     param = [
+        "mf_Extension_Type_A",
         "mf_Lower_Gear_Dia",
         "mf_Lower_Gear_Position",
         "mf_Upper_Gear_Dia",
@@ -435,10 +436,13 @@ class Type_A(Motor_Creator):
            
             if self.ex_type == 'mf_Extension_Type_1':
                 self.gear_orientation = factory.mf_Gear_Orientation_1
+                self.param.append("mf_Gear_Orientation_1")
             elif self.ex_type == 'mf_Extension_Type_2':                          
                 self.gear_orientation = factory.mf_Gear_Orientation_2
+                self.param.append("mf_Gear_Orientation_2")
             else:
                 self.gear_orientation = factory.mf_Gear_Orientation_1
+                self.param.append("mf_Gear_Orientation_2")
 
             
             self.upper_gear_dia = factory.mf_Upper_Gear_Dia
@@ -465,8 +469,15 @@ class Type_A(Motor_Creator):
                 self.param.append("mf_Upper_Gear_Bolt_Position_3")
 
 
-
-            self.motor_param += self.param
+            self.motor_param = self.param + [
+                                            "mf_Head_Type",
+                                            "mf_Flip",
+                                            "mf_Color_Render",
+                                            "mf_Bottom_Length",
+                                            "mf_Sub_Bottom_Length",
+                                            "mf_Bit_Type",
+                                            "mf_Bolt_Orientation",   
+                                        ]
             self.l_bolt_list = []
             self.s_bolt_list = []
 
@@ -1200,7 +1211,15 @@ class Type_B(Motor_Creator):
                 
             self.type_B_Height_1 = factory.mf_Type_B_Height_1
             self.type_B_Height_2 = factory.mf_Type_B_Height_2
-            self.motor_param += self.param
+            self.motor_param = self.param + [
+                                            "mf_Head_Type",
+                                            "mf_Flip",
+                                            "mf_Color_Render",
+                                            "mf_Bottom_Length",
+                                            "mf_Sub_Bottom_Length",
+                                            "mf_Bit_Type",
+                                            "mf_Bolt_Orientation",   
+                                        ]
             #self.l_bolt_list = []
             #self.s_bolt_list = []
 

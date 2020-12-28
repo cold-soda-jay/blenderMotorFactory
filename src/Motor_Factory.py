@@ -12,6 +12,7 @@ from bpy_extras.object_utils import AddObjectHelper
 
 
 class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
+    
     #Set Genera information
     bl_idname = "mesh.add_motor"
     bl_label = "Motor Property"
@@ -72,8 +73,9 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "save_path",
 
         ]
-    #Create genera types
+    #Create genera types and Variables
 
+    ################### General ##################################
     #Head Types 
     Head_Type_List = [('mf_Head_Type_A','Type A (Two gears)','Type A'),
                         ('mf_Head_Type_B','Type B (One gears)','Type B')]
@@ -81,25 +83,9 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             name='Type',
             description='Choose the type of Motor you would like',
             items = Head_Type_List, default = 'mf_Head_Type_B')
-
-    #Bottom size      
-    mf_Bottom_Length = FloatProperty(attr='mf_Bottom_Length',
-            name='Bottom Length', default = 6.4,
-            min = 0, soft_min = 0, max = MAX_INPUT_NUMBER, 
-            description='Length of the Bottom')
-
-    #Bottom size      
-    mf_Sub_Bottom_Length = FloatProperty(attr='mf_Sub_Bottom_Length',
-            name='Sub Bottom Length', default = 1.2,
-            min =0.6, soft_min = 0.1, max = 2, 
-            description='Length of the Sub Bottom')
-                    
-
-    mf_Sub_Bottom_Inner_Dia = FloatProperty(attr='mf_Sub_Bottom_Inner_Dia',
-        name='Sub Bottom Inner Dia', default = 0.5,
-        min = 0, soft_min = 0, max = 0.9, 
-        description='Length of the sub Bottom inner dia')
-    #Bottom Types
+    
+    #Extension zone Types
+    
     Extention_Type_List_A = [('mf_Extension_Type_1','Type 1','Type 1'),
                  ('mf_Extension_Type_2','Type 2','Type 2'),                 
                  ('mf_None','None','None') 
@@ -117,6 +103,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             description='Choose the type of extension area you would like',
             items = Extention_Type_List_B, default = 'mf_Extension_Type_1')
 
+
+   
     # Gear Orientation
     Orientation_List_Type_2 = [
                 ('mf_Ninety','90','90'),             
@@ -145,27 +133,28 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 default = False,
                 description = "Flip the gears")
 
-
-
+    # Set color rendering option
     mf_Color_Render : BoolProperty(name = "Color Render",
                 default = False,
                 description = "Render clor or not")
 
-    mf_Bottom_Size = FloatProperty(attr='mf_Bottom_Size',
-            name='Bottom Size', default = 20,
-            min = 0, soft_min = 0, max = 50, 
-            description='Size of the Bottom in percent')
+    ################## Bottom ########################################
+    #Bottom Length      
+    mf_Bottom_Length = FloatProperty(attr='mf_Bottom_Length',
+            name='Bottom Length', default = 6.4,
+            min = 0, soft_min = 0, max = MAX_INPUT_NUMBER, 
+            description='Length of the Bottom')
 
-    #Bit Types
-    Bit_Type_List = [('mf_Bit_Torx','Torx','Torx Bit Type'),
-                    ('mf_Bit_Slot','Slot','Slot Bit Type'),
-                    ('mf_Bit_Cross','Cross','Cross Bit Type')]
-    mf_Bit_Type = EnumProperty( attr='mf_Bit_Type',
-            name='Bit Type',
-            description='Choose the type of bit to you would like',
-            items = Bit_Type_List, default = 'mf_Bit_Torx')
+    #Sub Bottom length      
+    mf_Sub_Bottom_Length = FloatProperty(attr='mf_Sub_Bottom_Length',
+            name='Sub Bottom Length', default = 1.2,
+            min =0.6, soft_min = 0.1, max = 2, 
+            description='Length of the Sub Bottom')
+                    
 
+    
 
+    ###################### Lower Gears for type A and B ########################################
     mf_Lower_Gear_Dia = FloatProperty(attr='mf_Lower_Gear_Dia',
         name='Lower Gear Dia', default = 4,
         min = 3.5, soft_min = 0, max = 4.5, 
@@ -191,7 +180,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         min = 310, max = 350,  step=5,
         description='Position of bolt 2 on lower gear')
     
-    ###############################################################################
+    #################################### Gear option for Type B ###########################################
     mf_Gear_Bolt_Random_B : BoolProperty(name = "Random Bolt Position ", 
                 default = False,
                 description = "Random Bolt Rotation")
@@ -216,14 +205,23 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         min = -60, max = 10,  step=1,
         description='Position of bolt 2 on gear')
     
+    mf_Type_B_Height_1 =   FloatProperty(attr='mf_Type_B_Height_1',
+        name='Hieght of Extension left', default = 7,
+        min = 6.3, soft_min = 0, max = 8, 
+        description='Angle between bolts on large gear') 
+    
+    
+    mf_Type_B_Height_2 =   FloatProperty(attr='mf_Type_B_Height_2',
+        name='Hieght of Extension right', default =3.5,
+        min = 2, soft_min = 0, max = 6, 
+        description='Angle between bolts on large gear') 
 
-    #########################################################
+    ########################## Upper part Type A ###############################
 
     mf_Upper_Gear_Dia = FloatProperty(attr='mf_Upper_Gear_Dia',
         name='Upper Gear Dia', default = 5.5,
         min = 5, soft_min = 0, max = 6.5, 
         description='Diameter of upper Gear')
-
 
     #Bolt on large gear
     mf_Upper_Bolt_Nummber = IntProperty( 
@@ -254,16 +252,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         min = 0, max = 210, step=5,
         description='Position of bolts on large gear')
 
-    mf_Type_B_Height_1 =   FloatProperty(attr='mf_Type_B_Height_1',
-        name='Hieght of Extension left', default = 7,
-        min = 6.3, soft_min = 0, max = 8, 
-        description='Angle between bolts on large gear') 
-    
-    
-    mf_Type_B_Height_2 =   FloatProperty(attr='mf_Type_B_Height_2',
-        name='Hieght of Extension right', default =3.5,
-        min = 2, soft_min = 0, max = 6, 
-        description='Angle between bolts on large gear') 
+
+    ###################### Bolts ############################################
 
     bolt_orientation_list = [('mf_all_same', 'All Same','All Same'),
                             ('mf_all_random', 'All Random', 'All Random')]
@@ -272,23 +262,36 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             description='Orientation of bolts',
             items = bolt_orientation_list, default = 'mf_all_same')
     
+    
+    #Bit Types
+    Bit_Type_List = [('mf_Bit_Torx','Torx','Torx Bit Type'),
+                    ('mf_Bit_Slot','Slot','Slot Bit Type'),
+                    ('mf_Bit_Cross','Cross','Cross Bit Type')]
+    mf_Bit_Type = EnumProperty( attr='mf_Bit_Type',
+            name='Bit Type',
+            description='Choose the type of bit to you would like',
+            items = Bit_Type_List, default = 'mf_Bit_Torx')
+    
+    ##################### Svae path #####################
     save_path = StringProperty(name = "Save",
                 default = "None", maxlen=4096,
                 description = "Save the modell")        
     
     
     def draw(self, context):
+        """
+        Define the contex menu
+
+        """
         layout = self.layout
         col = layout.column()
         
-        #ENUMS
         col.label(text="General")
         col.prop(self, 'mf_Head_Type')
         if self.mf_Head_Type == "mf_Head_Type_A":  
             col.prop(self, 'mf_Extension_Type_A')
             if self.mf_Extension_Type_A == 'mf_Extension_Type_1':
                 col.prop(self, 'mf_Gear_Orientation_1')        
-                #col.prop(self, 'mf_Flip_1')
             elif self.mf_Extension_Type_A == 'mf_Extension_Type_2':
                 col.prop(self, 'mf_Gear_Orientation_2') 
             else:
@@ -341,22 +344,15 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         elif self.mf_Head_Type == "mf_Head_Type_B":
             col.label(text="Bolts Position around gear")
             if self.mf_Extension_Type_B == "mf_None":
-                col.prop(self, 'mf_Gear_Bolt_Nummber_B')
-                    
-           
+                col.prop(self, 'mf_Gear_Bolt_Nummber_B')                        
             col.prop(self, 'mf_Gear_Bolt_Random_B')
             if not self.mf_Gear_Bolt_Random_B:
                 col.prop(self, 'mf_Gear_Bolt_Position_B_1')
                 col.prop(self, 'mf_Gear_Bolt_Position_B_2')
                 if self.mf_Extension_Type_B == "mf_None" and self.mf_Gear_Bolt_Nummber_B == 3:
                     col.prop(self, 'mf_Gear_Bolt_Position_B_3')
-
-            
-
-     
-           
-        #col.prop(self, 'bf_presets')
         col.separator()
+
 
     @classmethod
     def poll(cls, context):
@@ -395,7 +391,13 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         return {'FINISHED'}
 
     def create_motor(self):
+        """Create motor
 
+        Returns:
+            Motor Object
+        """
+
+        # Check if the model should be svaed
         if self.save_path == "None":
             pass
         else:  
@@ -410,21 +412,24 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 os.mkdir(path_of_folder)
             except:
                 pass
+        # different headtype instance different object
         if self.mf_Head_Type == "mf_Head_Type_A":
             creator = mt.Type_A(self)
         elif self.mf_Head_Type == "mf_Head_Type_B":
             creator = mt.Type_B(self) 
+        
+        #Create bottom part
         bottom = creator.create_Bottom()
-        #creator.save_modell(bottom.name)
 
-        #middle = creator.create_middle()
-
+        #Create energy part (Electric socket)
         en_part = creator.create_en_part()
 
-        #convex = creator.create_4_convex_cyl()
+        #Create Upper part
         upper_part = creator.create_upper_part()
 
         obj_list=[upper_part,en_part]
+        
+        # Check if color should be rendered
         for area in bpy.context.screen.areas: # iterate through areas in current screen
 
             if area.type == 'VIEW_3D':               
@@ -434,13 +439,13 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                             space.shading.type = 'MATERIAL'
                         else:
                             space.shading.type = 'SOLID' # set the viewport shading to rendered
-    
+
+        # Combine all created parts
         motor = creator.combine_all_obj(bottom,obj_list)     
         motor.name = "Motor"
         motor.data.name = "Motor"
         creator.save_modell(motor)
-        creator.save_csv(self)
-            
+        creator.save_csv(self)          
         return motor
 
     

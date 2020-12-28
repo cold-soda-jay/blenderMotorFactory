@@ -11,6 +11,14 @@ import csv
 
 
 class Factory:
+    """Basic Class for creating motor. Contains several basic methods and variables.
+    
+
+        To use this the defined motor operator should be created and given when initiationg:
+        
+        e.g.: creator = Factory(operator)
+    """
+    
     #######################################################################################################################
     ##################### Constants #######################################################################################
     
@@ -27,9 +35,12 @@ class Factory:
     BOLT_THREAD_LENGTH = 1.4
     BOLT_THREAD_DIA = 0.2
     
+    # Board
     BOARD_THICKNESS = 0.1
     FOUR_CYL_DIA = 0.7
 
+    # 4 convex part
+    
     C1_LENGTH = 0
     C2_LENGTH = 0
     C3_LENGTH = 0
@@ -75,18 +86,8 @@ class Factory:
     color_render = False
     gear_Flip = False
 
-    #Save path
+    #Define the parameter that should be svaed in csv file
     motor_param = [
-        "mf_Head_Type",
-        "mf_Extension_Type",
-        "mf_Gear_Orientation",
-        "mf_Flip",
-        "mf_Color_Render",
-        "mf_Bottom_Length",
-        "mf_Sub_Bottom_Length",
-
-        "mf_Bit_Type",
-        "mf_Bolt_Orientation",
         
     ]
     key_list = []
@@ -98,6 +99,12 @@ class Factory:
     out_bolt_position = []
 
     def __init__(self,factory):
+        """initiate variables.
+
+        Args:
+            factory ([bpy.types.Operator]): [Operator]
+        """
+        
         self.head_Type = factory.mf_Head_Type
         self.init_x = factory.init_x
         self.init_y = factory.init_y
@@ -119,21 +126,43 @@ class Factory:
         
         self.color_render = factory.mf_Color_Render
 
-
+        self.motor_param += [
+            "mf_Head_Type",
+            "mf_Flip",
+            "mf_Color_Render",
+            "mf_Bottom_Length",
+            "mf_Sub_Bottom_Length",
+            "mf_Bit_Type",
+            "mf_Bolt_Orientation",
+            
+        ]
         self.save_path = factory.save_path
         self.id_Nr = factory.id_Nr    
         self.init_modify(factory)
     
     def init_modify(self,factory):
+        """Init other variables by demand
+
+        Args:
+            factory (bpy.types.Operator): [Operator]
+        """
         pass
 
     ##############################################################################################################################
-    ########################## Utility ###########################################################################################
+    ########################## Genera Utility ####################################################################################
     
 
     def combine_all_obj(self, main_obj, object_list):
+        """Combine objects. Joint all opjects in object_list into main_obj
+
+        Args:
+            main_obj ([bpy.types.Object]): [main object]
+            object_list ([list]): [List of objects that shold be joined into main object]
+
+        Returns:
+            [bpy.types.Object]: [Combined object. Should have same attribute as main_obj]
+        """
         bpy.ops.object.select_all(action='DESELECT')
-        #bpy.ops.object.mode_set(mode='OBJECT')
         bpy.context.view_layer.objects.active = main_obj
         for obj in object_list:
             try:
@@ -149,6 +178,16 @@ class Factory:
         return main_obj
 
     def rotate_around_point(self, origin, Angle, obj_position):
+        """Caculate rotation for 2D case.
+
+        Args:
+            origin (tuple): Original point which object should rotate around it. Size: 1*2
+            Angle (float): Rotate angle
+            obj_position (tuple): Object position. Size: 1*2
+
+        Returns:
+            tuple: Rotated object position
+        """
         if type(Angle) == int or float:
             rot = radians(Angle)   
         else:
@@ -159,6 +198,17 @@ class Factory:
         return x+origin[0],y+origin[1]
 
     def create_ring(self, position,height,radius,thickness):
+        """Create ring object
+
+        Args:
+            position (tuple): position of ring. Size: 1*3
+            height (float): height of ring
+            radius (float): raius of ring
+            thickness (float): Thickness of ring
+
+        Returns:
+            bpy.type.Object: Created ring
+        """
         bpy.ops.mesh.primitive_cylinder_add(radius=radius, depth=height, location=position)
         cly_out = bpy.context.object
         bpy.ops.mesh.primitive_cylinder_add(radius=radius-thickness, depth=height+1, location=position)
@@ -169,15 +219,27 @@ class Factory:
         bool_in.object = cly_in
         bpy.context.view_layer.objects.active = cly_out
         res = bpy.ops.object.modifier_apply(modifier='bool_in')
+        
         # Delete the cylinder.x
         cly_in.select_set(True)
         bpy.ops.object.delete() 
-        #if rotation is not None:
-        #    bpy.context.view_layer.objects.active = cly_out
-        #    bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
+
         return cly_out
 
-    def add_mesh(self, name, verts, faces, edges=None, col_name="Collection"):    
+    def add_mesh(self, name, verts, faces, edges=None, col_name="Collection"):  
+        """Create mesh using verts and faces
+
+        Args:
+            name (str): 
+            verts (tuple): List of verts
+            faces (tuple): List of faces
+            edges (Tuple, optional): [description]. Defaults to None.
+            col_name (str, optional): [description]. Defaults to "Collection".
+
+        Returns:
+            [bpy.type.objects]:
+        """
+          
         if edges is None:
             edges = []
         mesh = bpy.data.meshes.new(name)
@@ -189,6 +251,16 @@ class Factory:
         return obj
 
     def add_torx(self,position,size,depth):
+        """Create torx model
+
+        Args:
+            position (tuple): 
+            size (float): [description]
+            depth (float): [description]
+
+        Returns:
+            bpy.type.Object: Torx object
+        """
         x = position[0]
         y = position[1]
         z = position[2] + 0.2
@@ -245,6 +317,13 @@ class Factory:
         return obj
 
     def diff_obj(self, main, slave):
+        """Boolean oeration for two object. 
+
+        Args:
+            main (bpy.type.objects): Main object that should be cutted
+            slave (bpy.type.objects): Slave object that cuts main object
+
+        """
         boolean = main.modifiers.new('bool_in', 'BOOLEAN')
         boolean.operation = 'DIFFERENCE'
         boolean.object = slave
@@ -254,6 +333,17 @@ class Factory:
         return res
 
     def add_vector(self,v1,v2,minus=0,height=0):
+        """Add each element in two vectors
+
+        Args:
+            v1 (list): [description]
+            v2 (list): [description]
+            minus (int, optional): Set to 1, then v1 - v2. Set to 0, then v1 + v2. Defaults to 0.
+            height (int, optional): Set to 1, add height. Defaults to 0.
+
+        Returns:
+            list: result vector
+        """
         out = []
         for i in range(len(v1)):
             if minus == 1:
@@ -265,6 +355,15 @@ class Factory:
         return out
 
     def create_motor_main(self, position, height, width, length):
+        """Create motor botom main part(a cutted cylinder)
+
+        Args:
+            position ([type]): [description]
+            height ([type]): [description]
+            width ([type]): [description]
+            length ([type]): [description]
+
+        """
 
         # Add main cylinder
         cylinder_r = width/2
@@ -325,6 +424,7 @@ class Factory:
         bit_type = self.bit_type
         orientation = self.bolt_ortientation
         out_dia = self.BOLT_RAD
+        # Check if only body should be created
         if only_body :
             out_length = 0.3
             z_in = position[2] + out_length/2 - 0.15
@@ -359,8 +459,7 @@ class Factory:
 
             #Create Shell for Bolt
             out_cyl = self.create_ring(position, out_length, out_dia, 0.2)
-            #bpy.ops.mesh.primitive_cylinder_add(radius=out_dia, depth=out_length, location=position)
-            #out_cyl = bpy.context.object
+
             out_cyl.name = 'out_cylinder'
 
             bpy.ops.mesh.primitive_uv_sphere_add(radius=in_dia, location=(position[0],position[1],z_sphe))
@@ -375,11 +474,12 @@ class Factory:
             bool_in.operation = 'DIFFERENCE'
             bool_in.object = cut_cyl
             bpy.context.view_layer.objects.active = sphere
-            res = bpy.ops.object.modifier_apply(modifier='bool_in')
-            # Delete the cylinder.x
+            res = bpy.ops.object.modifier_apply(modifier='bool_in')           
+            # Delete the cylinder
             cut_cyl.select_set(True)
             bpy.ops.object.delete() 
 
+            #Create bit of bolts
             if bit_type == 'mf_Bit_Slot':
                 bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],z_sphe+ in_dia/3))
                 bpy.ops.transform.resize(value=(in_dia*1.5, 0.05, 0.2))
@@ -460,7 +560,7 @@ class Factory:
 
                 bit.select_set(True)
                 bpy.ops.object.delete() 
-
+            # rend color
             if self.color_render:
                 self.rend_color(out_cyl,"Plastic")
                 self.rend_color(sphere,"Bit")
@@ -469,10 +569,8 @@ class Factory:
             bolt = self.combine_all_obj(thread,[sphere,in_cyl])
             bolt.name = 'Bolt_'+str(self.bolt_num)
             self.bolt_num+=1
-            #self.save_modell(bolt)
-            #part = self.combine_all_obj(out_cyl,[bolt])
 
-
+        # rotate the bit
         if orientation == 'mf_all_random':
             Angle = random.randrange(0, 360, 10) 
             bpy.ops.object.select_all(action='DESELECT')
@@ -487,6 +585,12 @@ class Factory:
         return [out_cyl,bolt]
 
     def rend_color(self, obj, part):
+        """Rend color option. 
+
+        Args:
+            obj (bpy.type.Objects): Object to be colored
+            part (str): Keyword for color rendering
+        """
 
         mat = bpy.data.materials.new(name="Material")
         
@@ -521,6 +625,11 @@ class Factory:
         bpy.context.view_layer.objects.active = None
 
     def rotate_object(self, object_rotate):
+        """Rotate object after creation. Rotation will set by user
+
+        Args:
+            object_rotate (bpy.type.Objects): Object to be rotated
+        """
         rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
         x,y,z = object_rotate.location
         bpy.ops.object.select_all(action='DESELECT')
@@ -545,6 +654,11 @@ class Factory:
             pass
 
     def init_key_list(self,factory):
+        """Initiate key list for saving to csv
+
+        Args:
+            factory (bpy.types.Operator): Operator
+        """
         key_list = ["Nr."]
         for name in dir(factory):
             if name[0:3] == "mf_":
@@ -553,12 +667,25 @@ class Factory:
         self.key_list=key_list
 
     def init_csv(self,path, factory):
+        """initiate csv file
+
+        Args:
+            path (str): 
+            factory (bpy.types.Operator):
+        """
         self.init_key_list(factory)
         with open(path, "a+", encoding='utf-8') as log:
             writer = csv.writer(log)
             writer.writerow(self.key_list)
 
     def write_data(self, path, data, factory):
+        """Write data into csv
+
+        Args:
+            path (str): 
+            data (dict): 
+            factory (bpy.types.Operator): 
+        """
 
         csvdict = csv.DictReader(open(path, 'rt', encoding='utf-8', newline=''))
         dictrow = [row for row in csvdict if len(row) > 0 ]
@@ -571,6 +698,11 @@ class Factory:
                 wrier.writerow(wowow)
 
     def save_csv(self, factory):
+        """Save csv file
+
+        Args:
+            factory (bpy.types.Operator): 
+        """
         if self.save_path == "None":
             pass
         else:
@@ -583,6 +715,14 @@ class Factory:
             self.write_data(csv_path,data, factory)
 
     def create_data_list(self, factory):
+        """Create data list `
+
+        Args:
+            factory (bpy.types.Operator): 
+
+        Returns:
+            dict: Dictionary of parameter
+        """
         data_list=[str(self.id_Nr)]
         
         for name in dir(factory):
@@ -596,7 +736,12 @@ class Factory:
         return data
 
     def save_modell(self,modell, addtional = None):
-        
+        """Save model
+
+        Args:
+            modell (bpy.types.Objects): 
+            addtional (bpy.types.Objects, optional): If other model should be saved in the same file. Defaults to None.
+        """
         if self.save_path == "None":
             pass
         else:
@@ -618,6 +763,11 @@ class Factory:
             bpy.ops.object.select_all(action='DESELECT')
 
     def calculate_bolt_position(self,root_position):
+        """Caculate bolts positions
+
+        Args:
+            root_position (list): Bolt position before rotation
+        """
         x ,y, z = root_position
         position=[]
         rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]

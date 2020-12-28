@@ -13,10 +13,10 @@
 
 bl_info = {
     "name" : "MotorFactory",
-    "author" : "Joe",
+    "author" : "Cold-Soda-Joe",
     "description" : "Motor Factory",
-    "blender" : (2, 90, 0),
-    "version" : (0, 0, 1),
+    "blender" : (2, 90, 1),
+    "version" : (1, 0, 0),
     "location" : "View3D > Add > Mesh",
     "warning" : "",
     "category" : "Generic"
@@ -25,7 +25,6 @@ bl_info = {
 import bpy
 
 from .Motor_Factory import Motor_Factory_Operator
-#from .test_panel import Test_PT_Panel
 
 
 def add_mesh_motor_button(self, context):
@@ -50,7 +49,6 @@ def register():
     bpy.types.VIEW3D_MT_mesh_add.append(add_mesh_motor_button)
     bpy.types.VIEW3D_MT_object_context_menu.prepend(Motor_contex_menu)
 
-    #bpy.types.VIEW3D_PT_tools_objectmode.prepend(add_mesh_motor_button) #just for testing
 
 def unregister():
     
@@ -58,7 +56,6 @@ def unregister():
     bpy.types.VIEW3D_MT_mesh_add.remove(add_mesh_motor_button)
     bpy.utils.unregister_class(Motor_Factory_Operator)
 
-    #bpy.types.VIEW3D_PT_tools_objectmode.remove(add_mesh_motor_button) #just for testing
 
 #if __name__ == "__main__":
  #   register()
