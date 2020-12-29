@@ -6,7 +6,7 @@ This addon only support [blender version 2.90.1](https://download.blender.org/re
 
 ## 1. Installation
 
-1. Download the project via ``git clone https://github.com/cold-soda-jay/blender_Motor_Factory.git`` or download zip file from realese.
+1. Download the project via ``git clone https://github.com/cold-soda-jay/blenderMotorFactory.git`` or download zip file from realese.
 2. In Blender, go *Edit > Preference > Install* and find the file **Add Motor.zip**. Make sure it is activated.
 3. Now you can find it in *Add >Mesh*
 
