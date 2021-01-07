@@ -62,7 +62,7 @@ To generate more models at once, you can use script ``./src/auto_generate.py``. 
 "mf_Gear_Bolt_Position_B_1",
 "mf_Gear_Bolt_Position_B_2",
 "mf_Gear_Bolt_Position_B_3",
-
+"mf_Gear_Bolt_Right_B",
 
 "mf_Upper_Bolt_Nummber",
 "mf_Upper_Gear_Bolt_Random",
