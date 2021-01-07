@@ -59,6 +59,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Gear_Bolt_Position_B_1",
         "mf_Gear_Bolt_Position_B_2",
         "mf_Gear_Bolt_Position_B_3",
+        "mf_Gear_Bolt_Right_B",
 
         
         "mf_Upper_Bolt_Nummber",
@@ -215,6 +216,11 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         name='Hieght of Extension right', default =3.5,
         min = 2, soft_min = 0, max = 6, 
         description='Angle between bolts on large gear') 
+    
+    mf_Gear_Bolt_Right_B =   FloatProperty(attr='mf_Gear_Bolt_Right_B',
+        name='Position of bolt at right', default =2.5,
+        min = 1.7, soft_min = 0, max = 4, 
+        description='Position of bolt at right')
 
     ########################## Upper part Type A ###############################
 
@@ -342,7 +348,9 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                     col.prop(self, 'mf_Upper_Gear_Bolt_Position_2')
                     col.prop(self, 'mf_Upper_Gear_Bolt_Position_3')
         elif self.mf_Head_Type == "mf_Head_Type_B":
-            col.label(text="Bolts Position around gear")
+            col.label(text="Bolts Position around gear B")
+            col.prop(self, 'mf_Gear_Bolt_Right_B')
+
             if self.mf_Extension_Type_B == "mf_None":
                 col.prop(self, 'mf_Gear_Bolt_Nummber_B')                        
             col.prop(self, 'mf_Gear_Bolt_Random_B')

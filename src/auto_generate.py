@@ -22,6 +22,7 @@ def generate_param():
             "mf_Gear_Bolt_Nummber_B" : random.randrange(2, 3),
             "mf_Type_B_Height_1" : random.uniform(6.3, 8),
             "mf_Type_B_Height_2" : random.uniform(2, 6),
+            "mf_Gear_Bolt_Right_B" : random.uniform(1.7,4)
                         
             "mf_Upper_Gear_Dia": random.uniform(5, 6.5),
             "mf_Upper_Bolt_Nummber": random.randrange(1, 3),

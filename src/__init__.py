@@ -19,7 +19,7 @@ bl_info = {
     "version" : (1, 0, 0),
     "location" : "View3D > Add > Mesh",
     "warning" : "",
-    "category" : "Generic"
+    "category" : "Add Mesh"
 }
 
 import bpy

@@ -1179,6 +1179,7 @@ class Type_B(Motor_Creator):
     bolt_position_1 = 0
     bolt_position_2 = 0
     bolt_position_3 = 0
+    bolt_position_right = 0
     bolt_position_random = []
     
     param = [
@@ -1192,9 +1193,10 @@ class Type_B(Motor_Creator):
         "mf_Gear_Bolt_Position_B_1",
         "mf_Gear_Bolt_Position_B_2",
         "mf_Gear_Bolt_Position_B_3",
+        "mf_Gear_Bolt_Right_B"
 
     ]
-    def init_modify(self,factory):
+    def init_modify(self,factory: bpy.types.Operator):
             
             self.ex_type = factory.mf_Extension_Type_B                   
             self.gear_orientation = factory.mf_Gear_Orientation_1
@@ -1206,9 +1208,9 @@ class Type_B(Motor_Creator):
             self.bolt_position_1 = factory.mf_Gear_Bolt_Position_B_1
             self.bolt_position_2 = factory.mf_Gear_Bolt_Position_B_2
             self.bolt_position_3 = factory.mf_Gear_Bolt_Position_B_3
+            self.bolt_position_right = factory.mf_Gear_Bolt_Right_B
             #####################################
-            
-                
+                           
             self.type_B_Height_1 = factory.mf_Type_B_Height_1
             self.type_B_Height_2 = factory.mf_Type_B_Height_2
             self.motor_param = self.param + [
@@ -1219,10 +1221,7 @@ class Type_B(Motor_Creator):
                                             "mf_Sub_Bottom_Length",
                                             "mf_Bit_Type",
                                             "mf_Bolt_Orientation",   
-                                        ]
-            #self.l_bolt_list = []
-            #self.s_bolt_list = []
-
+                                        ]           
     
     ##############################################################################################################################
     ######################## Upper Part Type B ###################################################################################
@@ -1244,7 +1243,7 @@ class Type_B(Motor_Creator):
         z_b1 = bolt_positions[0][2] + self.BOLT_RAD
 
         y_b2 = bolt_positions[1][1] + self.BOLT_RAD
-        z_b2 = bolt_positions[1][2] -self.BOLT_RAD
+        z_b2 = bolt_positions[1][2] 
 
         y_b3 = bolt_positions[2][1]
         z_b3 = bolt_positions[2][2] -self.BOLT_RAD
@@ -1388,20 +1387,14 @@ class Type_B(Motor_Creator):
         s_gear.select_set(True)
         bpy.ops.transform.rotate(value=radians(90),orient_axis='Y') 
 
-
         exte = self.create_gear_extension((x,y,z),length_relativ)
 
-
         # Create Bolts
-
         x_bolt_init = x + length_relativ/2 - self.BOLT_LENGTH/2 + self.EXTENSION_THICKNESS + 0.1
         y_bolt_init = y - lower_gear_radius - 0.9*self.BOLT_RAD
         z_bolt_init = z 
         
-        # Calculate the rotate (x,z axis)
-               
-
-        
+        # Calculate the rotate (x,z axis)             
         if self.bolt_random:
             if self.ex_type ==  "mf_None":
                 bolt_rotation_1 = random.uniform(35,55)#self.lower_gear_bolt_position_2
@@ -1421,7 +1414,8 @@ class Type_B(Motor_Creator):
         bolt_2 = self.create_bolt((x_bolt_init, y_bolt_2,z_bolt_2), rotation = rotation_s) 
 
 
-        y_bolt_temp, z_bolt_3 = self.rotate_around_point((y,z),45,(y_bolt_init,z_bolt_init))
+        #y_bolt_temp, z_bolt_3 = self.rotate_around_point((y,z),45,(y_bolt_init,z_bolt_init))
+        z_bolt_3 = main_long + sub_long + self.bolt_position_right
 
         y_bolt_3 = self.FOUR_CYL_DIA + self.BOLT_RAD
         bolt_3 = self.create_bolt((x_bolt_init, y_bolt_3,z_bolt_3), rotation = rotation_s)
