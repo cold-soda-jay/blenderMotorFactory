@@ -16,7 +16,7 @@ bl_info = {
     "author" : "Cold-Soda-Joe",
     "description" : "Motor Factory",
     "blender" : (2, 90, 1),
-    "version" : (1, 0, 0),
+    "version" : (1, 0, 1),
     "location" : "View3D > Add > Mesh",
     "warning" : "",
     "category" : "Add Mesh"
