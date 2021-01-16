@@ -11,7 +11,7 @@ def generate_param():
             "mf_Gear_Orientation_2" : random.choice(['mf_Ninety', 'mf_HundredEighteen','mf_TwoHundredSeven']),
             "mf_Flip" : random.choice([True,False]),
             "mf_Color_Render" : False,
-            "mf_Bottom_Length" : random.randrange(0, 10),
+            "mf_Bottom_Length" : random.randrange(4, 8),
             "mf_Sub_Bottom_Length" : random.uniform(0.6, 2),
 
             "mf_Lower_Gear_Dia": random.uniform(3.5, 4.5),
@@ -19,13 +19,13 @@ def generate_param():
             "mf_Lower_Gear_Bolt_Random" : True,
             
             "mf_Gear_Bolt_Random_B": True,
-            "mf_Gear_Bolt_Nummber_B" : random.randrange(2, 3),
+            "mf_Gear_Bolt_Nummber_B" : str(random.randrange(2, 3)),
             "mf_Type_B_Height_1" : random.uniform(6.3, 8),
             "mf_Type_B_Height_2" : random.uniform(2, 6),
-            "mf_Gear_Bolt_Right_B" : random.uniform(1.7,4)
+            "mf_Gear_Bolt_Right_B" : random.uniform(1.7,4),
                         
             "mf_Upper_Gear_Dia": random.uniform(5, 6.5),
-            "mf_Upper_Bolt_Nummber": random.randrange(1, 3),
+            "mf_Upper_Bolt_Nummber": str(random.randrange(1, 3)),
             "mf_Upper_Gear_Bolt_Random" : True,
 
             "mf_Bit_Type" : random.choice(['mf_Bit_Torx','mf_Bit_Slot','mf_Bit_Cross']),
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     num = 5
     data = {}
     # Set parameter that should be manuelly modified
-    data['save_path']="F:/blender_test/" # Add other param like this
+    data['save_path']="D:/blender_test/" # Add other param like this
     create_motor(num, **data)    
                
         

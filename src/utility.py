@@ -424,6 +424,8 @@ class Factory:
         bit_type = self.bit_type
         orientation = self.bolt_ortientation
         out_dia = self.BOLT_RAD
+
+
         # Check if only body should be created
         if only_body :
             out_length = 0.3
@@ -439,6 +441,8 @@ class Factory:
             return [part, None]
 
         else:
+            self.bolt_position.append(position)
+
             out_length = self.BOLT_LENGTH
 
             in_dia = 0.8 * self.BOLT_RAD
@@ -581,7 +585,7 @@ class Factory:
             out_cyl.select_set(True)
             bolt.select_set(True)
             bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
-        self.bolt_position.append(position)
+        
         return [out_cyl,bolt]
 
     def rend_color(self, obj, part):
@@ -731,7 +735,7 @@ class Factory:
                     data_list.append(getattr(factory,name))
                 else:
                     data_list.append('-')
-        data_list.append(self.bolt_position)
+        data_list.append(self.out_bolt_position)
         data = dict(zip(self.key_list,data_list))
         return data
 
@@ -763,24 +767,126 @@ class Factory:
             bpy.ops.object.select_all(action='DESELECT')
 
     def calculate_bolt_position(self,root_position):
-        """Caculate bolts positions
+        """Caculate bolts positions. The result form is a [3*2*n] list. Each bolt position will be represented as a vector [Top_position(x,y,z), Bottom_position(x,y,z)].
+        E.g.: [
+            #Bolt 1
+            [
+                [x1,y1,z1],
+                [x2,y2,z2]
+            ],
+            #Bolt 2
+            [
+                [x3,y3,z3],
+                [x4,y4,z4] 
+            ],
+            .....           
+        ]
 
         Args:
-            root_position (list): Bolt position before rotation
+            root_position (tuple): Position of oringin  which bolt shoud rotate around
         """
-        x ,y, z = root_position
-        position=[]
-        rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
-        self.out_bolt_position += self.bolt_position[0:2]
-        for b_position in self.bolt_position[2:]:
-            x_new, y_new = self.rotate_around_point((x,y),rotation[0],(b_position[0],b_position[1]))
-            if self.gear_Flip:
-                x_new = x- x_new
-                y_new = y - y_new
-                if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
-                    x_new -= 2*x
+
+        x ,y, z = 0,0,0
+        out_position=[]
+        top_z =  1#self.BOLT_LENGTH/2 + 0.4 * self.BOLT_RAD + 0.8 * self.BOLT_RAD/3 + 0.2
+        bottom_z = 0.7#self.BOLT_LENGTH/2
+
+        # Bolts on "Bottom part"
+        for position in  self.bolt_position[0:2]:
+            top = [
+                position[0],
+                position[1],
+                position[2] - top_z
+            ]
+            bottom = [
+                position[0],
+                position[1],
+                position[2] + bottom_z
+            ]
+            out_position.append([top, bottom])
+        
+        for b_position in self.bolt_position[2:]:         
+            x ,y, z = b_position
+            
+            # Calculate rotation
+            if self.gear_orientation == 'mf_HundredEighteen' :
+                x_new, y_new = self.rotate_around_point((0,0),180,(x ,y))
+                if self.head_Type == "mf_Head_Type_A":
+                    x_top = -x_new
+                    x_bottom = -x_new
+                    y_top =  -y_new  - top_z
+                    y_bottom = -y_new + bottom_z
+                elif self.head_Type == "mf_Head_Type_B":
+                    x_top = x_new - top_z
+                    x_bottom = x_new + bottom_z
+                    y_top =  y_new
+                    y_bottom = y_new
+                                
+            elif self.gear_orientation == 'mf_TwoHundredSeven' :
+                x_new, y_new = self.rotate_around_point((0,0),-270,(x ,y))
+                if self.head_Type == "mf_Head_Type_A":
+                    x_top = x_new+ top_z
+                    x_bottom = x_new- bottom_z
+                    y_top =  y_new 
+                    y_bottom = y_new 
+                elif self.head_Type == "mf_Head_Type_B":
+                    x_top = x_new
+                    x_bottom = x_new
+                    y_top =  y_new + top_z
+                    y_bottom = y_new - bottom_z    
+
+            elif self.gear_orientation == 'mf_Ninety' :
+                x_new, y_new = self.rotate_around_point((0,0),-90,(x ,y))
+                if self.head_Type == "mf_Head_Type_A":
+                    x_top = x_new - top_z
+                    x_bottom = x_new + bottom_z
+                    y_top =  y_new
+                    y_bottom = y_new
+                elif self.head_Type == "mf_Head_Type_B":
+                    x_new, y_new = x, y
+                    x_top = x_new
+                    x_bottom = x_new
+                    y_top =  y_new - top_z
+                    y_bottom = y_new + bottom_z
+                       
+            elif self.gear_orientation == 'mf_zero' :
+                x_new, y_new = x, y
+                if self.head_Type == "mf_Head_Type_A":    
+                    x_top = x_new
+                    x_bottom = x_new
+                    y_top =  y_new - top_z
+                    y_bottom = y_new + bottom_z
+                elif self.head_Type == "mf_Head_Type_B":
+                    x_top = -x_new - top_z
+                    x_bottom = -x_new + bottom_z
+                    y_top =  -y_new 
+                    y_bottom = -y_new
                     
-                else:
-                    y_new -= 2*y
-            position.append((x_new, y_new, b_position[2]))
-        self.out_bolt_position = position
+            # Caculate Flip                   
+            if self.gear_Flip:
+                if self.head_Type == "mf_Head_Type_A":
+                    if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
+                        x_top = -x_top
+                        x_bottom = -x_bottom
+                    else:
+                        y_top = -y_top
+                        y_bottom = -y_bottom
+                elif self.head_Type == "mf_Head_Type_B":
+                    if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
+                        y_top = -y_top
+                        y_bottom = -y_bottom
+                    else: 
+                        x_top = -x_top
+                        x_bottom = -x_bottom  
+                        
+               
+            top = [x_top,
+                    y_top,
+                    z]
+            bottom = [x_bottom,
+                    y_bottom,
+                    z]  
+     
+            out_position.append([top, bottom])
+        print(out_position)
+        self.out_bolt_position = out_position

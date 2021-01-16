@@ -56,10 +56,3 @@ def unregister():
     bpy.types.VIEW3D_MT_mesh_add.remove(add_mesh_motor_button)
     bpy.utils.unregister_class(Motor_Factory_Operator)
 
-
-#if __name__ == "__main__":
- #   register()
-
-#classes = (Test_OT_Operator, Test_PT_Panel)
-
-#register, unregister = bpy.utils.register_classes_factory(classes)

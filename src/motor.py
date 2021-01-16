@@ -452,7 +452,7 @@ class Type_A(Motor_Creator):
             self.lower_gear_bolt_position_1 = factory.mf_Lower_Gear_Bolt_Position_1
             self.lower_gear_bolt_position_2 = factory.mf_Lower_Gear_Bolt_Position_2
 
-            self.l_bolt_num = factory.mf_Upper_Bolt_Nummber
+            self.l_bolt_num = int(factory.mf_Upper_Bolt_Nummber)
             
             self.upper_Gear_Bolt_Random = factory.mf_Upper_Gear_Bolt_Random
             self.upper_Gear_Bolt_Position_1 = factory.mf_Upper_Gear_Bolt_Position_1
@@ -577,8 +577,8 @@ class Type_A(Motor_Creator):
         #Calculate the rotation
         single_bolt_area = 210/self.l_bolt_num
         bolt_position_angle_1 = self.upper_Gear_Bolt_Position_1
-        bolt_position_angle_2 = self.upper_Gear_Bolt_Position_2+single_bolt_area
-        bolt_position_angle_3 = self.upper_Gear_Bolt_Position_3+single_bolt_area+single_bolt_area
+        bolt_position_angle_2 = self.upper_Gear_Bolt_Position_2
+        bolt_position_angle_3 = self.upper_Gear_Bolt_Position_3
 
         if self.l_bolt_num == 1:
             if self.upper_Gear_Bolt_Random:                    
@@ -1114,9 +1114,18 @@ class Type_A(Motor_Creator):
     def create_upper_part(self):
         rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
         #self.rotate_object(up1)
-        up1, bolt_list_1 = self.create_up(length_relativ)
-
         
+        board = self.create_outer_board()  
+        middle, bolt_list_middle = self. create_middle()
+
+        for bolt in bolt_list_middle:
+            self.save_modell(bolt)
+            
+        
+        up1, bolt_list_1 = self.create_up(length_relativ)
+        for bolt in bolt_list_1:
+            self.save_modell(bolt)
+            
         extension_zone, bolt_list_2 = self.create_up(length_relativ, extension=True)
         extension_zone.name = "Up2"
         self.save_modell(extension_zone)
@@ -1127,22 +1136,12 @@ class Type_A(Motor_Creator):
         ex_list=[extension_zone_1]
  
 
-        board = self.create_outer_board()  
-        middle, bolt_list_middle = self. create_middle()
-
-        for bolt in bolt_list_1:
-            self.save_modell(bolt)
-
-        for bolt in bolt_list_middle:
-            self.save_modell(bolt)
-
         gear_1 = self.combine_all_obj(board,[up1])
         gear_1.name = "Up1"
         self.save_modell(gear_1,middle)
 
         gear_2 = self.combine_all_obj(gear_1,bolt_list_1)
         self.rotate_object(gear_2)
-
 
 
         upper = self.combine_all_obj(gear_2, ex_list)
@@ -1204,7 +1203,7 @@ class Type_B(Motor_Creator):
             #####################################
 
             self.bolt_random = factory.mf_Gear_Bolt_Random_B
-            self.gear_bolt_num = factory.mf_Gear_Bolt_Nummber_B
+            self.gear_bolt_num = int(factory.mf_Gear_Bolt_Nummber_B)
             self.bolt_position_1 = factory.mf_Gear_Bolt_Position_B_1
             self.bolt_position_2 = factory.mf_Gear_Bolt_Position_B_2
             self.bolt_position_3 = factory.mf_Gear_Bolt_Position_B_3
@@ -1391,17 +1390,17 @@ class Type_B(Motor_Creator):
 
         # Create Bolts
         x_bolt_init = x + length_relativ/2 - self.BOLT_LENGTH/2 + self.EXTENSION_THICKNESS + 0.1
-        y_bolt_init = y - lower_gear_radius - 0.9*self.BOLT_RAD
+        y_bolt_init = y + lower_gear_radius + 0.9*self.BOLT_RAD
         z_bolt_init = z 
         
         # Calculate the rotate (x,z axis)             
         if self.bolt_random:
             if self.ex_type ==  "mf_None":
-                bolt_rotation_1 = random.uniform(35,55)#self.lower_gear_bolt_position_2
-                bolt_rotation_2 = random.uniform(-70,-110)
+                bolt_rotation_1 = random.uniform(210,225)#self.lower_gear_bolt_position_2
+                bolt_rotation_2 = random.uniform(70,110)
             else:  
-                bolt_rotation_1 = random.uniform(40,50)
-                bolt_rotation_2 = random.uniform(-80,-100)
+                bolt_rotation_1 = random.uniform(215,220)
+                bolt_rotation_2 = random.uniform(80,100)
 
         else:
                 bolt_rotation_1 = self.bolt_position_1
@@ -1413,8 +1412,6 @@ class Type_B(Motor_Creator):
         y_bolt_2, z_bolt_2 = self.rotate_around_point((y,z),bolt_rotation_2,(y_bolt_init,z_bolt_init))       
         bolt_2 = self.create_bolt((x_bolt_init, y_bolt_2,z_bolt_2), rotation = rotation_s) 
 
-
-        #y_bolt_temp, z_bolt_3 = self.rotate_around_point((y,z),45,(y_bolt_init,z_bolt_init))
         z_bolt_3 = main_long + sub_long + self.bolt_position_right
 
         y_bolt_3 = self.FOUR_CYL_DIA + self.BOLT_RAD
@@ -1424,7 +1421,7 @@ class Type_B(Motor_Creator):
         
         if self.gear_bolt_num == 3:
             if self.bolt_random:
-                bolt_ex_rotation = random.uniform(10,-60)
+                bolt_ex_rotation = random.uniform(130,190)
             else:
                 bolt_ex_rotation = self.bolt_position_3
             y_bolt_ex, z_bolt_ex = self.rotate_around_point((y,z),bolt_ex_rotation,(y_bolt_init,z_bolt_init))       
@@ -1545,10 +1542,11 @@ class Type_B(Motor_Creator):
 
     def create_upper_part(self):
   
-        upper_1, bolt_list = self.create_Up1()
-        upper_1.name = 'Up1'
 
-        middle, bolt_list_middle = self. create_middle()       
+        middle, bolt_list_middle = self.create_middle()     
+        
+        upper_1, bolt_list = self.create_Up1()
+        upper_1.name = 'Up1'  
         self.save_modell(upper_1,middle)
 
         bolt_position = []
@@ -1574,7 +1572,8 @@ class Type_B(Motor_Creator):
         
         upper  = self.combine_all_obj(up1, ex_list)
         x,y,z = upper.location
-        
+        self.calculate_bolt_position((x,y,z))
+
         upper.select_set(True)
         if self.gear_Flip : 
             if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:

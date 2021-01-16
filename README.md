@@ -27,9 +27,35 @@ The model will be saved as a whole entity and seperate parts
 
 The parameters of generated model will be saved into a csv file when ``save_path`` setted. Every model will be saved in a separate folder with a number as name. This number represent the Id of the model. The parameters of this model can be found in csv file. 
 
-The position of all bolts will also be saved as a list in the file. The order of bolt position is from bottom to top. 
+ 
+
+#### Bolt Positions
+
+The position of all bolts will also be saved as a list in the file. The order of bolt position is from bottom to top.
+
+<div align="center"><img src="pic/bolts.png" alt="Image" style="zoom:80%;" /></div>
+
+Every bolt will have a vector to store its position and orientation. In CSV the last colum stores all bolts positions. The result is a [3\*2\*n] list. Each bolt position will be represented as a vector [
+    Top_position(x,y,z), 
+    Bottom_position(x,y,z)
+].
+>      E.g.: [
+>            #Bolt 1
+>            [
+>                [x1,y1,z1],
+>                [x2,y2,z2]
+>            ],
+>            #Bolt 2
+>            [
+>                [x3,y3,z3],
+>                [x4,y4,z4] 
+>            ],
+>            .....           
+>        ] 
+
 
 ### 2.3 Auto generation
+
 
 To generate more models at once, you can use script ``./src/auto_generate.py``. In the script you can set the number of generated models and define several parameters when generating. Here are all parameters:
 
@@ -81,7 +107,7 @@ To generate more models at once, you can use script ``./src/auto_generate.py``. 
 After setting the parameters, you can runthe script in command line with following command:
 
 ```
-blender --background --python path/of/auto_generate.py"
+path/of/blender --background --python path/of/auto_generate.py
 ```
 
 See more details in `auto_generate.py`
