@@ -97,6 +97,7 @@ class Factory:
     l_bolt_list = []
     bolt_position = []
     out_bolt_position = []
+    temp_save = False
 
     def __init__(self,factory):
         """initiate variables.
@@ -137,6 +138,7 @@ class Factory:
             
         ]
         self.save_path = factory.save_path
+        self.temp_save = factory.temp_save
         self.id_Nr = factory.id_Nr    
         self.init_modify(factory)
     
@@ -749,10 +751,9 @@ class Factory:
         if self.save_path == "None":
             pass
         else:
-
             if modell is None:
                 return     
-            path_of_folder = self.save_path + str(self.id_Nr)+'/'
+            path_of_folder = self.save_path + "Motor_bl_Nr."+str(self.id_Nr)+'/'
             bpy.ops.object.select_all(action='DESELECT')
             modell.select_set(True)
             if addtional:
@@ -767,6 +768,7 @@ class Factory:
             bpy.ops.object.select_all(action='DESELECT')
 
     def calculate_bolt_position(self,root_position):
+        
         """Caculate bolts positions. The result form is a [3*2*n] list. Each bolt position will be represented as a vector [Top_position(x,y,z), Bottom_position(x,y,z)].
         E.g.: [
             #Bolt 1
@@ -878,8 +880,7 @@ class Factory:
                     else: 
                         x_top = -x_top
                         x_bottom = -x_bottom  
-                        
-               
+                                                              
             top = [x_top,
                     y_top,
                     z]
@@ -888,5 +889,5 @@ class Factory:
                     z]  
      
             out_position.append([top, bottom])
-        print(out_position)
         self.out_bolt_position = out_position
+       

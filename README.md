@@ -23,6 +23,12 @@ The model will be saved as a whole entity and seperate parts
 
 <div align="center"><img src="pic\parts_model.png" alt="Image" style="zoom:80%;" /></div>
 
+#### Save Model in Blender
+
+When you modified some motor manuelly and want to save the model and property value part by part, you can choose **Save the model** and then give the loaction where you want to save the model. Then the model you created will be saved.
+
+<div align="center"><img src="pic/save.png" alt="Image" style="zoom:0%;" /></div>
+
 ### 2.2 CSV data
 
 The parameters of generated model will be saved into a csv file when ``save_path`` setted. Every model will be saved in a separate folder with a number as name. This number represent the Id of the model. The parameters of this model can be found in csv file. 

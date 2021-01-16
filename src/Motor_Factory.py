@@ -70,7 +70,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
         "mf_Type_B_Height_1",
         "mf_Type_B_Height_2",
-
+        "temp_save",
         "save_path",
 
         ]
@@ -284,7 +284,11 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             items = Bit_Type_List, default = 'mf_Bit_Torx')
     
     ##################### Svae path #####################
-    save_path = StringProperty(name = "Save",
+    temp_save : BoolProperty(name = "Save the module ", 
+                default = False,
+                description = "Save the module")
+    
+    save_path = StringProperty(name = "Save Path",
                 default = "None", maxlen=4096,
                 description = "Save the modell")        
     
@@ -364,6 +368,9 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 col.prop(self, 'mf_Gear_Bolt_Position_B_2')
                 if self.mf_Extension_Type_B == "mf_None" and self.mf_Gear_Bolt_Nummber_B == '3':
                     col.prop(self, 'mf_Gear_Bolt_Position_B_3')
+        col.prop(self, 'temp_save')
+        if self.temp_save:
+            col.prop(self, 'save_path')
         col.separator()
 
 
@@ -421,11 +428,12 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             try:
                 os.mkdir(self.save_path)
             except:
-                pass              
-            self.id_Nr = len(os.listdir(self.save_path))
+                pass        
+                  
+            self.id_Nr = len([x for x in os.listdir(self.save_path) if "Motor_bl_Nr." in x])
             if self.id_Nr == 0:
                 self.id_Nr = 1
-            path_of_folder = self.save_path + str(self.id_Nr)+'/'
+            path_of_folder = self.save_path + "Motor_bl_Nr."+str(self.id_Nr)+'/'
             try:
                 os.mkdir(path_of_folder)
             except:
@@ -463,7 +471,10 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         motor.name = "Motor"
         motor.data.name = "Motor"
         creator.save_modell(motor)
-        creator.save_csv(self)          
+        creator.save_csv(self)  
+        if self.temp_save and self.save_path != "None":
+           self.temp_save = False   
+           self.save_path = "None"      
         return motor
 
     
