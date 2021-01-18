@@ -430,9 +430,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             except:
                 pass        
                   
-            self.id_Nr = len([x for x in os.listdir(self.save_path) if "Motor_bl_Nr." in x])
-            if self.id_Nr == 0:
-                self.id_Nr = 1
+            self.id_Nr = len([x for x in os.listdir(self.save_path) if "Motor_bl_Nr." in x])+1
             path_of_folder = self.save_path + "Motor_bl_Nr."+str(self.id_Nr)+'/'
             try:
                 os.mkdir(path_of_folder)
