@@ -453,29 +453,38 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
         obj_list=[upper_part,en_part]
         
+        # Combine all created parts
+        motor = creator.combine_all_obj(bottom,obj_list)     
+        motor.name = "Motor"
+        motor.data.name = "Motor"
+        
         # Check if color should be rendered
         for area in bpy.context.screen.areas: # iterate through areas in current screen
-
             if area.type == 'VIEW_3D':               
                 for space in area.spaces: # iterate through spaces in current VIEW_3D area
                     if space.type == 'VIEW_3D':
                         if self.mf_Color_Render:
                             space.shading.type = 'MATERIAL'
+                        elif space.shading.type == 'MATERIAL' and len(bpy.data.materials) >0:
+                            for material in bpy.data.materials:
+                                material.user_clear()
+                                bpy.data.materials.remove(material) #delete it
+                            space.shading.type = 'SOLID' # set the viewport shading to rendered
                         else:
                             space.shading.type = 'SOLID' # set the viewport shading to rendered
-
-        # Combine all created parts
-        motor = creator.combine_all_obj(bottom,obj_list)     
-        motor.name = "Motor"
-        motor.data.name = "Motor"
         creator.save_modell(motor)
         creator.save_csv(self)  
         if self.temp_save and self.save_path != "None":
+           bpy.context.window_manager.popup_menu(self.success_save, title="Info", icon='PLUGIN')    
+
            self.temp_save = False   
            self.save_path = "None"      
         return motor
 
-    
+    def success_save(self,okay,context):
+        text = "Module saved under " + str(self.save_path)+ "Motor_bl_Nr."+str(self.id_Nr)+'/'
+        okay.layout.label(text=text)
+
 
    
 

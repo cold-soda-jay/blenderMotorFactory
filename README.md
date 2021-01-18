@@ -113,7 +113,7 @@ To generate more models at once, you can use script ``./src/auto_generate.py``. 
 After setting the parameters, you can runthe script in command line with following command:
 
 ```
-path/of/blender --background --python path/of/auto_generate.py
+path/of/blender -b -P path/of/auto_generate.py 1> nul
 ```
 
 See more details in `auto_generate.py`

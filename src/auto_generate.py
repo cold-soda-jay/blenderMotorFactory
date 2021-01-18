@@ -1,7 +1,6 @@
 import bpy
 import random
 
-
 def generate_param():
     MotorParameters = {
             "mf_Head_Type" : random.choice(["mf_Head_Type_A","mf_Head_Type_B"]),
@@ -48,6 +47,6 @@ if __name__ == "__main__":
     data = {}
     # Set parameter that should be manuelly modified
     data['save_path']="D:/blender_test/" # Add other param like this
-    create_motor(num, **data)    
+    create_motor(num, **data)   
                
         
