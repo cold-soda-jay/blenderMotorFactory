@@ -33,7 +33,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     id_Nr = 0
 
     MotorParameters = [
-        "mf_Head_Type",
+        "mf_Top_Type",
         "mf_Extension_Type_A",
         "mf_Extension_Type_B",
         "mf_Gear_Orientation_1",
@@ -75,12 +75,12 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
     ################### General ##################################
     #Head Types 
-    Head_Type_List = [('mf_Head_Type_A','Type A (Two gears)','Type A'),
-                        ('mf_Head_Type_B','Type B (One gears)','Type B')]
-    mf_Head_Type = EnumProperty( attr='mf_Head_Type',
+    Head_Type_List = [('mf_Top_Type_A','Type A (Two gears)','Type A'),
+                        ('mf_Top_Type_B','Type B (One gears)','Type B')]
+    mf_Top_Type = EnumProperty( attr='mf_Top_Type',
             name='Type',
             description='Choose the type of Motor you would like',
-            items = Head_Type_List, default = 'mf_Head_Type_A')
+            items = Head_Type_List, default = 'mf_Top_Type_A')
     
     #Extension zone Types
     
@@ -299,8 +299,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         col = layout.column()
         
         col.label(text="General")
-        col.prop(self, 'mf_Head_Type')
-        if self.mf_Head_Type == "mf_Head_Type_A":  
+        col.prop(self, 'mf_Top_Type')
+        if self.mf_Top_Type == "mf_Top_Type_A":  
             col.prop(self, 'mf_Extension_Type_A')
             if self.mf_Extension_Type_A == 'mf_Extension_Type_1':
                 col.prop(self, 'mf_Gear_Orientation_1')        
@@ -308,7 +308,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 col.prop(self, 'mf_Gear_Orientation_2') 
             else:
                 col.prop(self, 'mf_Gear_Orientation_1')      
-        elif self.mf_Head_Type == "mf_Head_Type_B":
+        elif self.mf_Top_Type == "mf_Top_Type_B":
             col.prop(self, 'mf_Extension_Type_B')
             col.prop(self, 'mf_Gear_Orientation_1')
         
@@ -324,9 +324,9 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         col.label(text="Gears")
         col.prop(self, 'mf_Lower_Gear_Dia') 
         col.prop(self, 'mf_Lower_Gear_Position')
-        if self.mf_Head_Type == "mf_Head_Type_A":  
+        if self.mf_Top_Type == "mf_Top_Type_A":  
             col.prop(self, 'mf_Upper_Gear_Dia')    
-        elif  self.mf_Head_Type == "mf_Head_Type_B":  
+        elif  self.mf_Top_Type == "mf_Top_Type_B":  
             col.prop(self, 'mf_Type_B_Height_1')
             col.prop(self, 'mf_Type_B_Height_2')
 
@@ -334,7 +334,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         col.prop(self, 'mf_Bit_Type')
         col.prop(self, 'mf_Bolt_Orientation')      
 
-        if self.mf_Head_Type == "mf_Head_Type_A":    
+        if self.mf_Top_Type == "mf_Top_Type_A":    
 
             col.label(text="Bolts Position around lower gear")
 
@@ -353,7 +353,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 elif self.mf_Upper_Bolt_Nummber == '3':
                     col.prop(self, 'mf_Upper_Gear_Bolt_Position_2')
                     col.prop(self, 'mf_Upper_Gear_Bolt_Position_3')
-        elif self.mf_Head_Type == "mf_Head_Type_B":
+        elif self.mf_Top_Type == "mf_Top_Type_B":
             col.label(text="Bolts Position around gear B")
             col.prop(self, 'mf_Gear_Bolt_Right_B')
 
@@ -434,9 +434,9 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             except:
                 pass
         # different headtype instance different object
-        if self.mf_Head_Type == "mf_Head_Type_A":
+        if self.mf_Top_Type == "mf_Top_Type_A":
             creator = mt.Type_A(self)
-        elif self.mf_Head_Type == "mf_Head_Type_B":
+        elif self.mf_Top_Type == "mf_Top_Type_B":
             creator = mt.Type_B(self) 
         
         #Create bottom part

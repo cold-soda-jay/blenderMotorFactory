@@ -107,7 +107,7 @@ class Factory:
             factory ([bpy.types.Operator]): [Operator]
         """
         
-        self.head_Type = factory.mf_Head_Type
+        self.head_Type = factory.mf_Top_Type
         self.init_x = factory.init_x
         self.init_y = factory.init_y
         self.init_z = factory.init_z
@@ -129,7 +129,7 @@ class Factory:
         self.color_render = factory.mf_Color_Render
 
         self.motor_param += [
-            "mf_Head_Type",
+            "mf_Top_Type",
             "mf_Flip",
             "mf_Color_Render",
             "mf_Bottom_Length",
@@ -817,12 +817,12 @@ class Factory:
             # Calculate rotation
             if self.gear_orientation == 'r180' :
                 x_new, y_new = self.rotate_around_point((0,0),180,(x ,y))
-                if self.head_Type == "mf_Head_Type_A":
+                if self.head_Type == "mf_Top_Type_A":
                     x_top = -x_new
                     x_bottom = -x_new
                     y_top =  -y_new  - top_z
                     y_bottom = -y_new + bottom_z
-                elif self.head_Type == "mf_Head_Type_B":
+                elif self.head_Type == "mf_Top_Type_B":
                     x_top = x_new - top_z
                     x_bottom = x_new + bottom_z
                     y_top =  y_new
@@ -830,12 +830,12 @@ class Factory:
                                 
             elif self.gear_orientation == 'r270' :
                 x_new, y_new = self.rotate_around_point((0,0),-270,(x ,y))
-                if self.head_Type == "mf_Head_Type_A":
+                if self.head_Type == "mf_Top_Type_A":
                     x_top = x_new+ top_z
                     x_bottom = x_new- bottom_z
                     y_top =  y_new 
                     y_bottom = y_new 
-                elif self.head_Type == "mf_Head_Type_B":
+                elif self.head_Type == "mf_Top_Type_B":
                     x_top = x_new
                     x_bottom = x_new
                     y_top =  y_new + top_z
@@ -843,12 +843,12 @@ class Factory:
 
             elif self.gear_orientation == 'r90' :
                 x_new, y_new = self.rotate_around_point((0,0),-90,(x ,y))
-                if self.head_Type == "mf_Head_Type_A":
+                if self.head_Type == "mf_Top_Type_A":
                     x_top = x_new - top_z
                     x_bottom = x_new + bottom_z
                     y_top =  y_new
                     y_bottom = y_new
-                elif self.head_Type == "mf_Head_Type_B":
+                elif self.head_Type == "mf_Top_Type_B":
                     x_new, y_new = x, y
                     x_top = x_new
                     x_bottom = x_new
@@ -857,12 +857,12 @@ class Factory:
                        
             elif self.gear_orientation == 'r0' :
                 x_new, y_new = x, y
-                if self.head_Type == "mf_Head_Type_A":    
+                if self.head_Type == "mf_Top_Type_A":    
                     x_top = x_new
                     x_bottom = x_new
                     y_top =  y_new - top_z
                     y_bottom = y_new + bottom_z
-                elif self.head_Type == "mf_Head_Type_B":
+                elif self.head_Type == "mf_Top_Type_B":
                     x_top = -x_new - top_z
                     x_bottom = -x_new + bottom_z
                     y_top =  -y_new 
@@ -870,14 +870,14 @@ class Factory:
                     
             # Caculate Flip                   
             if self.gear_Flip:
-                if self.head_Type == "mf_Head_Type_A":
+                if self.head_Type == "mf_Top_Type_A":
                     if self.gear_orientation in ['r0','r180']:
                         x_top = -x_top
                         x_bottom = -x_bottom
                     else:
                         y_top = -y_top
                         y_bottom = -y_bottom
-                elif self.head_Type == "mf_Head_Type_B":
+                elif self.head_Type == "mf_Top_Type_B":
                     if self.gear_orientation in ['r0','r180']:
                         y_top = -y_top
                         y_bottom = -y_bottom

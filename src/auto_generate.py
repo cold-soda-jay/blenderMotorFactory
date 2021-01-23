@@ -3,7 +3,7 @@ import random
 
 def generate_param():
     MotorParameters = {
-            "mf_Head_Type" : random.choice(["mf_Head_Type_A","mf_Head_Type_B"]),
+            "mf_Top_Type" : random.choice(["mf_Top_Type_A","mf_Top_Type_B"]),
             "mf_Extension_Type_A" : random.choice(["mf_Extension_Type_1","mf_Extension_Type_2", "mf_None"]),
             "mf_Extension_Type_B" : random.choice(["mf_Extension_Type_1","mf_None"]),
             "mf_Gear_Orientation_1" : random.choice(['r0','r90', 'r180','r270']),

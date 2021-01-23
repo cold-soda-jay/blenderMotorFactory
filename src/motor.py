@@ -470,11 +470,10 @@ class Type_A(Motor_Creator):
 
             ]
             self.motor_param = [
-                                "mf_Head_Type",
+                                "mf_Top_Type",
                                 "mf_Extension_Type_A",
                                 "mf_Gear_Orientation_2",
                                 "mf_Flip",
-                                "mf_Color_Render",
                                 "mf_Bottom_Length",
                                 "mf_Sub_Bottom_Length",
                                 "mf_Lower_Gear_Dia",
@@ -1241,11 +1240,10 @@ class Type_B(Motor_Creator):
             self.type_B_Height_1 = factory.mf_Type_B_Height_1
             self.type_B_Height_2 = factory.mf_Type_B_Height_2
             self.motor_param = [
-                                "mf_Head_Type",
+                                "mf_Top_Type",
                                 "mf_Extension_Type_B",
                                 "mf_Gear_Orientation_1",
                                 "mf_Flip",
-                                "mf_Color_Render",
                                 "mf_Bottom_Length",
                                 "mf_Sub_Bottom_Length",
                                 "mf_Lower_Gear_Dia",
