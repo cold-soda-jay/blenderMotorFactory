@@ -731,7 +731,7 @@ class Factory:
         """
         data_list=[str(self.id_Nr)]
         
-        for name in self.key_list:            
+        for name in self.key_list[1:-3]:            
             if name in self.motor_param:
                 data_list.append(getattr(factory,name))
             else:

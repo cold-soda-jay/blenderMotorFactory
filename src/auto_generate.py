@@ -45,10 +45,10 @@ def create_motor(number: int, **data):
             
 if __name__ == "__main__":
     # Change this value to set how many models should be generated 
-    num = 5
+    num = 15
     data = {}
     # Set parameter that should be manuelly modified
-    data['save_path']="D:/blender_test/" # Add other param like this
+    data['save_path']="D:/blender_tests/" # Add other param like this
     create_motor(num, **data)   
                
         
