@@ -65,50 +65,42 @@ Every bolt will have a vector to store its position and orientation. In CSV the 
 
 To generate more models at once, you can use script ``./src/auto_generate.py``. In the script you can set the number of generated models and define several parameters when generating. Here are all parameters:
 
-```python
 
-[
-# Units are cm, degree.
-"mf_Top_Type",  #Head type of motor: Vaule can be ('mf_Top_Type_A', 'mf_Top_Type_B')
-"mf_Extension_Type_A", # Extension Type for Type A: Vaule can be  ('mf_Extension_Type_1', 'mf_Extension_Type_2', 'mf_None')                 
-"mf_Extension_Type_B", # Extension Type for Type B: Vaule can be  ('mf_Extension_Type_1', 'mf_None') 
-"mf_Gear_Orientation_1", # Orientation of top part for extension type 1: Vaule can be  ('r0', r90', 'r180', 'r270')
-"mf_Gear_Orientation_2", # Orientation of top part for extension type 2: Vaule can be  ('r90', 'r180', 'r270')
-"mf_Flip", # Wheather the top part ne fliped: Vaule can be  (True, Flase)
-"mf_Bottom_Length", # Length of bottom part: Vaule can be floate in range [4, 8].
-"mf_Sub_Bottom_Length", # Length of sub bottom part (Small cylinder under): Vaule can be floate in range [0.6, 2]. 
-"mf_Lower_Gear_Dia", # Diameter of lower gear: Vaule can be floate in range [3.5, 4.5]
-"mf_Lower_Gear_Position", # Position of lower gear respect to the top of the bottom part: Vaule can be floate in range [3.6, 4.2] 
-"mf_Upper_Gear_Dia", # Diameter of upper gear: Vaule can be floate in range [5, 6.5]  
+**!!Units are cm, degree**
 
-"mf_Bit_Type", # Type of bit in bolts: Vaule can be ('mf_Bit_Torx', 'mf_Bit_Slot', 'mf_Bit_Cross')
-"mf_Bolt_Orientation", # Orientation of bolts: Vaule can be ('mf_all_same', 'mf_all_random')
+| Variable| Explain|
+| :-: |:-|
+|mf_Top_Type|Head type of motor: Vaule can be ('mf_Top_Type_A', 'mf_Top_Type_B')|
+|mf_Extension_Type_A| Extension Type for Type A: Vaule can be  ('mf_Extension_Type_1', 'mf_Extension_Type_2', 'mf_None')                 |
+|mf_Extension_Type_B| Extension Type for Type B: Vaule can be  ('mf_Extension_Type_1', 'mf_None') |
+|mf_Gear_Orientation_1| Orientation of top part for extension type 1: Vaule can be  ('r0', r90', 'r180', 'r270')|
+|mf_Gear_Orientation_2| Orientation of top part for extension type 2: Vaule can be  ('r90', 'r180', 'r270')|
+|mf_Flip| Wheather the top part ne fliped: Vaule can be  (True, Flase)|
+|mf_Bottom_Length| Length of bottom part: Vaule can be floate in range [4, 8].|
+|mf_Sub_Bottom_Length| Length of sub bottom part (Small cylinder under): Vaule can be floate in range [0.6, 2]. |
+|mf_Lower_Gear_Dia| Diameter of lower gear: Vaule can be floate in range [3.5, 4.5]|
+|mf_Lower_Gear_Position| Position of lower gear respect to the top of the bottom part: Vaule can be floate in range [3.6, 4.2] |
+|mf_Upper_Gear_Dia| Diameter of upper gear: Vaule can be floate in range [5, 6.5]  |
+|mf_Bit_Type| Type of bit in bolts: Vaule can be ('mf_Bit_Torx', 'mf_Bit_Slot', 'mf_Bit_Cross')|
+|mf_Bolt_Orientation| Orientation of bolts: Vaule can be ('mf_all_same', 'mf_all_random')|
+|mf_Lower_Gear_Bolt_Random| Wheater postion of bolts on lower gear(Type A) should be random: Value can be (True, False)|
+|mf_Lower_Gear_Bolt_Position_1| The position of bolt around lower gear: Value in range [190, 230]. Unit degree|
+|mf_Lower_Gear_Bolt_Position_2| The position of bolt around lower gear: Value in range [320, 350]. Unit degree|
+|mf_Gear_Bolt_Random_B| Wheater postion of bolts on gear(Type B) should be random: Value can be (True, False)|
+|mf_Gear_Bolt_Nummber_B | Number of bolt around gear. Can only be modified when mf_Top_Type = 'mf_None'. Value can be 2 or 3|
+|mf_Gear_Bolt_Position_B_1| The position of bolt around gear: Value in range [210, 225]. Unit degree|
+|mf_Gear_Bolt_Position_B_2| The position of bolt around gear: Value in range [70, 110]. Unit degree|
+|mf_Gear_Bolt_Position_B_3| The position of bolt around gear: Value in range [130, 190]. Unit degree|
+|mf_Gear_Bolt_Right_B| The position of bolt in right side of gear(Type B). Repect to the top of bottom part: Value in range [1.7, 4]. Unit cm|
+|mf_Upper_Bolt_Nummber| Number of Bolts on upper gear (Type A): Value can be 1 or 2 or 3|
+|mf_Upper_Gear_Bolt_Random| Wheater postion of bolts on upper gear(Type A) should be random: Value can be (True, False)|
+|mf_Upper_Gear_Bolt_Position_1| The position of bolt around upper gear: Value in range [0, 210]. Unit degree|
+|mf_Upper_Gear_Bolt_Position_2| The position of bolt around upper gear: Value in range [0, 210]. Unit degree|
+|mf_Upper_Gear_Bolt_Position_3| The position of bolt around upper gear: Value in range [0, 210]. Unit degree|
+|mf_Type_B_Height_1| Height of Extension left relative to the top of the bottom part (mf_Sub_Bottom_Length + mf_Bottom_Length). Value can be in range [1.7, 4]|
+|mf_Type_B_Height_2| Height of Extension right relative to the top of the bottom part (mf_Sub_Bottom_Length + mf_Bottom_Length). Value can be in range [5, 6.5]|
+|save_path| Path of folder when saving the module.|
 
-"mf_Lower_Gear_Bolt_Random", # Wheater postion of bolts on lower gear(Type A) should be random: Value can be (True, False)
-"mf_Lower_Gear_Bolt_Position_1", # The position of bolt around lower gear: Value in range [190, 230]. Unit degree
-"mf_Lower_Gear_Bolt_Position_2", # The position of bolt around lower gear: Value in range [320, 350]. Unit degree
-
-"mf_Gear_Bolt_Random_B", # Wheater postion of bolts on gear(Type B) should be random: Value can be (True, False)
-"mf_Gear_Bolt_Nummber_B",# Number of bolt around gear. Can only be modified when mf_Top_Type = 'mf_None'. Value can be 2 or 3
-"mf_Gear_Bolt_Position_B_1", # The position of bolt around gear: Value in range [210, 225]. Unit degree
-"mf_Gear_Bolt_Position_B_2", # The position of bolt around gear: Value in range [70, 110]. Unit degree
-"mf_Gear_Bolt_Position_B_3", # The position of bolt around gear: Value in range [130, 190]. Unit degree
-
-"mf_Gear_Bolt_Right_B", # The position of bolt in right side of gear(Type B). Repect to the top of bottom part: Value in range [1.7, 4]. Unit cm
-
-"mf_Upper_Bolt_Nummber", # Number of Bolts on upper gear (Type A): Value can be 1 or 2 or 3
-"mf_Upper_Gear_Bolt_Random", # Wheater postion of bolts on upper gear(Type A) should be random: Value can be (True, False)
-"mf_Upper_Gear_Bolt_Position_1", # The position of bolt around upper gear: Value in range [0, 210]. Unit degree
-"mf_Upper_Gear_Bolt_Position_2", # The position of bolt around upper gear: Value in range [0, 210]. Unit degree
-"mf_Upper_Gear_Bolt_Position_3", # The position of bolt around upper gear: Value in range [0, 210]. Unit degree
-
-"mf_Type_B_Height_1", # Height of Extension left relative to the top of the bottom part (mf_Sub_Bottom_Length + mf_Bottom_Length). Value can be in range [1.7, 4]
-"mf_Type_B_Height_2", # Height of Extension right relative to the top of the bottom part (mf_Sub_Bottom_Length + mf_Bottom_Length). Value can be in range [5, 6.5]
-
-"save_path", # Path of folder when saving the module.
-
-]
-```
 
 After setting the parameters, you can runthe script in command line with following command:
 
