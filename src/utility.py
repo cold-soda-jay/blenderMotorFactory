@@ -67,15 +67,15 @@ class Factory:
     bolt_ortientation = False
     bit_type = "Torx"
     bolt_num = 0
-    gear_orientation = "mf_zero"
+    gear_orientation = "r0"
 
     
     # Define the behavior of rotation and flip
     orient_dict = {
-        'mf_zero':((radians(0),"Z"), BOTTOM_DIA, -BOTTOM_HEIGHT-0.1),
-        'mf_Ninety':((radians(-90),"Z"), BOTTOM_HEIGHT, BOTTOM_HEIGHT),
-        'mf_HundredEighteen':((radians(-180),"Z"), BOTTOM_DIA, BOTTOM_DIA),
-        'mf_TwoHundredSeven':((radians(-270),"Z"), BOTTOM_HEIGHT, -BOTTOM_DIA)
+        'r0':((radians(0),"Z"), BOTTOM_DIA, -BOTTOM_HEIGHT-0.1),
+        'r90':((radians(-90),"Z"), BOTTOM_HEIGHT, BOTTOM_HEIGHT),
+        'r180':((radians(-180),"Z"), BOTTOM_DIA, BOTTOM_DIA),
+        'r270':((radians(-270),"Z"), BOTTOM_HEIGHT, -BOTTOM_DIA)
     }
 
     #Extention Zone
@@ -98,6 +98,7 @@ class Factory:
     bolt_position = []
     out_bolt_position = []
     temp_save = False
+    bolt_roate_angle_list = []
 
     def __init__(self,factory):
         """initiate variables.
@@ -118,7 +119,7 @@ class Factory:
         self.bit_type = factory.mf_Bit_Type
         self.bolt_position = []
         self.out_bolt_position = []
-
+        self.bolt_roate_angle_list = []
 
         self.gear_Flip = factory.mf_Flip
 
@@ -577,6 +578,7 @@ class Factory:
             self.bolt_num+=1
 
         # rotate the bit
+        Angle = 0
         if orientation == 'mf_all_random':
             Angle = random.randrange(0, 360, 10) 
             bpy.ops.object.select_all(action='DESELECT')
@@ -587,7 +589,7 @@ class Factory:
             out_cyl.select_set(True)
             bolt.select_set(True)
             bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
-        
+        self.bolt_roate_angle_list.append(Angle)
         return [out_cyl,bolt]
 
     def rend_color(self, obj, part):
@@ -641,17 +643,17 @@ class Factory:
         bpy.ops.object.select_all(action='DESELECT')
         object_rotate.select_set(True)
         #bpy.context.view_layer.objects.active = object_rotate
-        if self.gear_orientation == 'mf_HundredEighteen' :
+        if self.gear_orientation == 'r180' :
             nx,ny = self.rotate_around_point((0,0),180,(x,y))
             bpy.ops.transform.translate(value=(nx-x,ny-y,0))
             bpy.ops.transform.rotate(value=-radians(180),orient_axis=rotation[1])
 
-        elif self.gear_orientation == 'mf_TwoHundredSeven' :
+        elif self.gear_orientation == 'r270' :
             nx,ny = self.rotate_around_point((0,0),-270,(x,y))
             bpy.ops.transform.translate(value=(nx-x,ny-y,0))
             bpy.ops.transform.rotate(value=-rotation[0],orient_axis=rotation[1])
 
-        elif self.gear_orientation == 'mf_Ninety' :
+        elif self.gear_orientation == 'r90' :
             nx,ny = self.rotate_around_point((0,0),-90,(x,y))
             bpy.ops.transform.translate(value=(nx-x,ny-y,0))
             bpy.ops.transform.rotate(value=-rotation[0],orient_axis=rotation[1])
@@ -665,11 +667,9 @@ class Factory:
         Args:
             factory (bpy.types.Operator): Operator
         """
-        key_list = ["Nr."]
-        for name in dir(factory):
-            if name[0:3] == "mf_":
-                key_list.append(name)
-        key_list.append("Bolts_Positions")
+        #key_list = ["Nr."]
+        motor_params = getattr(factory, "MotorParameters")[:-2]
+        key_list = ["Nr."] + motor_params + ["Bolts_Positions", "Bolt Angles", "Number of Bolts"]       
         self.key_list=key_list
 
     def init_csv(self,path, factory):
@@ -684,7 +684,7 @@ class Factory:
             writer = csv.writer(log)
             writer.writerow(self.key_list)
 
-    def write_data(self, path, data, factory):
+    def write_data(self, path, data):
         """Write data into csv
 
         Args:
@@ -718,7 +718,7 @@ class Factory:
             if not os.path.isfile(csv_path):
                 self.init_csv(csv_path, factory)                             
             data = self.create_data_list(factory)
-            self.write_data(csv_path,data, factory)
+            self.write_data(csv_path,data)
 
     def create_data_list(self, factory):
         """Create data list `
@@ -731,13 +731,14 @@ class Factory:
         """
         data_list=[str(self.id_Nr)]
         
-        for name in dir(factory):
-            if name[0:3] == "mf_":
-                if name in self.motor_param:
-                    data_list.append(getattr(factory,name))
-                else:
-                    data_list.append('-')
+        for name in self.key_list:            
+            if name in self.motor_param:
+                data_list.append(getattr(factory,name))
+            else:
+                data_list.append('-')
         data_list.append(self.out_bolt_position)
+        data_list.append(self.bolt_roate_angle_list)
+        data_list.append(len(self.out_bolt_position))
         data = dict(zip(self.key_list,data_list))
         return data
 
@@ -767,6 +768,9 @@ class Factory:
                 print("Error!")
             bpy.ops.object.select_all(action='DESELECT')
 
+    def write_back(self,factory):
+        pass
+        
     def calculate_bolt_position(self,root_position):
         
         """Caculate bolts positions. The result form is a [3*2*n] list. Each bolt position will be represented as a vector [Top_position(x,y,z), Bottom_position(x,y,z)].
@@ -811,7 +815,7 @@ class Factory:
             x ,y, z = b_position
             
             # Calculate rotation
-            if self.gear_orientation == 'mf_HundredEighteen' :
+            if self.gear_orientation == 'r180' :
                 x_new, y_new = self.rotate_around_point((0,0),180,(x ,y))
                 if self.head_Type == "mf_Head_Type_A":
                     x_top = -x_new
@@ -824,7 +828,7 @@ class Factory:
                     y_top =  y_new
                     y_bottom = y_new
                                 
-            elif self.gear_orientation == 'mf_TwoHundredSeven' :
+            elif self.gear_orientation == 'r270' :
                 x_new, y_new = self.rotate_around_point((0,0),-270,(x ,y))
                 if self.head_Type == "mf_Head_Type_A":
                     x_top = x_new+ top_z
@@ -837,7 +841,7 @@ class Factory:
                     y_top =  y_new + top_z
                     y_bottom = y_new - bottom_z    
 
-            elif self.gear_orientation == 'mf_Ninety' :
+            elif self.gear_orientation == 'r90' :
                 x_new, y_new = self.rotate_around_point((0,0),-90,(x ,y))
                 if self.head_Type == "mf_Head_Type_A":
                     x_top = x_new - top_z
@@ -851,7 +855,7 @@ class Factory:
                     y_top =  y_new - top_z
                     y_bottom = y_new + bottom_z
                        
-            elif self.gear_orientation == 'mf_zero' :
+            elif self.gear_orientation == 'r0' :
                 x_new, y_new = x, y
                 if self.head_Type == "mf_Head_Type_A":    
                     x_top = x_new
@@ -867,14 +871,14 @@ class Factory:
             # Caculate Flip                   
             if self.gear_Flip:
                 if self.head_Type == "mf_Head_Type_A":
-                    if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
+                    if self.gear_orientation in ['r0','r180']:
                         x_top = -x_top
                         x_bottom = -x_bottom
                     else:
                         y_top = -y_top
                         y_bottom = -y_bottom
                 elif self.head_Type == "mf_Head_Type_B":
-                    if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
+                    if self.gear_orientation in ['r0','r180']:
                         y_top = -y_top
                         y_bottom = -y_bottom
                     else: 

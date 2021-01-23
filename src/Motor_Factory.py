@@ -42,34 +42,31 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Color_Render",
         "mf_Bottom_Length",
         "mf_Sub_Bottom_Length",
-
         "mf_Lower_Gear_Dia",
         "mf_Lower_Gear_Position",
         "mf_Upper_Gear_Dia",
 
+        
         "mf_Bit_Type",
         "mf_Bolt_Orientation",
         "mf_Lower_Gear_Bolt_Random",
-
         "mf_Lower_Gear_Bolt_Position_1",
-        "mf_Lower_Gear_Bolt_Position_2",
-        
-        "mf_Gear_Bolt_Random_B",
-        "mf_Gear_Bolt_Nummber_B",
-        "mf_Gear_Bolt_Position_B_1",
-        "mf_Gear_Bolt_Position_B_2",
-        "mf_Gear_Bolt_Position_B_3",
-        "mf_Gear_Bolt_Right_B",
-
+        "mf_Lower_Gear_Bolt_Position_2", 
         
         "mf_Upper_Bolt_Nummber",
         "mf_Upper_Gear_Bolt_Random",
         "mf_Upper_Gear_Bolt_Position_1",
         "mf_Upper_Gear_Bolt_Position_2",
         "mf_Upper_Gear_Bolt_Position_3",
-
+              
         "mf_Type_B_Height_1",
-        "mf_Type_B_Height_2",
+        "mf_Type_B_Height_2", 
+        "mf_Gear_Bolt_Random_B",
+        "mf_Gear_Bolt_Nummber_B",
+        "mf_Gear_Bolt_Position_B_1",
+        "mf_Gear_Bolt_Position_B_2",
+        "mf_Gear_Bolt_Position_B_3",
+        "mf_Gear_Bolt_Right_B",
         "temp_save",
         "save_path",
 
@@ -108,27 +105,27 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
    
     # Gear Orientation
     Orientation_List_Type_2 = [
-                ('mf_Ninety','90','90'),             
-                ('mf_HundredEighteen','180','180'),
-                ('mf_TwoHundredSeven','270','270')
+                ('r90','90','90'),             
+                ('r180','180','180'),
+                ('r270','270','270')
         ]
 
     Orientation_List_Type_1 = [
-                ('mf_zero','0','0'),
-                ('mf_Ninety','90','90'),             
-                ('mf_HundredEighteen','180','180'),
-                ('mf_TwoHundredSeven','270','270')
+                ('r0','0','0'),
+                ('r90','90','90'),             
+                ('r180','180','180'),
+                ('r270','270','270')
         ]
 
     mf_Gear_Orientation_1 = EnumProperty( attr='mf_Gear_Orientation',
             name='Gear Rotation',
             description='Rotation of gears and extension zone',
-            items = Orientation_List_Type_1, default = 'mf_zero')   
+            items = Orientation_List_Type_1, default = 'r0')   
 
     mf_Gear_Orientation_2 = EnumProperty( attr='mf_Gear_Orientation',
             name='Gear Rotation',
             description='Rotation of gears and extension zone',
-            items = Orientation_List_Type_2, default = 'mf_TwoHundredSeven')
+            items = Orientation_List_Type_2, default = 'r270')
 
     mf_Flip : BoolProperty(name = "Flip",
                 default = False,
@@ -186,12 +183,12 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 description = "Random Bolt Rotation")
 
 
-    mf_Gear_Bolt_Nummber_B_List = [('2','2','2'),
+    upper_Gear_Bolt_Random = [('2','2','2'),
                     ('3','3','3')]
     mf_Gear_Bolt_Nummber_B = EnumProperty( attr='mf_Gear_Bolt_Nummber_B',
             name='Number of Bolts',
             description='Number of Bolts around Gear',
-            items = mf_Gear_Bolt_Nummber_B_List, default = '2')
+            items = upper_Gear_Bolt_Random, default = '2')
 
     mf_Gear_Bolt_Position_B_1 = IntProperty(attr='mf_Gear_Bolt_Position_B_1',
         name='Position of bolts on gear', default = 215,
@@ -233,13 +230,13 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
     #Bolt on large gear
     
-    mf_Upper_Bolt_Nummber_List = [('1','1','1'),
+    upper_Gear_Bolt_Random = [('1','1','1'),
                     ('2','2','2'),
                     ('3','3','3')]
     mf_Upper_Bolt_Nummber = EnumProperty( attr='mf_Upper_Bolt_Nummber',
             name='Number of Bolts',
             description='Number of Bolts around upper Gear',
-            items = mf_Upper_Bolt_Nummber_List, default = '2')
+            items = upper_Gear_Bolt_Random, default = '2')
 
 
     mf_Upper_Gear_Bolt_Random : BoolProperty(name = "Random Bolt Position of upper gear",
@@ -473,6 +470,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                         else:
                             space.shading.type = 'SOLID' # set the viewport shading to rendered
         creator.save_modell(motor)
+        creator.write_back(self)
         creator.save_csv(self)  
         if self.temp_save and self.save_path != "None":
            bpy.context.window_manager.popup_menu(self.success_save, title="Info", icon='PLUGIN')    

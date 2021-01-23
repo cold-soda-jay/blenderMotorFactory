@@ -387,22 +387,9 @@ class Motor_Creator(Factory):
 
 class Type_A(Motor_Creator):
     
-    param = [
-        "mf_Extension_Type_A",
-        "mf_Lower_Gear_Dia",
-        "mf_Lower_Gear_Position",
-        "mf_Upper_Gear_Dia",
-        "mf_Lower_Gear_Bolt_Random",
-        "mf_Lower_Gear_Bolt_Position_1",
-        "mf_Lower_Gear_Bolt_Position_2",
-
-        "mf_Upper_Bolt_Nummber",
-        "mf_Upper_Gear_Bolt_Random",
-        "mf_Upper_Gear_Bolt_Position_1",
-
-    ]
+    
     #Gear
-    gear_orientation = "mf_zero"
+    gear_orientation = "r0"
     lower_gear_dia = 0
     lower_gear_position = None
     upper_gear_dia = 0
@@ -426,7 +413,7 @@ class Type_A(Motor_Creator):
     C5_LENGTH = -6.4
 
     
-
+    param = []
     ##############################################################################################################################
     ######################## Upper Part Type A ###################################################################################
 
@@ -436,13 +423,13 @@ class Type_A(Motor_Creator):
            
             if self.ex_type == 'mf_Extension_Type_1':
                 self.gear_orientation = factory.mf_Gear_Orientation_1
-                self.param.append("mf_Gear_Orientation_1")
+                #self.param.append("mf_Gear_Orientation_1")
             elif self.ex_type == 'mf_Extension_Type_2':                          
                 self.gear_orientation = factory.mf_Gear_Orientation_2
-                self.param.append("mf_Gear_Orientation_2")
+                #self.param.append("mf_Gear_Orientation_2")
             else:
                 self.gear_orientation = factory.mf_Gear_Orientation_1
-                self.param.append("mf_Gear_Orientation_2")
+                #self.param.append("mf_Gear_Orientation_2")
 
             
             self.upper_gear_dia = factory.mf_Upper_Gear_Dia
@@ -468,18 +455,59 @@ class Type_A(Motor_Creator):
                 self.param.append("mf_Upper_Gear_Bolt_Position_2")
                 self.param.append("mf_Upper_Gear_Bolt_Position_3")
 
+            param = [
+                "mf_Extension_Type_A",
+                "mf_Lower_Gear_Dia",
+                "mf_Lower_Gear_Position",
+                "mf_Upper_Gear_Dia",
+                "mf_Lower_Gear_Bolt_Random",
+                "mf_Lower_Gear_Bolt_Position_1",
+                "mf_Lower_Gear_Bolt_Position_2",
 
-            self.motor_param = self.param + [
-                                            "mf_Head_Type",
-                                            "mf_Flip",
-                                            "mf_Color_Render",
-                                            "mf_Bottom_Length",
-                                            "mf_Sub_Bottom_Length",
-                                            "mf_Bit_Type",
-                                            "mf_Bolt_Orientation",   
-                                        ]
+                "mf_Upper_Bolt_Nummber",
+                "mf_Upper_Gear_Bolt_Random",
+                "mf_Upper_Gear_Bolt_Position_1",
+
+            ]
+            self.motor_param = [
+                                "mf_Head_Type",
+                                "mf_Extension_Type_A",
+                                "mf_Gear_Orientation_2",
+                                "mf_Flip",
+                                "mf_Color_Render",
+                                "mf_Bottom_Length",
+                                "mf_Sub_Bottom_Length",
+                                "mf_Lower_Gear_Dia",
+                                "mf_Lower_Gear_Position",
+                                "mf_Upper_Gear_Dia",                                
+                                "mf_Bit_Type",
+                                "mf_Bolt_Orientation",
+                                "mf_Lower_Gear_Bolt_Random",
+                                "mf_Lower_Gear_Bolt_Position_1",
+                                "mf_Lower_Gear_Bolt_Position_2",
+                                "mf_Upper_Bolt_Nummber",
+                                "mf_Upper_Gear_Bolt_Random",
+                                "mf_Upper_Gear_Bolt_Position_1",                               
+                                ] + self.param
+            if self.ex_type == 'mf_Extension_Type_1':
+                self.motor_param[2] = "mf_Gear_Orientation_1"
+            
+            
+            
             self.l_bolt_list = []
             self.s_bolt_list = []
+            
+    def write_back(self,factory):           
+        if self.lower_gear_bolt_random:
+
+            factory.mf_Lower_Gear_Bolt_Position_1 = self.lower_gear_bolt_position_1 
+            factory.mf_Lower_Gear_Bolt_Position_2 = self.lower_gear_bolt_position_2 
+       
+        if self.upper_Gear_Bolt_Random:
+            factory.mf_Upper_Gear_Bolt_Position_1 = self.upper_Gear_Bolt_Position_1
+            factory.mf_Upper_Gear_Bolt_Position_2 = self.upper_Gear_Bolt_Position_2
+            factory.mf_Upper_Gear_Bolt_Position_3 = self.upper_Gear_Bolt_Position_3
+
 
     def create_up(self, length_relativ, extension=False):
         
@@ -972,9 +1000,9 @@ class Type_A(Motor_Creator):
         height = self.BOARD_THICKNESS
         p1_length = 2.4/2
         ##Part 1
-        if self.gear_orientation in ['mf_HundredEighteen', 'mf_zero'] :
+        if self.gear_orientation in ['r180', 'r0'] :
             width = 0.9 * self.BOTTOM_DIA/2
-        elif self.gear_orientation in ['mf_TwoHundredSeven', 'mf_Ninety'] :
+        elif self.gear_orientation in ['r270', 'r90'] :
             width = 0.9 * self.BOTTOM_HEIGHT/2
         
 
@@ -1034,7 +1062,7 @@ class Type_A(Motor_Creator):
         bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
         bpy.ops.transform.resize(value=(main_height*0.15, self.BOARD_THICKNESS/2, length))
 
-        if self.gear_orientation in ['mf_TwoHundredSeven111', 'mf_Ninety111'] :
+        if self.gear_orientation in ['r270111', 'r90111'] :
             x = 0
             y = - main_width/2
             z = init_z + main_long + sub_long + self.BOLT_LENGTH
@@ -1086,7 +1114,7 @@ class Type_A(Motor_Creator):
 
         z_offset = main_long + sub_long
 
-        #if self.gear_orientation in ['mf_zero','mf_HundredEighteen'] :
+        #if self.gear_orientation in ['r0','r180'] :
         p1 = [0, thickness, z_offset]
         p2 = [0, thickness, z_offset+l2]
         p3 = [-east, thickness ,z_offset+l1]
@@ -1149,7 +1177,7 @@ class Type_A(Motor_Creator):
         self.calculate_bolt_position((x,y,z))
 
         if self.gear_Flip : 
-            if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
+            if self.gear_orientation in ['r0','r180']:
                 bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(True, False, False))
                 bpy.ops.transform.translate(value=(-2*x,0,0))
       
@@ -1192,9 +1220,9 @@ class Type_B(Motor_Creator):
         "mf_Gear_Bolt_Position_B_1",
         "mf_Gear_Bolt_Position_B_2",
         "mf_Gear_Bolt_Position_B_3",
-        "mf_Gear_Bolt_Right_B"
 
     ]
+
     def init_modify(self,factory: bpy.types.Operator):
             
             self.ex_type = factory.mf_Extension_Type_B                   
@@ -1212,16 +1240,36 @@ class Type_B(Motor_Creator):
                            
             self.type_B_Height_1 = factory.mf_Type_B_Height_1
             self.type_B_Height_2 = factory.mf_Type_B_Height_2
-            self.motor_param = self.param + [
-                                            "mf_Head_Type",
-                                            "mf_Flip",
-                                            "mf_Color_Render",
-                                            "mf_Bottom_Length",
-                                            "mf_Sub_Bottom_Length",
-                                            "mf_Bit_Type",
-                                            "mf_Bolt_Orientation",   
-                                        ]           
-    
+            self.motor_param = [
+                                "mf_Head_Type",
+                                "mf_Extension_Type_B",
+                                "mf_Gear_Orientation_1",
+                                "mf_Flip",
+                                "mf_Color_Render",
+                                "mf_Bottom_Length",
+                                "mf_Sub_Bottom_Length",
+                                "mf_Lower_Gear_Dia",
+                                "mf_Lower_Gear_Position",
+                                "mf_Type_B_Height_1",
+                                "mf_Type_B_Height_2",
+                                "mf_Bit_Type",
+                                "mf_Bolt_Orientation",   
+                                "mf_Gear_Bolt_Right_B",
+                                "mf_Gear_Bolt_Nummber_B",
+                                "mf_Gear_Bolt_Random_B",
+                                "mf_Gear_Bolt_Position_B_1",
+                                "mf_Gear_Bolt_Position_B_2",
+                                ] 
+            if  self.gear_bolt_num == 3 and self.ex_type == 'mf_None':
+                self.motor_param.append("mf_Gear_Bolt_Position_B_3") 
+
+    def write_back(self,factory):
+        if self.bolt_random:
+            factory.mf_Gear_Bolt_Position_B_1 = self.bolt_position_1
+            factory.mf_Gear_Bolt_Position_B_2 = self.bolt_position_2
+            factory.mf_Gear_Bolt_Position_B_3 = self.bolt_position_3
+            factory.mf_Gear_Bolt_Right_B = self.bolt_position_right
+                           
     ##############################################################################################################################
     ######################## Upper Part Type B ###################################################################################
     
@@ -1576,7 +1624,7 @@ class Type_B(Motor_Creator):
 
         upper.select_set(True)
         if self.gear_Flip : 
-            if self.gear_orientation in ['mf_zero','mf_HundredEighteen']:
+            if self.gear_orientation in ['r0','r180']:
                 bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(False, True, False))
                 bpy.ops.transform.translate(value=(0,-2*y,0))
       
