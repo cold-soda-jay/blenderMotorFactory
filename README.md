@@ -33,13 +33,41 @@ When you modified some motor manuelly and want to save the model and property va
 
 The parameters of generated model will be saved into a csv file when ``save_path`` setted. Every model will be saved in a separate folder with a number as name. This number represent the Id of the model. The parameters of this model can be found in csv file. 
 
- 
 
 #### Bolt Positions
 
-The position of all bolts will also be saved as a list in the file. The order of bolt position is from bottom to top.
+The position of all bolts will also be saved as a list in the file. The order of bolt position is from bottom to top. See picture below for more details.
 
+
+<div style="display:block;
+float:center;">
 <div align="center"><img src="pic/bolts.png" alt="Image" style="zoom:80%;" /></div>
+<div style="color: #666; padding: 2px;" align="center"> 
+Top Type A with extension 1.
+</div>
+</div>
+
+<div style="display:block;
+float:center;">
+
+<div align="center"><img src="pic/boltA2.png" alt="Image" style="zoom:80%;" /></div>
+<div style="color: #666; padding: 2px;" align="center"> 
+
+Top Type A with extension 2.
+</div>
+</div>
+
+
+
+<div style="display:block;
+float:center;">
+
+<div align="center"><img src="pic/boltB1.png" alt="Image" style="zoom:80%;" /></div>
+<div style="color: #666; padding: 2px;" align="center"> 
+
+Top Type B with extension 1.
+</div>
+</div>
 
 Every bolt will have a vector to store its position and orientation. In CSV the last colum stores all bolts positions. The result is a [3\*2\*n] list. Each bolt position will be represented as a vector [
     Top_position(x,y,z), 
