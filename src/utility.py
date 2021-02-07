@@ -7,6 +7,8 @@ from math import radians
 import bmesh
 import random
 import csv
+import re
+
 
 
 
@@ -730,10 +732,16 @@ class Factory:
             dict: Dictionary of parameter
         """
         data_list=[str(self.id_Nr)]
-        
+        pattern = re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$')
+
         for name in self.key_list[1:-3]:            
             if name in self.motor_param:
-                data_list.append(getattr(factory,name))
+                value = str(getattr(factory,name))
+                if pattern.match(value):
+                    data_list.append(round(float(value),3))
+                else:
+                    data_list.append(value)
+
             else:
                 data_list.append('-')
         data_list.append(self.out_bolt_position)
@@ -800,14 +808,14 @@ class Factory:
         # Bolts on "Bottom part"
         for position in  self.bolt_position[0:2]:
             top = [
-                position[0],
-                position[1],
-                position[2] - top_z
+                round(position[0],3),
+                round(position[1],3),
+                round(position[2] - top_z,3)
             ]
             bottom = [
-                position[0],
-                position[1],
-                position[2] + bottom_z
+                round(position[0],3),
+                round(position[1],3),
+                round(position[2] + bottom_z,3)
             ]
             out_position.append([top, bottom])
         
@@ -885,12 +893,12 @@ class Factory:
                         x_top = -x_top
                         x_bottom = -x_bottom  
                                                               
-            top = [x_top,
-                    y_top,
-                    z]
-            bottom = [x_bottom,
-                    y_bottom,
-                    z]  
+            top = [round(x_top,3),
+                    round(y_top,3),
+                    round(z,3)]
+            bottom = [round(x_bottom,3),
+                    round(y_bottom,3),
+                    round(z,3)]  
      
             out_position.append([top, bottom])
         self.out_bolt_position = out_position
