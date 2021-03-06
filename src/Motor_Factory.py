@@ -427,8 +427,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             except:
                 pass        
                   
-            self.id_Nr = len([x for x in os.listdir(self.save_path) if "Motor_bl_Nr." in x])+1
-            path_of_folder = self.save_path + "Motor_bl_Nr."+str(self.id_Nr)+'/'
+            self.id_Nr = len([x for x in os.listdir(self.save_path) if "Motor_" in x])+1
+            path_of_folder = self.save_path + "Motor_%04d/"%self.id_Nr
             try:
                 os.mkdir(path_of_folder)
             except:
@@ -476,12 +476,17 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
            bpy.context.window_manager.popup_menu(self.success_save, title="Info", icon='PLUGIN')    
 
            self.temp_save = False   
-           self.save_path = "None"      
+           self.save_path = "None"  
+        self.test(creator)    
         return motor
 
     def success_save(self,okay,context):
-        text = "Module saved under " + str(self.save_path)+ "Motor_bl_Nr."+str(self.id_Nr)+'/'
+        text = "Module saved under " + str(self.save_path)+ "Motor_%04d/"%self.id_Nr#"Motor_"+str(self.id_Nr)+'/'
         okay.layout.label(text=text)
+    
+    def test(self,creator):
+        #creator.create_internal_gear((0,0,20), 0.5, 2)
+        pass
 
 
    

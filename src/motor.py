@@ -90,7 +90,7 @@ class Motor_Creator(Factory):
 
         if self.color_render:
             self.rend_color(cyl, "Metall")
-        cyl.name = "Bottom_part"
+        cyl.name = "Bottom"
         self.save_modell(cyl)
         return cyl
 
@@ -506,7 +506,6 @@ class Type_A(Motor_Creator):
             factory.mf_Upper_Gear_Bolt_Position_1 = self.upper_Gear_Bolt_Position_1
             factory.mf_Upper_Gear_Bolt_Position_2 = self.upper_Gear_Bolt_Position_2
             factory.mf_Upper_Gear_Bolt_Position_3 = self.upper_Gear_Bolt_Position_3
-
 
     def create_up(self, length_relativ, extension=False):
         
@@ -1143,7 +1142,7 @@ class Type_A(Motor_Creator):
         #self.rotate_object(up1)
         
         board = self.create_outer_board()  
-        middle, bolt_list_middle = self. create_middle()
+        middle, bolt_list_middle = self.create_middle()
 
         for bolt in bolt_list_middle:
             self.save_modell(bolt)
@@ -1154,7 +1153,7 @@ class Type_A(Motor_Creator):
             self.save_modell(bolt)
             
         extension_zone, bolt_list_2 = self.create_up(length_relativ, extension=True)
-        extension_zone.name = "Up2"
+        extension_zone.name = "Cover"
         self.save_modell(extension_zone)
         for bolt in bolt_list_2:
             self.save_modell(bolt)
@@ -1164,7 +1163,7 @@ class Type_A(Motor_Creator):
  
 
         gear_1 = self.combine_all_obj(board,[up1])
-        gear_1.name = "Up1"
+        gear_1.name = "Gear_Container"
         self.save_modell(gear_1,middle)
 
         gear_2 = self.combine_all_obj(gear_1,bolt_list_1)

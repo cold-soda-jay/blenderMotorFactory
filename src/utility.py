@@ -582,7 +582,7 @@ class Factory:
         # rotate the bit
         Angle = 0
         if orientation == 'mf_all_random':
-            Angle = random.randrange(0, 360, 10) 
+            Angle = random.randrange(0, 360, 1) 
             bpy.ops.object.select_all(action='DESELECT')
             bolt.select_set(True)    
             bpy.ops.transform.rotate(value=radians(Angle),orient_axis='Z') 
@@ -731,14 +731,14 @@ class Factory:
         Returns:
             dict: Dictionary of parameter
         """
-        data_list=[str(self.id_Nr)]
+        data_list=['%04d'%self.id_Nr]
         pattern = re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$')
 
         for name in self.key_list[1:-3]:            
             if name in self.motor_param:
                 value = str(getattr(factory,name))
                 if pattern.match(value):
-                    data_list.append(round(float(value),3))
+                    data_list.append('%.03f'%float(value))
                 else:
                     data_list.append(value)
 
@@ -761,19 +761,28 @@ class Factory:
             pass
         else:
             if modell is None:
-                return     
-            path_of_folder = self.save_path + "Motor_bl_Nr."+str(self.id_Nr)+'/'
+                return  
+            modell.data.name = modell.data.name[-3:]
+            path_of_folder = self.save_path + "Motor_%04d/"%self.id_Nr
             bpy.ops.object.select_all(action='DESELECT')
             modell.select_set(True)
             if addtional:
                 addtional.select_set(True)
             name = modell.name
-            if name == "Bolt" and os.path.isfile(path_of_folder+name+'.stl'):
-                return
-            try:
-                bpy.ops.export_mesh.stl(filepath=path_of_folder+name+'.stl', check_existing=True, use_selection=True, filter_glob='*.stl',)
-            except:
-                print("Error!")
+            if self.color_render:
+                if name == "Bolt" and os.path.isfile(path_of_folder+name+'.obj'):
+                    return
+                try:
+                    bpy.ops.export_scene.obj(filepath=path_of_folder+name+'.obj', check_existing=True, use_selection=True, filter_glob='*.obj',)
+                except:
+                    print("Error!")
+            else:
+                if name == "Bolt" and os.path.isfile(path_of_folder+name+'.stl'):
+                    return
+                try:
+                    bpy.ops.export_mesh.stl(filepath=path_of_folder+name+'.stl', check_existing=True, use_selection=True, filter_glob='*.stl',)
+                except:
+                    print("Error!")
             bpy.ops.object.select_all(action='DESELECT')
 
     def write_back(self,factory):
@@ -893,13 +902,72 @@ class Factory:
                         x_top = -x_top
                         x_bottom = -x_bottom  
                                                               
-            top = [round(x_top,3),
-                    round(y_top,3),
-                    round(z,3)]
-            bottom = [round(x_bottom,3),
-                    round(y_bottom,3),
-                    round(z,3)]  
+            top = ['%.03f'%x_top,
+                    '%.03f'%y_top,
+                    '%.03f'%z]
+            bottom = ['%.03f'%x_bottom,
+                        '%.03f'%y_bottom,
+                        '%.03f'%z]  
      
             out_position.append([top, bottom])
         self.out_bolt_position = out_position
        
+    def create_internal_gear(self, position, height, radius):
+        thickness = radius - 0.5
+        ring_main = self.create_ring(position=position,height=height,radius=radius, thickness=thickness)
+        number = 17
+        angle = 2*math.pi/number
+        len_base = radius * math.sin(angle/2)
+        posi_x = radius * math.cos(angle/2)
+        teeth_list = []
+        position_teeth = [position[0]-posi_x, position[1],position[2]]
+        for i in range(number):
+            teeth = self.create_teeth_mesh(position_teeth, height, len_base)
+            rotation_angle = i*angle
+            r_x, r_y = self.rotate_around_point(position[:2], rotation_angle, teeth.location[:2])
+            teeth.location.x = r_x
+            teeth.location.y = r_y
+            teeth.select_set(True)
+            bpy.ops.transform.rotate(value=rotation_angle,orient_axis="Z")
+            teeth_list.append(teeth)
+            bpy.ops.object.select_all(action='DESELECT')
+        internal_gear = self.combine_all_obj(ring_main, teeth_list)
+        return internal_gear   
+    
+    def create_teeth_mesh(self, position,height,len_base):
+        x = position[0]
+        y = position[1]
+        z = position[2] + height/2
+        t_len = 1.5 *len_base
+        len_up = len_base * 0.4
+        p1x = x
+        p1y = y + len_base
+        p2x = x - t_len
+        p2y = y + len_up
+        p3x = x - t_len
+        p3y = y - len_up
+        p4x = x
+        p4y = y - len_base
+        
+        verts =[
+            [p1x, p1y, z],
+            [p1x, p1y, z - height],
+            [p2x, p2y, z],
+            [p2x, p2y, z - height],
+            [p3x, p3y,z],
+            [p3x, p3y, z - height],
+            [p4x, p4y, z],
+            [p4x, p4y, z - height],
+        ]
+        
+        faces = [
+            [0,1,3,2],
+            [2,3,5,4],
+            [4,5,7,6],
+            [6,7,1,0],
+            [0,2,4,6],
+            [1,3,5,7]
+        ]
+        
+        obj = self.add_mesh('Teeth',verts, faces)
+        return obj        
