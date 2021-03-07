@@ -1058,7 +1058,7 @@ class Type_A(Motor_Creator):
         y = -0.2
         z = init_z + main_long + sub_long + self.BOLT_LENGTH
         bpy.ops.mesh.primitive_cube_add(location=(x,y,z))
-        bpy.ops.transform.resize(value=(main_height*0.15, self.BOARD_THICKNESS/2, length))
+        bpy.ops.transform.resize(value=(main_height*0.15, self.BOARD_THICKNESS/2, length*0.8))
 
         if self.gear_orientation in ['r270111', 'r90111'] :
             x = 0
@@ -1138,52 +1138,46 @@ class Type_A(Motor_Creator):
         return board
 
     def create_upper_part(self):
-        rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
-        #self.rotate_object(up1)
+        rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]        
         
-        board = self.create_outer_board()  
         middle, bolt_list_middle = self.create_middle()
-
         for bolt in bolt_list_middle:
             self.save_modell(bolt)
             
+        board = self.create_outer_board()  
+        self.rotate_object(board)
         
         up1, bolt_list_1 = self.create_up(length_relativ)
+        self.rotate_object(up1)
+
         for bolt in bolt_list_1:
+            self.rotate_object(bolt)
             self.save_modell(bolt)
             
         extension_zone, bolt_list_2 = self.create_up(length_relativ, extension=True)
+        self.rotate_object(extension_zone)
         extension_zone.name = "Cover"
         self.save_modell(extension_zone)
+        
         for bolt in bolt_list_2:
+            self.rotate_object(bolt)
             self.save_modell(bolt)
+        
         extension_zone_1 = self.combine_all_obj(extension_zone,bolt_list_2)
-        self.rotate_object(extension_zone_1)      
         ex_list=[extension_zone_1]
  
 
-        gear_1 = self.combine_all_obj(board,[up1])
+        gear_1 = self.combine_all_obj(board,[up1,middle])
         gear_1.name = "Gear_Container"
-        self.save_modell(gear_1,middle)
+        self.save_modell(gear_1)
 
         gear_2 = self.combine_all_obj(gear_1,bolt_list_1)
-        self.rotate_object(gear_2)
-
 
         upper = self.combine_all_obj(gear_2, ex_list)
         x,y,z = upper.location
-        self.calculate_bolt_position((x,y,z))
+        self.calculate_bolt_position()
 
-        if self.gear_Flip : 
-            if self.gear_orientation in ['r0','r180']:
-                bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(True, False, False))
-                bpy.ops.transform.translate(value=(-2*x,0,0))
-      
-            else:
-                bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(False, True, False))
-                bpy.ops.transform.translate(value=(0,-2*y,0))
-
-        gear = self.combine_all_obj(upper, [middle] + bolt_list_middle)
+        gear = self.combine_all_obj(upper, bolt_list_middle)
 
         return upper
     
@@ -1589,47 +1583,55 @@ class Type_B(Motor_Creator):
   
 
         middle, bolt_list_middle = self.create_middle()     
-        
+
         upper_1, bolt_list = self.create_Up1()
-        upper_1.name = 'Up1'  
-        self.save_modell(upper_1,middle)
+        self.rotate_object(upper_1)
+
+        container = self.combine_all_obj(upper_1, [middle])
+        container.name = 'Gear_Container'  
+        self.save_modell(container)
 
         bolt_position = []
         for bl in bolt_list:
-            self.save_modell(bl)
             bolt_position.append(bl.location)
-        
+            
+        extension_zone = self.create_Up2(bolt_position, 1.5)        
+        extension_zone.name = "Cover"  
+        self.rotate_object(extension_zone)
+        self.save_modell(extension_zone)  
+            
+        for bl in bolt_list:
+            self.rotate_object(bl)
+            self.save_modell(bl)
+            
         for bl in bolt_list_middle:
             self.save_modell(bl)
+
         
-         
-        extension_zone = self.create_Up2(bolt_position, 1.5)        
-        extension_zone.name = "Up2"
-        
-        self.rotate_object(extension_zone)
-        self.save_modell(extension_zone)
-        ex_list=[extension_zone]
+        ex_list=[extension_zone]#
 
         
 
-        up1 = self.combine_all_obj(upper_1, bolt_list)
-        self.rotate_object(up1)
+        up1 = self.combine_all_obj(container, bolt_list)
         
         upper  = self.combine_all_obj(up1, ex_list)
         x,y,z = upper.location
-        self.calculate_bolt_position((x,y,z))
+        self.calculate_bolt_position()
+                
+        gear = self.combine_all_obj(upper, bolt_list_middle)
 
-        upper.select_set(True)
+        return gear
+    
+    def flip_object(self, object_rotate):
+        x,y,z = object_rotate.location
+        bpy.ops.object.select_all(action='DESELECT')
+        object_rotate.select_set(True)
         if self.gear_Flip : 
             if self.gear_orientation in ['r0','r180']:
                 bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(False, True, False))
-                bpy.ops.transform.translate(value=(0,-2*y,0))
-      
+                bpy.ops.transform.translate(value=(0,-2*y,0)) 
             else:
                 
                 bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(True, False, False))
                 bpy.ops.transform.translate(value=(-2*x,0,0))
-                
-        gear = self.combine_all_obj(upper, [middle]+bolt_list_middle)
-
-        return gear
+        bpy.ops.object.select_all(action='DESELECT')

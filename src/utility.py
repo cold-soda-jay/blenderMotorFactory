@@ -98,6 +98,7 @@ class Factory:
     s_bolt_list = []
     l_bolt_list = []
     bolt_position = []
+    
     out_bolt_position = []
     temp_save = False
     bolt_roate_angle_list = []
@@ -120,6 +121,7 @@ class Factory:
 
         self.bit_type = factory.mf_Bit_Type
         self.bolt_position = []
+        
         self.out_bolt_position = []
         self.bolt_roate_angle_list = []
 
@@ -447,7 +449,6 @@ class Factory:
 
         else:
             self.bolt_position.append(position)
-
             out_length = self.BOLT_LENGTH
 
             in_dia = 0.8 * self.BOLT_RAD
@@ -641,6 +642,8 @@ class Factory:
             object_rotate (bpy.type.Objects): Object to be rotated
         """
         rotation, length_relativ, mirror = self.orient_dict[self.gear_orientation]
+        if object_rotate is None:
+            return
         x,y,z = object_rotate.location
         bpy.ops.object.select_all(action='DESELECT')
         object_rotate.select_set(True)
@@ -659,9 +662,25 @@ class Factory:
             nx,ny = self.rotate_around_point((0,0),-90,(x,y))
             bpy.ops.transform.translate(value=(nx-x,ny-y,0))
             bpy.ops.transform.rotate(value=-rotation[0],orient_axis=rotation[1])
-
+            
         else:
             pass
+        bpy.ops.object.select_all(action='DESELECT')
+        self.flip_object(object_rotate)
+
+    def flip_object(self, object_rotate):
+        x,y,z = object_rotate.location
+        bpy.ops.object.select_all(action='DESELECT')
+        object_rotate.select_set(True)
+        if self.gear_Flip : 
+            if self.gear_orientation in ['r0','r180']:
+                bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(True, False, False))
+                bpy.ops.transform.translate(value=(-2*x,0,0))
+      
+            else:
+                bpy.ops.transform.mirror(orient_type='GLOBAL',constraint_axis=(False, True, False))
+                bpy.ops.transform.translate(value=(0,-2*y,0))
+        bpy.ops.object.select_all(action='DESELECT')
 
     def init_key_list(self,factory):
         """Initiate key list for saving to csv
@@ -788,7 +807,7 @@ class Factory:
     def write_back(self,factory):
         pass
         
-    def calculate_bolt_position(self,root_position):
+    def calculate_bolt_position(self):
         
         """Caculate bolts positions. The result form is a [3*2*n] list. Each bolt position will be represented as a vector [Top_position(x,y,z), Bottom_position(x,y,z)].
         E.g.: [
@@ -817,14 +836,14 @@ class Factory:
         # Bolts on "Bottom part"
         for position in  self.bolt_position[0:2]:
             top = [
-                round(position[0],3),
-                round(position[1],3),
-                round(position[2] - top_z,3)
+                '%.03f'%round(position[0],3),
+                '%.03f'%round(position[1],3),
+                '%.03f'%round(position[2] - top_z,3)
             ]
             bottom = [
-                round(position[0],3),
-                round(position[1],3),
-                round(position[2] + bottom_z,3)
+                '%.03f'%round(position[0],3),
+                '%.03f'%round(position[1],3),
+                '%.03f'%round(position[2] + bottom_z,3)
             ]
             out_position.append([top, bottom])
         
