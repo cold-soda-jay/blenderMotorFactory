@@ -626,7 +626,7 @@ class Type_A(Motor_Creator):
                     bolt_position_angle_2 = self.l_bolt_list[1]
                 else:
                     bolt_position_angle_1 = random.uniform(0,single_bolt_area) 
-                    bolt_position_angle_2 = random.uniform(bolt_position_angle_1 + 0.5*single_bolt_area, 2*single_bolt_area)
+                    bolt_position_angle_2 = random.uniform(1.2*single_bolt_area, 2*single_bolt_area)
                     self.upper_Gear_Bolt_Position_1 = bolt_position_angle_1
                     self.upper_Gear_Bolt_Position_2 = bolt_position_angle_2
                     self.l_bolt_list=[bolt_position_angle_1, bolt_position_angle_2]
@@ -652,8 +652,8 @@ class Type_A(Motor_Creator):
                     bolt_position_angle_3 = self.l_bolt_list[2]
                 else:
                     bolt_position_angle_1 = random.uniform(0,single_bolt_area) 
-                    bolt_position_angle_2 = random.uniform(bolt_position_angle_1 + 0.5*single_bolt_area, 2*single_bolt_area)
-                    bolt_position_angle_3 = random.uniform(bolt_position_angle_2 + 0.5*single_bolt_area, 3*single_bolt_area)
+                    bolt_position_angle_2 = random.uniform(1.2*single_bolt_area, 2*single_bolt_area)
+                    bolt_position_angle_3 = random.uniform(2.2*single_bolt_area, 3*single_bolt_area)
                     self.upper_Gear_Bolt_Position_1 = bolt_position_angle_1
                     self.upper_Gear_Bolt_Position_2 = bolt_position_angle_2
                     self.upper_Gear_Bolt_Position_3 = bolt_position_angle_3
@@ -1200,6 +1200,9 @@ class Type_B(Motor_Creator):
     bolt_position_3 = 0
     bolt_position_right = 0
     bolt_position_random = []
+    bolt_rotation_1 = 0
+    bolt_rotation_2 = 0
+    bolt_ex_rotation = 0
     
     param = [
         "mf_Extension_Type_B",
@@ -1256,9 +1259,9 @@ class Type_B(Motor_Creator):
 
     def write_back(self,factory):
         if self.bolt_random:
-            factory.mf_Gear_Bolt_Position_B_1 = self.bolt_position_1
-            factory.mf_Gear_Bolt_Position_B_2 = self.bolt_position_2
-            factory.mf_Gear_Bolt_Position_B_3 = self.bolt_position_3
+            factory.mf_Gear_Bolt_Position_B_1 = self.bolt_rotation_1
+            factory.mf_Gear_Bolt_Position_B_2 = self.bolt_rotation_2
+            factory.mf_Gear_Bolt_Position_B_3 = self.bolt_ex_rotation
             factory.mf_Gear_Bolt_Right_B = self.bolt_position_right
                            
     ##############################################################################################################################
@@ -1435,20 +1438,20 @@ class Type_B(Motor_Creator):
         # Calculate the rotate (x,z axis)             
         if self.bolt_random:
             if self.ex_type ==  "mf_None":
-                bolt_rotation_1 = random.uniform(210,225)#self.lower_gear_bolt_position_2
-                bolt_rotation_2 = random.uniform(70,110)
+                self.bolt_rotation_1 = random.uniform(210,225)#self.lower_gear_bolt_position_2
+                self.bolt_rotation_2 = random.uniform(70,110)
             else:  
-                bolt_rotation_1 = random.uniform(215,220)
-                bolt_rotation_2 = random.uniform(80,100)
+                self.bolt_rotation_1 = random.uniform(215,220)
+                self.bolt_rotation_2 = random.uniform(80,100)
 
         else:
-                bolt_rotation_1 = self.bolt_position_1
-                bolt_rotation_2 = self.bolt_position_2
+                self.bolt_rotation_1 = self.bolt_position_1
+                self.bolt_rotation_2 = self.bolt_position_2
 
-        y_bolt_1, z_bolt_1 = self.rotate_around_point((y,z),bolt_rotation_1,(y_bolt_init,z_bolt_init))
+        y_bolt_1, z_bolt_1 = self.rotate_around_point((y,z),self.bolt_rotation_1,(y_bolt_init,z_bolt_init))
         bolt_1 = self.create_bolt((x_bolt_init, y_bolt_1,z_bolt_1), rotation = rotation_s)
         
-        y_bolt_2, z_bolt_2 = self.rotate_around_point((y,z),bolt_rotation_2,(y_bolt_init,z_bolt_init))       
+        y_bolt_2, z_bolt_2 = self.rotate_around_point((y,z),self.bolt_rotation_2,(y_bolt_init,z_bolt_init))       
         bolt_2 = self.create_bolt((x_bolt_init, y_bolt_2,z_bolt_2), rotation = rotation_s) 
 
         z_bolt_3 = main_long + sub_long + self.bolt_position_right
@@ -1460,10 +1463,10 @@ class Type_B(Motor_Creator):
         
         if self.gear_bolt_num == 3:
             if self.bolt_random:
-                bolt_ex_rotation = random.uniform(130,190)
+                self.bolt_ex_rotation = random.uniform(130,190)
             else:
-                bolt_ex_rotation = self.bolt_position_3
-            y_bolt_ex, z_bolt_ex = self.rotate_around_point((y,z),bolt_ex_rotation,(y_bolt_init,z_bolt_init))       
+                self.bolt_ex_rotation = self.bolt_position_3
+            y_bolt_ex, z_bolt_ex = self.rotate_around_point((y,z),self.bolt_ex_rotation,(y_bolt_init,z_bolt_init))       
             
             bolt_ex = self.create_bolt((x_bolt_init, y_bolt_ex,z_bolt_ex), rotation = rotation_s)
             bolt_shell_list.append(bolt_ex[0])
