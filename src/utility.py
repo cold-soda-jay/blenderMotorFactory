@@ -592,7 +592,14 @@ class Factory:
             out_cyl.select_set(True)
             bolt.select_set(True)
             bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
-        self.bolt_roate_angle_list.append(Angle)
+        print(Angle)
+        if bit_type == 'mf_Bit_Slot':
+            self.bolt_roate_angle_list.append(Angle%180)
+        elif bit_type == 'mf_Bit_Torx':
+            self.bolt_roate_angle_list.append(Angle%60)
+        elif bit_type == 'mf_Bit_Cross':
+            self.bolt_roate_angle_list.append(Angle%90)
+     
         return [out_cyl,bolt]
 
     def rend_color(self, obj, part):
