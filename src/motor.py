@@ -419,6 +419,7 @@ class Type_A(Motor_Creator):
 
 
     def init_modify(self,factory):    
+            self.param = []
             self.ex_type = factory.mf_Extension_Type_A
            
             if self.ex_type == 'mf_Extension_Type_1':
