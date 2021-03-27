@@ -39,7 +39,7 @@ def create_motor(number: int, **data):
         param = generate_param()
         for key, value in data.items():
             param[key] = value
-            motor = bpy.ops.mesh.add_motor(**param)
+        motor = bpy.ops.mesh.add_motor(**param)
             
         
             
