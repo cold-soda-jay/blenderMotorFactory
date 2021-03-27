@@ -122,9 +122,12 @@ To generate more models at once, you can use script ``./src/auto_generate.py``. 
 |mf_Gear_Bolt_Right_B| The position of bolt in right side of gear(Type B). Repect to the top of bottom part: Value in range [1.7, 4]. Unit cm|
 |mf_Upper_Bolt_Nummber| Number of Bolts on upper gear (Type A): Value can be 1 or 2 or 3|
 |mf_Upper_Gear_Bolt_Random| Wheater postion of bolts on upper gear(Type A) should be random: Value can be (True, False)|
-|mf_Upper_Gear_Bolt_Position_1| The position of bolt around upper gear: Value in range [0, 210]. Unit degree|
-|mf_Upper_Gear_Bolt_Position_2| The position of bolt around upper gear: Value in range [0, 210]. Unit degree|
-|mf_Upper_Gear_Bolt_Position_3| The position of bolt around upper gear: Value in range [0, 210]. Unit degree|
+|mf_Upper_Gear_Bolt_Position_1_1| The position of bolt Nr.1 around upper gear when only one bolt: Value in range [0, 210]. Unit degree|
+|mf_Upper_Gear_Bolt_Position_1_2| The position of bolt Nr.1 around upper gear when two bolts: Value in range [0, 100]. Unit degree|
+|mf_Upper_Gear_Bolt_Position_1_3| The position of bolt Nr.1 around upper gear when three bolts: Value in range [0, 65]. Unit degree|
+|mf_Upper_Gear_Bolt_Position_2_1| The position of bolt Nr.2 around upper gear when two bolts: Value in range [110, 210]. Unit degree|
+|mf_Upper_Gear_Bolt_Position_2_2| The position of bolt Nr.2 around upper gear when three bolts: Value in range [75, 135]. Unit degree|
+|mf_Upper_Gear_Bolt_Position_3| The position of bolt Nr.3 around upper gear when three bolts: Value in range [145, 210]. Unit degree|
 |mf_Type_B_Height_1| Height of Extension left relative to the top of the bottom part (mf_Sub_Bottom_Length + mf_Bottom_Length). Value can be in range [1.7, 4]|
 |mf_Type_B_Height_2| Height of Extension right relative to the top of the bottom part (mf_Sub_Bottom_Length + mf_Bottom_Length). Value can be in range [5, 6.5]|
 |save_path| Path of folder when saving the module.|

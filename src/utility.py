@@ -696,7 +696,7 @@ class Factory:
             factory (bpy.types.Operator): Operator
         """
         #key_list = ["Nr."]
-        motor_params = getattr(factory, "MotorParameters")[:-2]
+        motor_params = getattr(factory, "CsvParameters")
         key_list = ["Nr."] + motor_params + ["Bolts_Positions", "Bolt Angles", "Number of Bolts"]       
         self.key_list=key_list
 

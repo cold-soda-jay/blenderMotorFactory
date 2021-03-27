@@ -55,8 +55,12 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         
         "mf_Upper_Bolt_Nummber",
         "mf_Upper_Gear_Bolt_Random",
-        "mf_Upper_Gear_Bolt_Position_1",
-        "mf_Upper_Gear_Bolt_Position_2",
+        "mf_Upper_Gear_Bolt_Position_1_1",
+        "mf_Upper_Gear_Bolt_Position_1_2",
+        "mf_Upper_Gear_Bolt_Position_1_3",
+        #"mf_Upper_Gear_Bolt_Position_1",
+        "mf_Upper_Gear_Bolt_Position_2_1",
+        "mf_Upper_Gear_Bolt_Position_2_2",
         "mf_Upper_Gear_Bolt_Position_3",
               
         "mf_Type_B_Height_1",
@@ -70,6 +74,39 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "temp_save",
         "save_path",
 
+        ]
+    
+    CsvParameters = [
+        "mf_Top_Type",
+        "mf_Extension_Type_A",
+        "mf_Extension_Type_B",
+        "mf_Gear_Orientation_1",
+        "mf_Gear_Orientation_2",
+        "mf_Flip",
+        "mf_Color_Render",
+        "mf_Bottom_Length",
+        "mf_Sub_Bottom_Length",
+        "mf_Lower_Gear_Dia",
+        "mf_Lower_Gear_Position",
+        "mf_Upper_Gear_Dia",
+        "mf_Bit_Type",
+        "mf_Bolt_Orientation",
+        "mf_Lower_Gear_Bolt_Random",
+        "mf_Lower_Gear_Bolt_Position_1",
+        "mf_Lower_Gear_Bolt_Position_2", 
+        "mf_Upper_Bolt_Nummber",
+        "mf_Upper_Gear_Bolt_Random",
+        "mf_Upper_Gear_Bolt_Position_1",
+        "mf_Upper_Gear_Bolt_Position_2",
+        "mf_Upper_Gear_Bolt_Position_3",
+        "mf_Type_B_Height_1",
+        "mf_Type_B_Height_2", 
+        "mf_Gear_Bolt_Random_B",
+        "mf_Gear_Bolt_Nummber_B",
+        "mf_Gear_Bolt_Position_B_1",
+        "mf_Gear_Bolt_Position_B_2",
+        "mf_Gear_Bolt_Position_B_3",
+        "mf_Gear_Bolt_Right_B",
         ]
     #Create genera types and Variables
 
@@ -245,19 +282,41 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
 
     #TODO: Change range
-    mf_Upper_Gear_Bolt_Position_1 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_1',
+    
+    #mf_Upper_Gear_Bolt_Position_1 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_1',
+    # #   name='Position of bolts on large gear', default = 13,
+    #    min = 0, max = uppp, step=1,
+     #   description='Position of bolts on large gear')
+    
+    mf_Upper_Gear_Bolt_Position_1_1 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_1',
         name='Position of bolts on large gear', default = 13,
         min = 0, max = 210, step=1,
         description='Position of bolts on large gear')
-
-    mf_Upper_Gear_Bolt_Position_2 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_2',
-        name='Position of bolts on large gear', default = 100,
-        min = 0, max = 210, step=1,
+    
+    mf_Upper_Gear_Bolt_Position_1_2 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_1',
+        name='Position of bolts on large gear', default = 13,
+        min = 0, max = 100, step=1,
         description='Position of bolts on large gear')
+    
+    mf_Upper_Gear_Bolt_Position_1_3 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_1',
+        name='Position of bolts on large gear', default = 13,
+        min = 0, max = 65, step=1,
+        description='Position of bolts on large gear')
+    
+
+    mf_Upper_Gear_Bolt_Position_2_1 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_2',
+        name='Position of bolts on large gear', default = 100,
+        min = 110, max = 210, step=1,
+        description='Position of bolts on large gear')    
+    mf_Upper_Gear_Bolt_Position_2_2 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_2',
+        name='Position of bolts on large gear', default = 100,
+        min = 75, max = 135, step=1,
+        description='Position of bolts on large gear')
+    
 
     mf_Upper_Gear_Bolt_Position_3 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_3',
         name='Position of bolts on large gear', default =200,
-        min = 0, max = 210, step=1,
+        min = 145, max = 210, step=1,
         description='Position of bolts on large gear')
 
 
@@ -289,7 +348,10 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 default = "None", maxlen=4096,
                 description = "Save the modell")        
     
-    
+    mf_Upper_Gear_Bolt_Position_1 = 0
+
+    mf_Upper_Gear_Bolt_Position_2 = 0
+
     def draw(self, context):
         """
         Define the contex menu
@@ -347,12 +409,17 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             col.prop(self, 'mf_Upper_Bolt_Nummber')
             col.prop(self, 'mf_Upper_Gear_Bolt_Random')
             if not self.mf_Upper_Gear_Bolt_Random:
-                col.prop(self, 'mf_Upper_Gear_Bolt_Position_1') 
-                if self.mf_Upper_Bolt_Nummber == '2':
-                    col.prop(self, 'mf_Upper_Gear_Bolt_Position_2') 
+                if self.mf_Upper_Bolt_Nummber == '1':
+                    col.prop(self, 'mf_Upper_Gear_Bolt_Position_1_1') 
+                elif self.mf_Upper_Bolt_Nummber == '2':
+                    col.prop(self, 'mf_Upper_Gear_Bolt_Position_1_2') 
+                    col.prop(self, 'mf_Upper_Gear_Bolt_Position_2_1') 
+
                 elif self.mf_Upper_Bolt_Nummber == '3':
-                    col.prop(self, 'mf_Upper_Gear_Bolt_Position_2')
+                    col.prop(self, 'mf_Upper_Gear_Bolt_Position_1_3') 
+                    col.prop(self, 'mf_Upper_Gear_Bolt_Position_2_2')
                     col.prop(self, 'mf_Upper_Gear_Bolt_Position_3')
+
         elif self.mf_Top_Type == "mf_Top_Type_B":
             col.label(text="Bolts Position around gear B")
             col.prop(self, 'mf_Gear_Bolt_Right_B')
@@ -436,6 +503,17 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         # different headtype instance different object
         if self.mf_Top_Type == "mf_Top_Type_A":
             creator = mt.Type_A(self)
+            if self.mf_Upper_Bolt_Nummber == '1':
+                self.mf_Upper_Gear_Bolt_Position_1 = self.mf_Upper_Gear_Bolt_Position_1_1
+            elif self.mf_Upper_Bolt_Nummber == '2':
+                self.mf_Upper_Gear_Bolt_Position_1 = self.mf_Upper_Gear_Bolt_Position_1_2
+                self.mf_Upper_Gear_Bolt_Position_2 = self.mf_Upper_Gear_Bolt_Position_2_1
+            elif self.mf_Upper_Bolt_Nummber == '3':
+                self.mf_Upper_Gear_Bolt_Position_1 = self.mf_Upper_Gear_Bolt_Position_1_3
+                self.mf_Upper_Gear_Bolt_Position_2 = self.mf_Upper_Gear_Bolt_Position_2_2
+
+               
+
         elif self.mf_Top_Type == "mf_Top_Type_B":
             creator = mt.Type_B(self) 
         
