@@ -468,6 +468,7 @@ class Factory:
             z_sphe = z_in + in_dia/2
 
             #Create Shell for Bolt
+            
             out_cyl = self.create_ring(position, out_length, out_dia, 0.2)
 
             out_cyl.name = 'out_cylinder'
@@ -592,7 +593,7 @@ class Factory:
             out_cyl.select_set(True)
             bolt.select_set(True)
             bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
-        print(Angle)
+        #print(Angle)
         if bit_type == 'mf_Bit_Slot':
             self.bolt_roate_angle_list.append(Angle%180)
         elif bit_type == 'mf_Bit_Torx':
@@ -628,10 +629,15 @@ class Factory:
             mat.roughness = 0.7
 
         elif part == "Bit":
-            mat.diffuse_color = (0.9, 0.9, 0.9, 1)
-            mat.metallic = 0.85
-            mat.specular_intensity = 0.5
-            mat.roughness = 0.1
+            mat.metallic = 0.8
+            mat.roughness = 0.4
+            mat.diffuse_color = (0.3, 0.3, 0.3, 1)
+            mat.specular_intensity = 0.9
+            
+            #mat.diffuse_color = (0.9, 0.9, 0.9, 1)
+            #mat.metallic = 0.85
+            #mat.specular_intensity = 0.5
+            #mat.roughness = 0.1
 
         # Assign it to object
         if obj.data.materials:

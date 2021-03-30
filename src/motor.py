@@ -544,11 +544,12 @@ class Type_A(Motor_Creator):
                 extension_zone, bottom_board = self.create_extension_zone((x_large,y_large,z_large),0.3)
                 
             s_gear = self.create_gear((x,y,z),self.lower_gear_dia/2,"stick",length_relativ, extension = extension, bottom_board=bottom_board)
-            y_bolt_init = y
+            y_bolt_init = y + 0.25 - 0.15
 
         else:
             s_gear = self.create_gear((x,y,z),self.lower_gear_dia/2,"stick",length_relativ)
-            y_bolt_init = y - length_relativ/2 + self.BOLT_LENGTH/2 + self.EXTENSION_THICKNESS + 0.1
+            y_bolt_init = y - length_relativ/3 + self.BOLT_LENGTH/2 -  0.8 * self.BOLT_RAD
+            #+ self.EXTENSION_THICKNESS + 0.1
 
 
         # Create Bolt for small gear
@@ -580,11 +581,12 @@ class Type_A(Motor_Creator):
         if extension:        
             
             l_gear = self.create_gear((x_large,y_large,z_large),self.upper_gear_dia/2, "hollow",length_relativ,extension = extension,bottom_board=bottom_board)
-            y_bolt_init = y_large
+            y_bolt_init = y_large + 0.25 - 0.15
 
         else:
             l_gear = self.create_gear((x_large,y_large,z_large),self.upper_gear_dia/2, "hollow",length_relativ)
-            y_bolt_init = y_large - length_relativ/3 + self.BOLT_LENGTH/2 + 0.3
+            y_bolt_init = y_large - length_relativ/6 + self.BOLT_LENGTH/2 -  0.8 * self.BOLT_RAD
+            
 
 
         #Create bolts for large gear
@@ -684,8 +686,25 @@ class Type_A(Motor_Creator):
         else:
             gear_board = self.create_gear_board()
             up = self.combine_all_obj(s_gear,[l_gear,gear_board] + bolt_shell_list)
+            
+        
+        #Cut unseful part
+        if extension:
+            pass
+        else:
+            pass
+            bpy.ops.mesh.primitive_cube_add(location=(x, y-length_relativ/3-5.05, z))
+            bpy.ops.transform.resize(value=(5, 5, 8))
+            cube_1 = bpy.context.object
+            cube_1.name = 'cube1'
+            self.diff_obj(up,cube_1)
+            cube_1.select_set(True)
+            bpy.ops.object.delete()
+        
         if self.color_render:
             self.rend_color(up, "Plastic")
+
+
 
         return up, bolt_bit_list
 
@@ -693,12 +712,16 @@ class Type_A(Motor_Creator):
         rotation = (radians(-90),"X")
         length_relativ = info
         if gear_type == 'stick':
+            inner_radius = 1/2
             if extension:
                 length = 0.5
+                inner_length = 0.7 * length +0.5
+                position_inner = (position[0], position[1], position[2]+inner_length/2)
             else:
                 length = length_relativ*2/3
-            inner_radius = 1/2
-            inner_length = 1.4 * length +1
+                inner_length = 0.7 * length +0.5
+                position_inner = (position[0], position[1], position[2]-inner_length/2)
+            
 
             #Create out
             bpy.ops.mesh.primitive_cylinder_add(radius=radius, depth=length, location=position)
@@ -706,7 +729,7 @@ class Type_A(Motor_Creator):
             out_cyl.name = 'out_cylinder'
 
             #Create inner
-            bpy.ops.mesh.primitive_cylinder_add(radius=inner_radius, depth=inner_length, location=position)
+            bpy.ops.mesh.primitive_cylinder_add(radius=inner_radius, depth=inner_length, location=position_inner)
             in_cyl = bpy.context.object
             in_cyl.name = 'in_cylinder'
             
