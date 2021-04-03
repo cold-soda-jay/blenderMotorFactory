@@ -470,6 +470,7 @@ class Factory:
             #Create Shell for Bolt
             
             out_cyl = self.create_ring(position, out_length, out_dia, 0.2)
+            
 
             out_cyl.name = 'out_cylinder'
 
@@ -600,7 +601,7 @@ class Factory:
             self.bolt_roate_angle_list.append(Angle%60)
         elif bit_type == 'mf_Bit_Cross':
             self.bolt_roate_angle_list.append(Angle%90)
-     
+        bolt["cp_category_id"] = 4
         return [out_cyl,bolt]
 
     def rend_color(self, obj, part):

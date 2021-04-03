@@ -519,13 +519,10 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         
         #Create bottom part
         bottom = creator.create_Bottom()
-
         #Create energy part (Electric socket)
         en_part = creator.create_en_part()
-
         #Create Upper part
         upper_part = creator.create_upper_part()
-
         obj_list=[upper_part,en_part]
         
         # Combine all created parts
@@ -547,6 +544,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                             space.shading.type = 'SOLID' # set the viewport shading to rendered
                         else:
                             space.shading.type = 'SOLID' # set the viewport shading to rendered
+        motor["cp_category_id"] = 9
         creator.save_modell(motor)
         creator.write_back(self)
         creator.save_csv(self)  
