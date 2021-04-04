@@ -34,7 +34,7 @@ class Factory:
     BOLT_RAD = 0.4
     BOLT_LENGTH = 1.4
     BOLT_BIT_DIA = 0.2
-    BOLT_THREAD_LENGTH = 1.4
+    BOLT_THREAD_LENGTH = 1.3
     BOLT_THREAD_DIA = 0.2
     
     # Board
@@ -461,7 +461,7 @@ class Factory:
 
             #Create Thread of Bolt
 
-            bpy.ops.mesh.primitive_cylinder_add(radius=self.BOLT_THREAD_DIA, depth=self.BOLT_THREAD_LENGTH, location=position)
+            bpy.ops.mesh.primitive_cylinder_add(radius=self.BOLT_THREAD_DIA, depth=self.BOLT_THREAD_LENGTH, location=(position[0],position[1],position[2]+0.05))
             thread = bpy.context.object
             thread.name = 'thread'
 
@@ -469,9 +469,10 @@ class Factory:
 
             #Create Shell for Bolt
             
-            out_cyl = self.create_ring(position, out_length, out_dia, 0.2)
-            
-
+            cyl_shell = self.create_ring(position, out_length, out_dia, 0.2)
+            bpy.ops.mesh.primitive_cylinder_add(radius=self.BOLT_THREAD_DIA, depth=0.1, location=(position[0],position[1],position[2]-0.65))
+            cyl_deck = bpy.context.object
+            out_cyl = self.combine_all_obj(cyl_shell, [cyl_deck])
             out_cyl.name = 'out_cylinder'
 
             bpy.ops.mesh.primitive_uv_sphere_add(radius=in_dia, location=(position[0],position[1],z_sphe))
@@ -573,14 +574,15 @@ class Factory:
                 bit.select_set(True)
                 bpy.ops.object.delete() 
             # rend color
-            if self.color_render:
-                self.rend_color(out_cyl,"Plastic")
-                self.rend_color(sphere,"Bit")
-                self.rend_color(in_cyl,"Bit")
-                self.rend_color(thread,"Bit")
             bolt = self.combine_all_obj(thread,[sphere,in_cyl])
             bolt.name = 'Bolt_'+str(self.bolt_num)
             self.bolt_num+=1
+            if self.color_render:
+                self.rend_color(out_cyl,"Plastic")
+                self.rend_color(bolt,"Bit")
+                #self.rend_color(in_cyl,"Bit")
+                #self.rend_color(thread,"Bit")
+
 
         # rotate the bit
         Angle = 0
@@ -601,7 +603,7 @@ class Factory:
             self.bolt_roate_angle_list.append(Angle%60)
         elif bit_type == 'mf_Bit_Cross':
             self.bolt_roate_angle_list.append(Angle%90)
-        bolt["cp_category_id"] = 4
+        bolt["category_id"] = 4
         return [out_cyl,bolt]
 
     def rend_color(self, obj, part):
@@ -629,16 +631,11 @@ class Factory:
             mat.specular_intensity = 0.5
             mat.roughness = 0.7
 
-        elif part == "Bit":
-            mat.metallic = 0.8
-            mat.roughness = 0.4
-            mat.diffuse_color = (0.3, 0.3, 0.3, 1)
-            mat.specular_intensity = 0.9
-            
-            #mat.diffuse_color = (0.9, 0.9, 0.9, 1)
-            #mat.metallic = 0.85
-            #mat.specular_intensity = 0.5
-            #mat.roughness = 0.1
+        elif part == "Bit":           
+            mat.diffuse_color = (0.9, 0.9, 0.9, 1)
+            mat.metallic = 0.9
+            mat.specular_intensity = 0.7
+            mat.roughness = 0.1
 
         # Assign it to object
         if obj.data.materials:

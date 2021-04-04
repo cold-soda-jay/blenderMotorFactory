@@ -91,7 +91,7 @@ class Motor_Creator(Factory):
         if self.color_render:
             self.rend_color(cyl, "Metall")
         cyl.name = "Bottom"
-        cyl["cp_category_id"] = 0
+        cyl["category_id"] = 0
 
         self.save_modell(cyl)
         return cyl
@@ -323,7 +323,7 @@ class Motor_Creator(Factory):
         en_part = self.combine_all_obj(en_part_1,[en_part_2])
 
         en_part.name = "Charger"
-        en_part["cp_category_id"] = 1
+        en_part["category_id"] = 1
 
         self.save_modell(en_part)
 
@@ -1184,7 +1184,7 @@ class Type_A(Motor_Creator):
         extension_zone, bolt_list_2 = self.create_up(length_relativ, extension=True)
         self.rotate_object(extension_zone)
         extension_zone.name = "Cover"
-        extension_zone["cp_category_id"] = 3
+        extension_zone["category_id"] = 3
         self.save_modell(extension_zone)
         
         for bolt in bolt_list_2:
@@ -1197,7 +1197,7 @@ class Type_A(Motor_Creator):
 
         gear_1 = self.combine_all_obj(board,[up1,middle])
         gear_1.name = "Gear_Container"
-        gear_1["cp_category_id"] = 2
+        gear_1["category_id"] = 2
         self.save_modell(gear_1)
 
         gear_2 = self.combine_all_obj(gear_1,bolt_list_1)
@@ -1621,7 +1621,7 @@ class Type_B(Motor_Creator):
 
         container = self.combine_all_obj(upper_1, [middle])
         container.name = 'Gear_Container' 
-        container["cp_category_id"] = 2
+        container["category_id"] = 2
  
         self.save_modell(container)
 
@@ -1633,7 +1633,7 @@ class Type_B(Motor_Creator):
         extension_zone.name = "Cover"  
         self.rotate_object(extension_zone)
         
-        extension_zone["cp_category_id"] = 3
+        extension_zone["category_id"] = 3
         self.save_modell(extension_zone)  
             
         for bl in bolt_list:

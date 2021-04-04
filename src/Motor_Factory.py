@@ -544,7 +544,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                             space.shading.type = 'SOLID' # set the viewport shading to rendered
                         else:
                             space.shading.type = 'SOLID' # set the viewport shading to rendered
-        motor["cp_category_id"] = 9
+        motor["category_id"] = 9
         creator.save_modell(motor)
         creator.write_back(self)
         creator.save_csv(self)  
