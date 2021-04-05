@@ -695,8 +695,7 @@ class Type_A(Motor_Creator):
         #Cut unseful part
         if extension:
             pass
-        else:
-            pass
+        else:           
             bpy.ops.mesh.primitive_cube_add(location=(x, y-length_relativ/3-5.05, z))
             bpy.ops.transform.resize(value=(5, 5, 8))
             cube_1 = bpy.context.object
@@ -1400,7 +1399,8 @@ class Type_B(Motor_Creator):
             [2,12,13,4],
             [4,13,11,10],
             [8,2,4,10],
-            [9,12,13,11]
+            [9,12,13,11],
+            [2,12,9,8]
             
         ]
         if self.ex_type == "mf_None":
@@ -1420,9 +1420,26 @@ class Type_B(Motor_Creator):
         
         extension = self.combine_all_obj(board_1, [board_2, s_gear])
         
+        #Create bolt body
+        bolt_list=[]
+        for posi in bolt_positions:
+            bolt = self.create_bolt((posi[0] + 0.53, posi[1],posi[2]), rotation = (radians(-90),'Y'), only_body = True)[0]
+            #Hole
+            bpy.ops.mesh.primitive_cylinder_add(radius=self.BOLT_RAD-0.05, depth=5, location=posi)
+            cyl_tmp = bpy.context.object
+            cyl_tmp.select_set(True)
+            bpy.ops.transform.rotate(value=radians(90),orient_axis='Y')
+            bpy.ops.object.select_all(action='DESELECT')
+            self.diff_obj(extension, cyl_tmp)
+            bpy.ops.object.select_all(action='DESELECT')
+            cyl_tmp.select_set(True)
+            bpy.ops.object.delete()
+            bolt_list.append(bolt)
+
+        up2 = self.combine_all_obj(extension, bolt_list)
         if self.color_render:
-            self.rend_color(extension, "Plastic")
-        return extension
+            self.rend_color(up2, "Plastic")
+        return up2
 
     def create_Up1(self):
         init_x = self.init_x
@@ -1458,6 +1475,7 @@ class Type_B(Motor_Creator):
         bpy.ops.transform.rotate(value=radians(90),orient_axis='Y') 
 
         exte = self.create_gear_extension((x,y,z),length_relativ)
+        up1 = self.combine_all_obj(s_gear, [exte])
 
         # Create Bolts
         x_bolt_init = x + length_relativ/2 - self.BOLT_LENGTH/2 + self.EXTENSION_THICKNESS + 0.1
@@ -1479,14 +1497,44 @@ class Type_B(Motor_Creator):
 
         y_bolt_1, z_bolt_1 = self.rotate_around_point((y,z),self.bolt_rotation_1,(y_bolt_init,z_bolt_init))
         bolt_1 = self.create_bolt((x_bolt_init, y_bolt_1,z_bolt_1), rotation = rotation_s)
+        #Hole
+        bpy.ops.mesh.primitive_cylinder_add(radius=self.BOLT_RAD-0.05, depth=5, location=(x_bolt_init, y_bolt_1,z_bolt_1))
+        cyl_tmp = bpy.context.object
+        cyl_tmp.select_set(True)
+        bpy.ops.transform.rotate(value=rotation_s[0],orient_axis=rotation_s[1])
+        bpy.ops.object.select_all(action='DESELECT')
+        self.diff_obj(up1, cyl_tmp)
+        bpy.ops.object.select_all(action='DESELECT')
+        cyl_tmp.select_set(True)
+        bpy.ops.object.delete()
         
         y_bolt_2, z_bolt_2 = self.rotate_around_point((y,z),self.bolt_rotation_2,(y_bolt_init,z_bolt_init))       
         bolt_2 = self.create_bolt((x_bolt_init, y_bolt_2,z_bolt_2), rotation = rotation_s) 
-
+        #Hole
+        bpy.ops.mesh.primitive_cylinder_add(radius=self.BOLT_RAD-0.05, depth=5, location=(x_bolt_init, y_bolt_2,z_bolt_2))
+        cyl_tmp = bpy.context.object
+        cyl_tmp.select_set(True)
+        bpy.ops.transform.rotate(value=rotation_s[0],orient_axis=rotation_s[1])
+        bpy.ops.object.select_all(action='DESELECT')
+        self.diff_obj(up1, cyl_tmp)
+        bpy.ops.object.select_all(action='DESELECT')
+        cyl_tmp.select_set(True)
+        bpy.ops.object.delete()
+        
         z_bolt_3 = main_long + sub_long + self.bolt_position_right
-
         y_bolt_3 = self.FOUR_CYL_DIA + self.BOLT_RAD
         bolt_3 = self.create_bolt((x_bolt_init, y_bolt_3,z_bolt_3), rotation = rotation_s)
+        #Hole
+        bpy.ops.mesh.primitive_cylinder_add(radius=self.BOLT_RAD-0.05, depth=5, location=(x_bolt_init, y_bolt_3,z_bolt_3))
+        cyl_tmp = bpy.context.object
+        cyl_tmp.select_set(True)
+        bpy.ops.transform.rotate(value=rotation_s[0],orient_axis=rotation_s[1])
+        bpy.ops.object.select_all(action='DESELECT')
+        self.diff_obj(up1, cyl_tmp)
+        bpy.ops.object.select_all(action='DESELECT')
+        cyl_tmp.select_set(True)
+        bpy.ops.object.delete()
+        
         bolt_shell_list = [bolt_1[0], bolt_2[0],bolt_3[0]]
         bolt_bit_list = [bolt_2[1],bolt_3[1],bolt_1[1]]
         
@@ -1502,8 +1550,16 @@ class Type_B(Motor_Creator):
             bolt_bit_list.append(bolt_ex[1])        
 
 
-
-        upper_1 = self.combine_all_obj(s_gear, [exte]+bolt_shell_list)
+        upper_1 = self.combine_all_obj(up1, bolt_shell_list)
+        
+        bpy.ops.mesh.primitive_cube_add(location=(x+length_relativ/2+5.05, y, z))
+        bpy.ops.transform.resize(value=(5, 5, 8))
+        cube_1 = bpy.context.object
+        cube_1.name = 'cube1'
+        self.diff_obj(upper_1,cube_1)
+        cube_1.select_set(True)
+        bpy.ops.object.delete()
+        
         return upper_1, bolt_bit_list
     
     def create_gear_extension(self, position, length_relative):
