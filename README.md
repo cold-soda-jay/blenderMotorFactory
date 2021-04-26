@@ -2,9 +2,12 @@
 
 This is an blender addon which can create motor. We parameterized many features of a motor and so user can generate various model in same type but different parameters.
 
-This addon only support [blender version 2.90.1](https://download.blender.org/release/Blender2.90/). Other version may cause unpredictable falier.
 
 ## 1. Installation
+
+> **Requirement**:
+> - This addon only support [blender version 2.90.1](https://download.blender.org/release/Blender2.90/). Other version may cause unpredictable falier.
+> - Blender Bolt Factory should be enabled. It is a default addon in blender, you can enable it in *Edit > Preference > Install*. 
 
 1. Download the project via ``git clone https://github.com/cold-soda-jay/blenderMotorFactory.git`` or download zip file from realese.
 2. In Blender, go *Edit > Preference > Install* and find the file **Add Motor.zip**. Make sure it is activated.
@@ -109,7 +112,7 @@ To generate more models at once, you can use script ``./src/auto_generate.py``. 
 |mf_Lower_Gear_Dia| Diameter of lower gear: Vaule can be floate in range [3.5, 4.5]|
 |mf_Lower_Gear_Position| Position of lower gear respect to the top of the bottom part: Vaule can be floate in range [3.6, 4.2] |
 |mf_Upper_Gear_Dia| Diameter of upper gear: Vaule can be floate in range [5, 6.5]  |
-|mf_Bit_Type| Type of bit in bolts: Vaule can be ('mf_Bit_Torx', 'mf_Bit_Slot', 'mf_Bit_Cross')|
+|mf_Bit_Type| Type of bit in bolts: Vaule can be ('mf_Bit_Torx', 'mf_Bit_Slot', 'mf_Bit_Cross', 'mf_Bit_Allen')|
 |mf_Bolt_Orientation| Orientation of bolts: Vaule can be ('mf_all_same', 'mf_all_random')|
 |mf_Lower_Gear_Bolt_Random| Wheater postion of bolts on lower gear(Type A) should be random: Value can be (True, False)|
 |mf_Lower_Gear_Bolt_Position_1| The position of bolt around lower gear: Value in range [190, 230]. Unit degree|
