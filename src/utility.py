@@ -431,6 +431,17 @@ class Factory:
         bit_type = self.bit_type
         orientation = self.bolt_ortientation
         out_dia = self.BOLT_RAD
+        shank_length = 0
+        shank_dia = 6
+        cap_height = 3
+        cap_dia = 7
+        thread_length = 14
+        major = 3
+        minor = 4
+        pitch = 1
+        crest = 41
+        root = 1
+        div = 60
 
 
         # Check if only body should be created
@@ -453,130 +464,91 @@ class Factory:
 
             in_dia = 0.8 * self.BOLT_RAD
             
-            #Create first BIt base of Bolt
-            z_in = position[2] + out_length/2
-            bpy.ops.mesh.primitive_cylinder_add(radius=in_dia, depth=in_dia, location=(position[0],position[1],z_in))
-            in_cyl = bpy.context.object
-            in_cyl.name = 'in_cylinder'
-
-            #Create Thread of Bolt
-
-            bpy.ops.mesh.primitive_cylinder_add(radius=self.BOLT_THREAD_DIA, depth=self.BOLT_THREAD_LENGTH, location=(position[0],position[1],position[2]+0.05))
-            thread = bpy.context.object
-            thread.name = 'thread'
-
-            z_sphe = z_in + in_dia/2
-
             #Create Shell for Bolt
             
-            cyl_shell = self.create_ring(position, out_length, out_dia, 0.2)
-            bpy.ops.mesh.primitive_cylinder_add(radius=self.BOLT_THREAD_DIA, depth=0.1, location=(position[0],position[1],position[2]-0.65))
+            cyl_shell = self.create_ring((position[0],position[1],position[2]-0.15), out_length, out_dia, 0.2)
+            bpy.ops.mesh.primitive_cylinder_add(radius=self.BOLT_THREAD_DIA, depth=0.1, location=(position[0],position[1],position[2]-0.8))
             cyl_deck = bpy.context.object
             out_cyl = self.combine_all_obj(cyl_shell, [cyl_deck])
             out_cyl.name = 'out_cylinder'
-
-            bpy.ops.mesh.primitive_uv_sphere_add(radius=in_dia, location=(position[0],position[1],z_sphe))
-            sphere = bpy.context.object
-            sphere.name = 'sphere'
-            z_cut = z_sphe + in_dia/2 + in_dia/3
-            bpy.ops.mesh.primitive_cylinder_add(radius=in_dia, depth=in_dia, location=(position[0],position[1],z_cut))
-            cut_cyl = bpy.context.object
-            cut_cyl.name = 'cut_cylinder'
-
-            bool_in = sphere.modifiers.new('bool_in', 'BOOLEAN')
-            bool_in.operation = 'DIFFERENCE'
-            bool_in.object = cut_cyl
-            bpy.context.view_layer.objects.active = sphere
-            res = bpy.ops.object.modifier_apply(modifier='bool_in')           
-            # Delete the cylinder
-            cut_cyl.select_set(True)
-            bpy.ops.object.delete() 
-
-            #Create bit of bolts
+            bpy.ops.object.select_all(action='DESELECT')
+            ##################################### Bolt ######################################################################################################
+            local = (position[0],position[1],position[2]+0.15)
             if bit_type == 'mf_Bit_Slot':
-                bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],z_sphe+ in_dia/3))
-                bpy.ops.transform.resize(value=(in_dia*1.5, 0.05, 0.2))
-                bit = bpy.context.object
-            elif bit_type == 'mf_Bit_Torx':
-                bit = self.add_torx((position[0],position[1],z_sphe+ in_dia),in_dia*1.5,0.2)
-            elif bit_type == 'mf_Bit_Cross':
-                bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],z_sphe+ in_dia/3))
-                bpy.ops.transform.resize(value=(0.05, in_dia, 0.2))
-                bit_1 = bpy.context.object
-                bool_bit = sphere.modifiers.new('bool_bit', 'BOOLEAN')
-                bool_bit.operation = 'DIFFERENCE'
-                bool_bit.object = bit_1
-                bpy.context.view_layer.objects.active = sphere
-                res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit')
-
-                bool_bit_2 = in_cyl.modifiers.new('bool_bit_2', 'BOOLEAN')
-                bool_bit_2.operation = 'DIFFERENCE'
-                bool_bit_2.object = bit_1
-                bpy.context.view_layer.objects.active = in_cyl
-                res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_2')
-
-                bool_bit_3 = out_cyl.modifiers.new('bool_bit_3', 'BOOLEAN')
-                bool_bit_3.operation = 'DIFFERENCE'
-                bool_bit_3.object = bit_1
-                bpy.context.view_layer.objects.active = out_cyl
-                res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_3')
-
-                bit_1.select_set(True)
-                bpy.ops.object.delete() 
-                #bpy.ops.transform.rotate(value=radians(90),orient_axis='Z') 
-
-                bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],z_sphe+ in_dia/3))
-                bpy.ops.transform.resize(value=(in_dia, 0.05, 0.2))
-                bit_2 = bpy.context.object   
-                bool_bit = sphere.modifiers.new('bool_bit', 'BOOLEAN')
-                bool_bit.operation = 'DIFFERENCE'
-                bool_bit.object = bit_2
-                bpy.context.view_layer.objects.active = sphere
-                res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit')
-
-                bool_bit_2 = in_cyl.modifiers.new('bool_bit_2', 'BOOLEAN')
-                bool_bit_2.operation = 'DIFFERENCE'
-                bool_bit_2.object = bit_2
-                bpy.context.view_layer.objects.active = in_cyl
-                res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_2')
-
-                bool_bit_3 = out_cyl.modifiers.new('bool_bit_3', 'BOOLEAN')
-                bool_bit_3.operation = 'DIFFERENCE'
-                bool_bit_3.object = bit_2
-                bpy.context.view_layer.objects.active = out_cyl
-                res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_3')
-
-                bit_2.select_set(True)
-                bpy.ops.object.delete()          
-
-            if bit_type == 'mf_Bit_Cross':
                 pass
-            
-            else:
-                bool_bit = sphere.modifiers.new('bool_bit', 'BOOLEAN')
+                bpy.ops.mesh.bolt_add(align='VIEW', location=local, 
+                                      bf_Model_Type='bf_Model_Bolt', 
+                                      bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_None', 
+                                      bf_Shank_Length=shank_length, 
+                                     bf_Shank_Dia=shank_dia,  
+                                      bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
+                                      bf_Thread_Length=thread_length, 
+                                      bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
+                                    bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div,)
+                bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
+                bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
+                bolt = bpy.context.object
+                bolt.location = local  
+                
+                bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],position[2]+out_length/2+0.2))
+                bpy.ops.transform.resize(value=(5, 0.05, 0.2))
+                bit = bpy.context.object
+                
+                bool_bit = bolt.modifiers.new('bool_bit', 'BOOLEAN')
                 bool_bit.operation = 'DIFFERENCE'
                 bool_bit.object = bit
-                bpy.context.view_layer.objects.active = sphere
-                res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit')
-
-                bool_bit_2 = in_cyl.modifiers.new('bool_bit_2', 'BOOLEAN')
-                bool_bit_2.operation = 'DIFFERENCE'
-                bool_bit_2.object = bit
-                bpy.context.view_layer.objects.active = in_cyl
-                res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_2')
-
-                bool_bit_3 = out_cyl.modifiers.new('bool_bit_3', 'BOOLEAN')
-                bool_bit_3.operation = 'DIFFERENCE'
-                bool_bit_3.object = bit
-                bpy.context.view_layer.objects.active = out_cyl
-                res_2 = bpy.ops.object.modifier_apply(modifier='bool_bit_3')
-
+                bpy.context.view_layer.objects.active = bolt
+                res = bpy.ops.object.modifier_apply(modifier='bool_bit')
                 bit.select_set(True)
                 bpy.ops.object.delete() 
-            # rend color
-            bolt = self.combine_all_obj(thread,[sphere,in_cyl])
+                
+            elif bit_type == 'mf_Bit_Torx':
+                #Torx
+                
+                bpy.ops.mesh.bolt_add(align='CURSOR', #location=local,  
+                                    bf_Model_Type='bf_Model_Bolt', bf_Head_Type='bf_Head_Cap', 
+                                    bf_Bit_Type='bf_Bit_Torx', bf_Shank_Length=shank_length, 
+                                    bf_Shank_Dia=shank_dia, bf_Torx_Size_Type='bf_Torx_T20', bf_Torx_Bit_Depth=2, 
+                                    bf_Cap_Head_Height=cap_height+1, bf_Cap_Head_Dia=cap_dia, 
+                                    bf_Thread_Length=thread_length, bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
+                                    bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div,)
+                bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
+                bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
+                bolt = bpy.context.object
+                bolt.location = local
+                
+            elif bit_type == 'mf_Bit_Cross':
+                # Cross
+                bpy.ops.mesh.bolt_add(align='WORLD', location=local,
+                                       bf_Model_Type='bf_Model_Bolt',
+                                        bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_Philips', 
+                                        bf_Shank_Length=shank_length, bf_Shank_Dia=shank_dia, 
+                                        bf_Phillips_Bit_Depth=2.23269, bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
+                                        bf_Philips_Bit_Dia=3, bf_Thread_Length=thread_length, 
+                                        bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
+                                    bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div)
+                bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
+                bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
+                bolt = bpy.context.object
+                bolt.location = local
+                
+            elif bit_type == 'mf_Bit_Allen':
+                #Allen
+                bpy.ops.mesh.bolt_add(align='WORLD', location=local, 
+                                    bf_Model_Type='bf_Model_Bolt', bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_Allen', 
+                                    bf_Shank_Length=shank_length, bf_Shank_Dia=shank_dia, 
+                                    bf_Allen_Bit_Depth=2, bf_Allen_Bit_Flat_Distance=3, bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
+                                    bf_Thread_Length=thread_length, 
+                                    bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
+                                    bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div)
+                bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
+                bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
+                bolt = bpy.context.object
+                bolt.location = local
+            #bolt = self.create_ring((0,0,0), 0.01, 0.01, 0.005)
             bolt.name = 'Bolt_'+str(self.bolt_num)
             self.bolt_num+=1
+                       
             if self.color_render:
                 self.rend_color(out_cyl,"Plastic")
                 self.rend_color(bolt,"Bit")
@@ -591,11 +563,18 @@ class Factory:
             bpy.ops.object.select_all(action='DESELECT')
             bolt.select_set(True)    
             bpy.ops.transform.rotate(value=radians(Angle),orient_axis='Z') 
+        #rotate Bolt
         if rotation:
             bpy.ops.object.select_all(action='DESELECT')
             out_cyl.select_set(True)
             bolt.select_set(True)
             bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
+            
+            #bpy.ops.object.select_all(action='DESELECT')
+            #out_cyl.select_set(True)
+            #bolt.select_set(True)
+            #bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1],orient_type='LOCAL')
+            
         #print(Angle)
         if bit_type == 'mf_Bit_Slot':
             self.bolt_roate_angle_list.append(Angle%180)
@@ -603,6 +582,8 @@ class Factory:
             self.bolt_roate_angle_list.append(Angle%60)
         elif bit_type == 'mf_Bit_Cross':
             self.bolt_roate_angle_list.append(Angle%90)
+        elif bit_type == 'mf_Bit_Allen':
+            self.bolt_roate_angle_list.append(Angle%60)
         bolt["category_id"] = 4
         return [out_cyl,bolt]
 

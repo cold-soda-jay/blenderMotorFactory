@@ -1423,7 +1423,7 @@ class Type_B(Motor_Creator):
         #Create bolt body
         bolt_list=[]
         for posi in bolt_positions:
-            bolt = self.create_bolt((posi[0] + 0.53, posi[1],posi[2]), rotation = (radians(-90),'Y'), only_body = True)[0]
+            bolt = self.create_bolt((posi[0] + 0.45, posi[1],posi[2]), rotation = (radians(-90),'Y'), only_body = True)[0]
             #Hole
             bpy.ops.mesh.primitive_cylinder_add(radius=self.BOLT_RAD-0.05, depth=5, location=posi)
             cyl_tmp = bpy.context.object

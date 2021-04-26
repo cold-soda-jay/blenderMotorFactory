@@ -333,7 +333,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     #Bit Types
     Bit_Type_List = [('mf_Bit_Torx','Torx','Torx Bit Type'),
                     ('mf_Bit_Slot','Slot','Slot Bit Type'),
-                    ('mf_Bit_Cross','Cross','Cross Bit Type')]
+                    ('mf_Bit_Cross','Cross','Cross Bit Type'),
+                    ('mf_Bit_Allen','Allen','Allen Bit Type')]
     mf_Bit_Type = EnumProperty( attr='mf_Bit_Type',
             name='Bit Type',
             description='Choose the type of bit to you would like',
