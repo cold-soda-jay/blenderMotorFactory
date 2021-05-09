@@ -12,7 +12,7 @@ import re
 
 
 
-class Factory:
+class Factory: 
     """Basic Class for creating motor. Contains several basic methods and variables.
     
 
@@ -102,6 +102,7 @@ class Factory:
     out_bolt_position = []
     temp_save = False
     bolt_roate_angle_list = []
+    general_Bolt = None
 
     def __init__(self,factory):
         """initiate variables.
@@ -144,8 +145,9 @@ class Factory:
         ]
         self.save_path = factory.save_path
         self.temp_save = factory.temp_save
-        self.id_Nr = factory.id_Nr    
+        self.id_Nr = factory.id_Nr     
         self.init_modify(factory)
+        self.general_Bolt = self.create_general_bolt()
     
     def init_modify(self,factory):
         """Init other variables by demand
@@ -424,13 +426,9 @@ class Factory:
 
         return cyl
 
-    def create_bolt(self, position,rotation=None,only_body=False):
-        """[summary]
-        create_bolt((0,0,0),(radians(45),'X'))
-        """   
+    def create_general_bolt(self):
+        local = (0,0,0)
         bit_type = self.bit_type
-        orientation = self.bolt_ortientation
-        out_dia = self.BOLT_RAD
         shank_length = 0
         shank_dia = 6
         cap_height = 3
@@ -442,6 +440,86 @@ class Factory:
         crest = 41
         root = 1
         div = 60
+        if bit_type == 'mf_Bit_Slot':
+            bpy.ops.mesh.bolt_add(align='VIEW', location=local, 
+                                    bf_Model_Type='bf_Model_Bolt', 
+                                    bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_None', 
+                                    bf_Shank_Length=shank_length, 
+                                    bf_Shank_Dia=shank_dia,  
+                                    bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
+                                    bf_Thread_Length=thread_length, 
+                                    bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
+                                bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div,)
+            bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
+            bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
+            bolt = bpy.context.object
+            bolt.location = local  
+            
+            bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],position[2]+out_length/2+0.2))
+            bpy.ops.transform.resize(value=(5, 0.05, 0.2))
+            bit = bpy.context.object
+            
+            bool_bit = bolt.modifiers.new('bool_bit', 'BOOLEAN')
+            bool_bit.operation = 'DIFFERENCE'
+            bool_bit.object = bit
+            bpy.context.view_layer.objects.active = bolt
+            res = bpy.ops.object.modifier_apply(modifier='bool_bit')
+            bit.select_set(True)
+            bpy.ops.object.delete() 
+            
+        elif bit_type == 'mf_Bit_Torx':
+            #Torx
+            
+            bpy.ops.mesh.bolt_add(align='CURSOR', #location=local,  
+                                bf_Model_Type='bf_Model_Bolt', bf_Head_Type='bf_Head_Cap', 
+                                bf_Bit_Type='bf_Bit_Torx', bf_Shank_Length=shank_length, 
+                                bf_Shank_Dia=shank_dia, bf_Torx_Size_Type='bf_Torx_T20', bf_Torx_Bit_Depth=2, 
+                                bf_Cap_Head_Height=cap_height+1, bf_Cap_Head_Dia=cap_dia, 
+                                bf_Thread_Length=thread_length, bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
+                                bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div,)
+            bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
+            bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
+            bolt = bpy.context.object
+            bolt.location = local
+            
+        elif bit_type == 'mf_Bit_Cross':
+            # Cross
+            bpy.ops.mesh.bolt_add(align='WORLD', location=local,
+                                    bf_Model_Type='bf_Model_Bolt',
+                                    bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_Philips', 
+                                    bf_Shank_Length=shank_length, bf_Shank_Dia=shank_dia, 
+                                    bf_Phillips_Bit_Depth=2.23269, bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
+                                    bf_Philips_Bit_Dia=3, bf_Thread_Length=thread_length, 
+                                    bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
+                                bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div)
+            bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
+            bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
+            bolt = bpy.context.object
+            bolt.location = local
+            
+        elif bit_type == 'mf_Bit_Allen':
+            #Allen
+            bpy.ops.mesh.bolt_add(align='WORLD', location=local, 
+                                bf_Model_Type='bf_Model_Bolt', bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_Allen', 
+                                bf_Shank_Length=shank_length, bf_Shank_Dia=shank_dia, 
+                                bf_Allen_Bit_Depth=2, bf_Allen_Bit_Flat_Distance=3, bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
+                                bf_Thread_Length=thread_length, 
+                                bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
+                                bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div)
+            bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
+            bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
+            bolt = bpy.context.object
+            bolt.location = local
+        return bolt
+
+    def create_bolt(self, position,rotation=None,only_body=False):
+        """[summary]
+        create_bolt((0,0,0),(radians(45),'X'))
+        """   
+        bit_type = self.bit_type
+        orientation = self.bolt_ortientation
+        out_dia = self.BOLT_RAD
+
 
 
         # Check if only body should be created
@@ -474,77 +552,17 @@ class Factory:
             bpy.ops.object.select_all(action='DESELECT')
             ##################################### Bolt ######################################################################################################
             local = (position[0],position[1],position[2]+0.15)
-            if bit_type == 'mf_Bit_Slot':
-                pass
-                bpy.ops.mesh.bolt_add(align='VIEW', location=local, 
-                                      bf_Model_Type='bf_Model_Bolt', 
-                                      bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_None', 
-                                      bf_Shank_Length=shank_length, 
-                                     bf_Shank_Dia=shank_dia,  
-                                      bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
-                                      bf_Thread_Length=thread_length, 
-                                      bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
-                                    bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div,)
-                bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
-                bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
-                bolt = bpy.context.object
-                bolt.location = local  
-                
-                bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],position[2]+out_length/2+0.2))
-                bpy.ops.transform.resize(value=(5, 0.05, 0.2))
-                bit = bpy.context.object
-                
-                bool_bit = bolt.modifiers.new('bool_bit', 'BOOLEAN')
-                bool_bit.operation = 'DIFFERENCE'
-                bool_bit.object = bit
-                bpy.context.view_layer.objects.active = bolt
-                res = bpy.ops.object.modifier_apply(modifier='bool_bit')
-                bit.select_set(True)
-                bpy.ops.object.delete() 
-                
-            elif bit_type == 'mf_Bit_Torx':
-                #Torx
-                
-                bpy.ops.mesh.bolt_add(align='CURSOR', #location=local,  
-                                    bf_Model_Type='bf_Model_Bolt', bf_Head_Type='bf_Head_Cap', 
-                                    bf_Bit_Type='bf_Bit_Torx', bf_Shank_Length=shank_length, 
-                                    bf_Shank_Dia=shank_dia, bf_Torx_Size_Type='bf_Torx_T20', bf_Torx_Bit_Depth=2, 
-                                    bf_Cap_Head_Height=cap_height+1, bf_Cap_Head_Dia=cap_dia, 
-                                    bf_Thread_Length=thread_length, bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
-                                    bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div,)
-                bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
-                bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
-                bolt = bpy.context.object
-                bolt.location = local
-                
-            elif bit_type == 'mf_Bit_Cross':
-                # Cross
-                bpy.ops.mesh.bolt_add(align='WORLD', location=local,
-                                       bf_Model_Type='bf_Model_Bolt',
-                                        bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_Philips', 
-                                        bf_Shank_Length=shank_length, bf_Shank_Dia=shank_dia, 
-                                        bf_Phillips_Bit_Depth=2.23269, bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
-                                        bf_Philips_Bit_Dia=3, bf_Thread_Length=thread_length, 
-                                        bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
-                                    bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div)
-                bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
-                bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
-                bolt = bpy.context.object
-                bolt.location = local
-                
-            elif bit_type == 'mf_Bit_Allen':
-                #Allen
-                bpy.ops.mesh.bolt_add(align='WORLD', location=local, 
-                                    bf_Model_Type='bf_Model_Bolt', bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_Allen', 
-                                    bf_Shank_Length=shank_length, bf_Shank_Dia=shank_dia, 
-                                    bf_Allen_Bit_Depth=2, bf_Allen_Bit_Flat_Distance=3, bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
-                                    bf_Thread_Length=thread_length, 
-                                    bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
-                                    bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div)
-                bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
-                bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
-                bolt = bpy.context.object
-                bolt.location = local
+
+            bpy.ops.object.select_all(action='DESELECT')
+            bpy.context.view_layer.objects.active = None
+            bpy.context.view_layer.objects.active = self.general_Bolt
+            self.general_Bolt.select_set(True)  
+            
+            bpy.ops.object.duplicate(linked=0,mode='TRANSLATION') 
+            bolt = bpy.context.object
+            #bolt = self.general_Bolt.copy()
+            #bolt.data = self.general_Bolt.data.copy()
+            bolt.location = local
             #bolt = self.create_ring((0,0,0), 0.01, 0.01, 0.005)
             bolt.name = 'Bolt_'+str(self.bolt_num)
             self.bolt_num+=1
@@ -922,18 +940,17 @@ class Factory:
      
             out_position.append([top, bottom])
         self.out_bolt_position = out_position
-       
-    def create_internal_gear(self, position, height, radius):
-        thickness = radius - 0.5
-        ring_main = self.create_ring(position=position,height=height,radius=radius, thickness=thickness)
-        number = 17
+
+    def normal_gear(self,number,thickness):
+        position = (0,0,0)
+        ring_main =self.create_ring(position=position,height=1,radius=1.1, thickness=thickness)
         angle = 2*math.pi/number
-        len_base = radius * math.sin(angle/2)
-        posi_x = radius * math.cos(angle/2)
+        len_base = math.sin(angle/2)
+        posi_x = math.cos(angle/2)
         teeth_list = []
         position_teeth = [position[0]-posi_x, position[1],position[2]]
         for i in range(number):
-            teeth = self.create_teeth_mesh(position_teeth, height, len_base)
+            teeth = self.create_teeth_mesh(position_teeth, 1, len_base)
             rotation_angle = i*angle
             r_x, r_y = self.rotate_around_point(position[:2], rotation_angle, teeth.location[:2])
             teeth.location.x = r_x
@@ -944,12 +961,20 @@ class Factory:
             bpy.ops.object.select_all(action='DESELECT')
         internal_gear = self.combine_all_obj(ring_main, teeth_list)
         return internal_gear   
+
+    def create_internal_gear(self, position, height, radius, number, thickness=0.5):
+        internal_gear = self.normal_gear(number, thickness)
+        bpy.ops.object.select_all(action='DESELECT')
+        internal_gear.select_set(True)
+        bpy.ops.transform.resize(value=(radius, radius, height))
+        internal_gear.location = position
+        return internal_gear   
     
     def create_teeth_mesh(self, position,height,len_base):
-        x = position[0]
+        x = position[0] 
         y = position[1]
         z = position[2] + height/2
-        t_len = 1.5 *len_base
+        t_len = 2.3 *len_base
         len_up = len_base * 0.4
         p1x = x
         p1y = y + len_base
@@ -962,13 +987,13 @@ class Factory:
         
         verts =[
             [p1x, p1y, z],
-            [p1x, p1y, z - height],
+            [p1x, p1y + len_base, z - height],
             [p2x, p2y, z],
-            [p2x, p2y, z - height],
+            [p2x, p2y + len_base, z - height],
             [p3x, p3y,z],
-            [p3x, p3y, z - height],
+            [p3x, p3y + len_base, z - height],
             [p4x, p4y, z],
-            [p4x, p4y, z - height],
+            [p4x, p4y + len_base, z - height],
         ]
         
         faces = [
@@ -981,4 +1006,11 @@ class Factory:
         ]
         
         obj = self.add_mesh('Teeth',verts, faces)
-        return obj        
+        return obj      
+
+    def clear_bolt(self):
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.context.view_layer.objects.active = None
+        bpy.context.view_layer.objects.active = self.general_Bolt
+        self.general_Bolt.select_set(True)  
+        bpy.ops.object.delete()
