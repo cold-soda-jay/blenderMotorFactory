@@ -554,6 +554,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
            self.temp_save = False   
            self.save_path = "None"  
+        creator.clear_bolt()
         self.test(creator)    
         return motor
 
