@@ -455,7 +455,7 @@ class Factory:
             bolt = bpy.context.object
             bolt.location = local  
             
-            bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],position[2]+out_length/2+0.2))
+            bpy.ops.mesh.primitive_cube_add(location=(local[0],local[1],local[2]+self.BOLT_LENGTH/2-0.2))
             bpy.ops.transform.resize(value=(5, 0.05, 0.2))
             bit = bpy.context.object
             
