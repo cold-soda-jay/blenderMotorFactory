@@ -1,6 +1,8 @@
-# Blender Motor Factory
+# Blender Motor Factory Version 1.0 C
 
-This is an blender addon which can create motor. We parameterized many features of a motor and so user can generate various model in same type but different parameters.
+This is an blender addon which can create motor. We parameterized many features of a motor and so user can generate various model in same type but different parameters. 
+
+This version is similar as 1.0 B. But have extra feature of simulating the bolt corrosion and bolt head fail.
 
 
 ## 1. Installation
@@ -8,6 +10,8 @@ This is an blender addon which can create motor. We parameterized many features 
 > **Requirement**:
 > - This addon only support [blender version 2.90.1](https://download.blender.org/release/Blender2.90/). Other version may cause unpredictable falier.
 > - Blender Bolt Factory should be enabled. It is a default addon in blender, you can enable it in *Edit > Preference > Install > Add Mesh: Bolt Factory*. 
+> - Bool Tool should be enabled: *Edit > Preference > Install > Object: Bool Tool*
+> - Newest version of [Damaged Bolt](https://github.com/gamekltt/Damaged-Bolt) should be installed
 
 1. Download the project via ``git clone https://github.com/cold-soda-jay/blenderMotorFactory.git`` or download zip file from release.
 2. In Blender, go *Edit > Preference > Install* and find the file **Add Motor.zip**. Make sure it is activated.
