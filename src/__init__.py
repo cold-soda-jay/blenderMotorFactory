@@ -28,7 +28,7 @@ from .Motor_Factory import Motor_Factory_Operator
 
 
 def add_mesh_motor_button(self, context):
-    self.layout.operator(Motor_Factory_Operator.bl_idname, text="Motor", icon="PLUGIN")
+    self.layout.operator(Motor_Factory_Operator.bl_idname, text="Motor 1c", icon="PLUGIN")
 
 
 def Motor_contex_menu(self, context):

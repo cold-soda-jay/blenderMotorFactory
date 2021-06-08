@@ -14,13 +14,13 @@ from bpy_extras.object_utils import AddObjectHelper
 class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     
     #Set Genera information
-    bl_idname = "mesh.add_motor"
+    bl_idname = "mesh.add_motor_1c"
     bl_label = "Motor Property"
     bl_options = {'REGISTER', 'UNDO', 'PRESET'}
     bl_description = "Add new motor"
     MAX_INPUT_NUMBER = 10
 
-    motor : BoolProperty(name = "Motor",
+    motor : BoolProperty(name = "Motor 1c",
                 default = True,
                 description = "New motor")
 
