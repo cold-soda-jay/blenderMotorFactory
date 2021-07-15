@@ -9,9 +9,11 @@ This is an blender addon which can create motor. We parameterized many features 
 > - This addon only support [blender version 2.90.1](https://download.blender.org/release/Blender2.90/). Other version may cause unpredictable falier.
 > - Blender Bolt Factory should be enabled. It is a default addon in blender, you can enable it in *Edit > Preference > Install > Add Mesh: Bolt Factory*. 
 
-1. Download the project via ``git clone https://github.com/cold-soda-jay/blenderMotorFactory.git`` or download zip file from release.
-2. In Blender, go *Edit > Preference > Install* and find the file **Add Motor.zip**. Make sure it is activated.
-3. Now you can find it in *Add >Mesh*
+1. Download the project 
+    - Clone project via ``git clone https://github.com/cold-soda-jay/blenderMotorFactory.git`` , then pack folder ***src*** into a zip file or 
+    - Download zip file from realese.
+2. In Blender, go *Edit > Preference > Install* and find the zip file. After installing make sure it is activated.
+3. Now you can find the Addon in *Add >Mesh >Motor*
 
 ## 2. Advanced
 
