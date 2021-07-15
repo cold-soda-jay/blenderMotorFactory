@@ -13,9 +13,11 @@ This version is similar as 1.0 B. But have extra feature of simulating the bolt 
 > - Bool Tool should be enabled: *Edit > Preference > Install > Object: Bool Tool*
 > - Newest version of [Damaged Bolt](https://github.com/gamekltt/Damaged-Bolt) should be installed
 
-1. Download the project via ``git clone https://github.com/cold-soda-jay/blenderMotorFactory.git`` or download zip file from release.
-2. In Blender, go *Edit > Preference > Install* and find the file **Add Motor.zip**. Make sure it is activated.
-3. Now you can find it in *Add >Mesh*
+1. Download the project 
+    - Clone project via ``git clone https://github.com/cold-soda-jay/blenderMotorFactoryVer2.0.git`` , switch to brach **1.0C**, then pack folder ***src*** into a zip file or 
+    - Download zip file from realese.
+2. In Blender, go *Edit > Preference > Install* and find the zip file. After installing make sure it is activated.
+3. Now you can find the Addon in *Add >Mesh >Motor*
 
 ## 2. Advanced
 
