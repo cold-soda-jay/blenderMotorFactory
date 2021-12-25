@@ -2,6 +2,7 @@
 
 This is an blender addon which can create motor. We parameterized many features of a motor and so user can generate various model in same type but different parameters.
 
+There is an extended version of this Addon [blenderMotorFactory](https://github.com/cold-soda-jay/blenderMotorFactoryVer2.0).
 
 ## 1. Installation
 
