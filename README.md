@@ -4,6 +4,10 @@ This is an blender addon which can create motor. We parameterized many features 
 
 There is an extended version of this Addon [blenderMotorFactory2.0](https://github.com/cold-soda-jay/blenderMotorFactoryVer2.0).
 
+**Related publications**:
+1. [MotorFactory: A Blender Add-on for Large Dataset Generation of Small Electric Motors](https://doi.org/10.1016/j.procir.2022.02.168)
+2. [SynMotor: A Benchmark Suite for Object Attribute Regression and Multi-task Learning](https://arxiv.org/abs/2301.05027)
+
 ## 1. Installation
 
 > **Requirement**:
